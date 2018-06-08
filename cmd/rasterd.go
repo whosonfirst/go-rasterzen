@@ -14,15 +14,24 @@ func main() {
 	var host = flag.String("host", "localhost", "The host for rasterd to listen for requests on")
 	var port = flag.Int("port", 8080, "The port for rasterd to listen for requests on")
 
-	var api_key = flag.String("nextzen-apikey", "", "A valid Nextzen API key (https://developers.nextzen.org/)")
-
 	flag.Parse()
 
 	mux := gohttp.NewServeMux()
 
-	svg_handler, err := http.SVGHandler(*api_key)
+	png_handler, err := http.PNGHandler()
 
-	mux.Handle("/", svg_handler)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	svg_handler, err := http.SVGHandler()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mux.Handle("/png/", png_handler)
+	mux.Handle("/svg/", svg_handler)
 
 	endpoint := fmt.Sprintf("%s:%d", *host, *port)
 	log.Printf("listening for requests on %s\n", endpoint)

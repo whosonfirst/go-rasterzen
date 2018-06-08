@@ -68,8 +68,6 @@ _Error handling has been removed for the sake of brevity._
 Usage of ./bin/rasterd:
   -host string
     	The host for rasterd to listen for requests on (default "localhost")
-  -nextzen-apikey string
-    		  A valid Nextzen API key (https://developers.nextzen.org/)
   -port int
     	The port for rasterd to listen for requests on (default 8080)
 ```
@@ -82,7 +80,6 @@ Specifically:
 * MVT tiles are not being cropped properly
 * The source MVT tiles are not being cached
 * There is no styling beyond block outlines with transparent fills
-* This should probably read the Nextzen API key from HTTP requests rather than the command line
 
 Like this:
 
@@ -111,8 +108,9 @@ Like this:
     <div id="map"></div>
     
     <script>
+      var api_key = 'NEXTZEN_API_KEY';		// https://developers.nextzen.org/
       var map = L.map('map').setView([37.613858, -122.37366], 13);
-      L.tileLayer('http://localhost:8080/rasterd/{z}/{x}/{y}.svg').addTo(map);
+      L.tileLayer('http://localhost:8080/svg/{z}/{x}/{y}.svg?api_key=' + api_key).addTo(map);
     </script>
     
   </body>

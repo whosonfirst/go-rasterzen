@@ -5,7 +5,7 @@ import (
 	gohttp "net/http"
 )
 
-func SVGHandler() (gohttp.HandlerFunc, error) {
+func PNGHandler() (gohttp.HandlerFunc, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
@@ -18,10 +18,9 @@ func SVGHandler() (gohttp.HandlerFunc, error) {
 
 		defer fh.Close()
 
-		rsp.Header().Set("Content-Type", "image/svg+xml")
-		rsp.Header().Set("Access-Control-Allow-Origin", "*")
+		rsp.Header().Set("Content-Type", "image/png")
 
-		err = mvt.ToSVG(fh, rsp)
+		err = mvt.ToPNG(fh, rsp)
 
 		if err != nil {
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)

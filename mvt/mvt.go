@@ -47,16 +47,17 @@ func ToSVG(in io.Reader, out io.Writer) error {
 
 		for _, f := range features.Array() {
 
-			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Fills_and_Strokes		
+			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Fills_and_Strokes
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+
+			// SOMETHING ABOUT THIS MAKES oksvg VERY VERY SAD BUT I AM NOT SURE WHAT YET...
+			// (20180608/thisisaaronland)
 
 			f2, err := sjson.Set(f.String(), "properties.style", "stroke: black; fill: transparent;")
 
 			if err != nil {
 				return err
 			}
-
-			// log.Println(f2)
 
 			err = s.AddFeature(f2)
 
