@@ -1,6 +1,7 @@
 package mvt
 
 import (
+	"fmt"
 	"github.com/fapian/geojson2svg/pkg/geojson2svg"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
@@ -10,6 +11,7 @@ import (
 	"image/png"
 	"io"
 	"io/ioutil"
+	_ "log"
 	"os"
 )
 
@@ -35,6 +37,12 @@ func ToSVG(in io.Reader, out io.Writer) error {
 
 	s := geojson2svg.New()
 
+	use_props := map[string]bool{
+		// "id": true,
+		"kind":        true,
+		"kind_detail": true,
+	}
+
 	for _, l := range layers {
 
 		fc := gjson.GetBytes(body, l)
@@ -50,16 +58,28 @@ func ToSVG(in io.Reader, out io.Writer) error {
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Fills_and_Strokes
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
 
-			// SOMETHING ABOUT THIS MAKES oksvg VERY VERY SAD BUT I AM NOT SURE WHAT YET...
+			// https://github.com/srwiley/oksvg/blob/master/doc/SVG_Element_List.txt
+
+			// as it happens neither bits of code (commented and uncommented) produce
+			// SVG that oksvg is happy parsing - I am not sure why yet...
 			// (20180608/thisisaaronland)
 
-			f2, err := sjson.Set(f.String(), "properties.style", "stroke: black; fill: transparent;")
+			// f2, err := sjson.Set(f.String(), "properties.style", "stroke: black; fill: transparent;")
 
-			if err != nil {
-				return err
+			props := map[string]string{
+				"stroke": "black",
+				"fill":   "transparent",
 			}
 
-			err = s.AddFeature(f2)
+			str_f := f.String()
+
+			for k, v := range props {
+				path := fmt.Sprintf("properties.%s", k)
+				str_f, _ = sjson.Set(str_f, path, v)
+				use_props[k] = true
+			}
+
+			err := s.AddFeature(str_f)
 
 			if err != nil {
 				return err
@@ -67,10 +87,16 @@ func ToSVG(in io.Reader, out io.Writer) error {
 		}
 	}
 
+	props := make([]string, 0)
+
+	for k, _ := range use_props {
+		props = append(props, k)
+	}
+
 	rsp := s.Draw(256, 256,
 		geojson2svg.WithAttribute("xmlns", "http://www.w3.org/2000/svg"),
 		geojson2svg.WithAttribute("viewBox", "0 0 256 256"),
-		geojson2svg.UseProperties([]string{"style", "id", "kind", "kind_detail"}),
+		geojson2svg.UseProperties(props),
 	)
 
 	_, err = out.Write([]byte(rsp))
