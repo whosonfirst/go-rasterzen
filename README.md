@@ -19,6 +19,8 @@ the hilarity mentioned above.
 
 Third, it's not possible to style any of the data beyond black outlines with transparent backgrounds.
 
+Fourth, labels. Yeah... it's easiest just to not even think about them yet.
+
 ## Install
 
 You will need to have both `Go` (specifically a version of Go more recent than 1.7 so let's just assume you need [Go 1.9](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
@@ -80,6 +82,7 @@ Specifically:
 * MVT tiles are not being cropped properly
 * The source MVT tiles are not being cached
 * There is no styling beyond block outlines with transparent fills
+* This should probably read the Nextzen API key from HTTP requests rather than the command line
 
 Like this:
 
