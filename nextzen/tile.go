@@ -12,7 +12,9 @@ import (
 
 func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 
-	url := fmt.Sprintf("https://tile.nextzen.org/tilezen/vector/v1/256/all/%d/%d/%d.json?api_key=%s", z, x, y, api_key)
+     	layer := "all"
+
+	url := fmt.Sprintf("https://tile.nextzen.org/tilezen/vector/v1/256/%s/%d/%d/%d.json?api_key=%s", layer, z, x, y, api_key)
 
 	rsp, err := http.Get(url)
 
