@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/whosonfirst/go-rasterzen/mvt"
+	"github.com/whosonfirst/go-rasterzen/tile"
 	gohttp "net/http"
 )
 
@@ -20,7 +20,7 @@ func PNGHandler() (gohttp.HandlerFunc, error) {
 
 		rsp.Header().Set("Content-Type", "image/png")
 
-		err = mvt.ToPNG(fh, rsp)
+		err = tile.ToPNG(fh, rsp)
 
 		if err != nil {
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)

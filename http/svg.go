@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/whosonfirst/go-rasterzen/mvt"
+	"github.com/whosonfirst/go-rasterzen/tile"
 	gohttp "net/http"
 )
 
@@ -21,7 +21,7 @@ func SVGHandler() (gohttp.HandlerFunc, error) {
 		rsp.Header().Set("Content-Type", "image/svg+xml")
 		rsp.Header().Set("Access-Control-Allow-Origin", "*")
 
-		err = mvt.ToSVG(fh, rsp)
+		err = tile.ToSVG(fh, rsp)
 
 		if err != nil {
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)

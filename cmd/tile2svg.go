@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/whosonfirst/go-rasterzen/mvt"
+	"github.com/whosonfirst/go-rasterzen/tile"
 	"log"
 	"os"
 )
@@ -25,7 +25,7 @@ func main() {
 
 		out := os.Stdout
 
-		err = mvt.ToSVG(fh, out)
+		err = tile.ToSVG(fh, out)
 
 		if err != nil {
 			log.Fatal(err)

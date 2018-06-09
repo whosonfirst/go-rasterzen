@@ -1,4 +1,4 @@
-package mvt
+package tile
 
 import (
 	"fmt"
@@ -55,8 +55,7 @@ func ToSVG(in io.Reader, out io.Writer) error {
 
 		for _, f := range features.Array() {
 
-			// https://github.com/paulmach/orb/tree/master/clip
-			// clipped = clip.Geometry(bound, ls)
+			str_f := f.String()
 
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Fills_and_Strokes
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
@@ -73,8 +72,6 @@ func ToSVG(in io.Reader, out io.Writer) error {
 				"fill":         "#ffffff", // "transparent",
 				"fill-opacity": "0.25",
 			}
-
-			str_f := f.String()
 
 			for k, v := range props {
 				path := fmt.Sprintf("properties.%s", k)

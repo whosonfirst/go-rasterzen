@@ -2,10 +2,9 @@ package http
 
 import (
 	"errors"
-	"github.com/paulmach/orb/maptile"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"io"
-	"log"
+	_ "log"
 	gohttp "net/http"
 	"regexp"
 	"strconv"
@@ -52,12 +51,6 @@ func GetTileForRequest(req *gohttp.Request) (io.ReadCloser, error) {
 	if api_key == "" {
 		return nil, errors.New("Missing API key")
 	}
-
-	zm := maptile.Zoom( uint32(z) )
-	tl := maptile.Tile{uint32(z), uint32(x), zm}
-
-	log.Println("TILE", tl)
-	log.Println("BOUNDS", tl.Bound())
 
 	return nextzen.FetchTile(z, x, y, api_key)
 }

@@ -9,7 +9,7 @@ self:   prep rmdeps
 	mkdir -p src/github.com/whosonfirst/go-rasterzen
 	cp *.go src/github.com/whosonfirst/go-rasterzen/
 	cp -r nextzen src/github.com/whosonfirst/go-rasterzen/
-	cp -r mvt src/github.com/whosonfirst/go-rasterzen/
+	cp -r tile src/github.com/whosonfirst/go-rasterzen/
 	cp -r http src/github.com/whosonfirst/go-rasterzen/
 	cp -r vendor/* src/
 
@@ -40,7 +40,7 @@ fmt:
 	go fmt *.go
 	go fmt cmd/*.go
 	go fmt http/*.go
-	go fmt mvt/*.go
+	go fmt tile/*.go
 	go fmt nextzen/*.go
 
 bin: 	self
