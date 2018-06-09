@@ -23,6 +23,8 @@ func ToSVG(in io.Reader, out io.Writer) error {
 		return err
 	}
 
+	tile_size := 512.0
+
 	layers := []string{
 		"boundaries",
 		"buildings",
@@ -93,9 +95,10 @@ func ToSVG(in io.Reader, out io.Writer) error {
 		props = append(props, k)
 	}
 
-	rsp := s.Draw(256, 256,
+	rsp := s.Draw(tile_size, tile_size,
 		geojson2svg.WithAttribute("xmlns", "http://www.w3.org/2000/svg"),
-		geojson2svg.WithAttribute("viewBox", "0 0 256 256"),
+		geojson2svg.WithAttribute("viewBox", fmt.Sprintf("0 0 %d %d", int(tile_size), int(tile_size))),
+		// geojson2svg.WithAttribute("style", "border: solid thin;"),
 		geojson2svg.UseProperties(props),
 	)
 

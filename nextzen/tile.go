@@ -10,7 +10,7 @@ import (
 	"github.com/tidwall/sjson"
 	"io"
 	"io/ioutil"
-	"log"
+	_ "log"
 	"net/http"
 )
 
@@ -20,8 +20,7 @@ type nopCloser struct {
 
 func (nopCloser) Close() error { return nil }
 
-// THIS SIGNATURE WILL CHANGE - YES
-// ALSO PLEASE CACHE ME...
+// PLEASE CACHE ME...
 
 func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 
@@ -89,6 +88,9 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 			if err != nil {
 				return nil, err
 			}
+
+			// SOMETHING SOMETHING SOMETHING WSG84 VERSUS SPHERICAL MERCATOR
+			// PLEASE FIX ME... (20180609/thisisaaronland)
 
 			geom := feature.Geometry
 
