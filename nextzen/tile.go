@@ -1,15 +1,24 @@
 package nextzen
 
 import (
+	"bytes"
 	"fmt"
-	_ "github.com/paulmach/orb"
-	_ "github.com/paulmach/orb/clip"
-	_ "github.com/paulmach/orb/geojson"
+	"github.com/paulmach/orb/clip"
+	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/maptile"
+	"github.com/tidwall/gjson"
+	"github.com/tidwall/sjson"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
+
+type nopCloser struct {
+	io.Reader
+}
+
+func (nopCloser) Close() error { return nil }
 
 // THIS SIGNATURE WILL CHANGE - YES
 // ALSO PLEASE CACHE ME...
@@ -26,14 +35,77 @@ func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 		return nil, err
 	}
 
+	fh := rsp.Body
+	defer fh.Close()
+
+	return CropTile(z, x, y, fh)
+}
+
+func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
+
 	zm := maptile.Zoom(uint32(z))
-	tl := maptile.Tile{uint32(z), uint32(x), zm}
+	tl := maptile.Tile{uint32(x), uint32(y), zm}
 
-	log.Println("BOUNDS", tl.Bound())
+	bounds := tl.Bound()
 
-	// CLIP TO BOUNDS HERE...
-	// fc, _ := geojson.UnmarshalFeature([]byte(str_f))
-	// clipped := clip.Geometry(bounds, fc.Geometry)
+	body, err := ioutil.ReadAll(fh)
 
-	return rsp.Body, nil
+	if err != nil {
+		return nil, err
+	}
+
+	// PLEASE RECONCILE ME WITH tile/geojson.go
+
+	layers := []string{
+		"boundaries",
+		"buildings",
+		"earth",
+		"landuse",
+		"places",
+		"pois",
+		"roads",
+		"transit",
+		"water",
+	}
+
+	for _, l := range layers {
+
+		fc := gjson.GetBytes(body, l)
+
+		if !fc.Exists() {
+			continue
+		}
+
+		features := fc.Get("features")
+
+		// SOMETHING SOMETHING SOMETHING DO THESE ALL IN PARALLEL...
+
+		for i, f := range features.Array() {
+
+			str_f := f.String()
+
+			feature, err := geojson.UnmarshalFeature([]byte(str_f))
+
+			if err != nil {
+				return nil, err
+			}
+
+			geom := feature.Geometry
+
+			clipped := clip.Geometry(bounds, geom)
+			// log.Println(l, geom, "CLIPPED", clipped)
+
+			new_geom := geojson.NewGeometry(clipped)
+
+			path := fmt.Sprintf("%s.features.%d.geometry", l, i)
+			body, err = sjson.SetBytes(body, path, new_geom)
+
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	r := bytes.NewReader(body)
+	return nopCloser{r}, nil
 }
