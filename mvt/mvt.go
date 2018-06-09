@@ -55,6 +55,9 @@ func ToSVG(in io.Reader, out io.Writer) error {
 
 		for _, f := range features.Array() {
 
+			// https://github.com/paulmach/orb/tree/master/clip
+			// clipped = clip.Geometry(bound, ls)
+
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Fills_and_Strokes
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
 

@@ -23,7 +23,7 @@ deps:
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/gjson"
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/sjson"
 	@GOPATH=$(GOPATH) go get -u "github.com/fapian/geojson2svg/pkg/geojson2svg"
-
+	@GOPATH=$(GOPATH) go get -u "github.com/paulmach/orb"
 
 # if you're wondering about the 'rm -rf' stuff below it's because Go is
 # weird... https://vanduuren.xyz/2017/golang-vendoring-interface-confusion/
