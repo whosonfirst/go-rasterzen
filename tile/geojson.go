@@ -106,12 +106,12 @@ func ToSVG(in io.Reader, out io.Writer) error {
 	return err
 }
 
-func ToPNG(in io.Reader, out io.Writer) error {
+func ToImage(in io.Reader) (image.Image, error) {
 
 	tmpfile, err := ioutil.TempFile("", "svg")
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer func() {
@@ -126,7 +126,7 @@ func ToPNG(in io.Reader, out io.Writer) error {
 	err = ToSVG(in, tmpfile)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tmpfile.Close()
@@ -134,7 +134,7 @@ func ToPNG(in io.Reader, out io.Writer) error {
 	icon, err := oksvg.ReadIcon(tmpfile.Name(), oksvg.StrictErrorMode)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	w, h := int(icon.ViewBox.W), int(icon.ViewBox.H)
@@ -144,6 +144,17 @@ func ToPNG(in io.Reader, out io.Writer) error {
 	raster := rasterx.NewDasher(w, h, scanner)
 
 	icon.Draw(raster, 1.0)
+
+	return img, nil
+}
+
+func ToPNG(in io.Reader, out io.Writer) error {
+
+	img, err := ToImage(in)
+
+	if err != nil {
+		return err
+	}
 
 	return png.Encode(out, img)
 }
