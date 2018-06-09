@@ -11,7 +11,7 @@ import (
 	"image/png"
 	"io"
 	"io/ioutil"
-	"log"
+	_ "log"
 	"os"
 )
 
@@ -68,7 +68,7 @@ func ToSVG(in io.Reader, out io.Writer) error {
 			props := map[string]string{
 				"stroke":       "#000000",
 				"fill":         "#ffffff", // "transparent",
-				"fill-opacity": "0",
+				"fill-opacity": "0.25",
 			}
 
 			str_f := f.String()
