@@ -11,7 +11,7 @@ import (
 	"image/png"
 	"io"
 	"io/ioutil"
-	_ "log"
+	"log"
 	"os"
 )
 
@@ -58,17 +58,17 @@ func ToSVG(in io.Reader, out io.Writer) error {
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Fills_and_Strokes
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
 
+			// oksvg does not know how to deal with named style properties (like transparent)
 			// https://github.com/srwiley/oksvg/blob/master/doc/SVG_Element_List.txt
 
-			// as it happens neither bits of code (commented and uncommented) produce
-			// SVG that oksvg is happy parsing - I am not sure why yet...
+			// we could also define a single "style" attribute but this just feels a bit
+			// more explicit and easier to compose on a per-layer basis in the future
 			// (20180608/thisisaaronland)
 
-			// f2, err := sjson.Set(f.String(), "properties.style", "stroke: black; fill: transparent;")
-
 			props := map[string]string{
-				"stroke": "black",
-				"fill":   "transparent",
+				"stroke":       "#000000",
+				"fill":         "#ffffff", // "transparent",
+				"fill-opacity": "0",
 			}
 
 			str_f := f.String()

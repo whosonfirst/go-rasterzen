@@ -4,22 +4,20 @@ Tools for rendering raster tiles derived from Nextzen (Mapzen) Vector tiles.
 
 ## Important
 
-It's way too soon. This is full of bugs and hilarity (see below) and the actual _raster_ tiles side of things doesn't work yet.
+It's way too soon. This is full of bugs and hilarity (see below).
 
-First, this package uses a two-pass process to convert a Nextzen vector tile to an SVG
+This package uses a two-pass process to convert a Nextzen vector tile to an SVG
 document with embedded CSS style information and then to convert that SVG
 document to a PNG file. It uses the
 [geojson2svg](https://github.com/fapian/geojson2svg) and
-[oksvg](https://github.com/srwiley/oksvg) packages respectively to do this. For
-reasons I don't understand yet there is something causing the SVG to PNG
-conversion to fail.
+[oksvg](https://github.com/srwiley/oksvg) packages respectively to do this.
 
-Second, there is no clipping during the MVT to SVG conversion which results in
+There is no clipping during the MVT to SVG conversion which results in
 the hilarity mentioned above.
 
-Third, it's not possible to style any of the data beyond black outlines with transparent backgrounds.
+It's also not possible to style any of the data beyond black outlines with transparent backgrounds.
 
-Fourth, labels. Yeah... it's easiest just to not even think about them yet.
+Labels... it's easiest just to not even think about them yet.
 
 ## Install
 
@@ -76,7 +74,6 @@ A simple HTTP server for rasterized Netzen vector tiles. **Remember: this doesn'
 
 Specifically:
 
-* This currently returns SVG tiles (and not actual raster tiles)
 * MVT tiles are not being cropped properly
 * The source MVT tiles are not being cached
 * There is no styling beyond block outlines with transparent fills
@@ -109,8 +106,11 @@ Like this:
     
     <script>
       var api_key = 'NEXTZEN_API_KEY';		// https://developers.nextzen.org/
+      var format = 'png';			// you can also request 'svg'
+
       var map = L.map('map').setView([37.613858, -122.37366], 13);
-      L.tileLayer('http://localhost:8080/svg/{z}/{x}/{y}.svg?api_key=' + api_key).addTo(map);
+
+      L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.json?api_key=' + api_key).addTo(map);
     </script>
     
   </body>
