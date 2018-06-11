@@ -98,6 +98,7 @@ Like this:
     
     <style type="text/css">
       #map { width:100%; height:600px; }
+      .leaflet-tile { border: dashed red 1px; }
     </style>
   </head>
   
@@ -109,8 +110,9 @@ Like this:
       var format = 'png';			// you can also request 'svg'
 
       var map = L.map('map').setView([37.613858, -122.37366], 13);
+      var layer = L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.svg?api_key=' + api_key, {maxZoom: 16});
 
-      L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.json?api_key=' + api_key).addTo(map);
+      layer.addTo(map);
     </script>
     
   </body>
