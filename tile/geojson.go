@@ -3,7 +3,8 @@ package tile
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fapian/geojson2svg/pkg/geojson2svg"
+	// "github.com/fapian/geojson2svg/pkg/geojson2svg"
+	"github.com/whosonfirst/geojson2svg/pkg/geojson2svg"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
 	"github.com/tidwall/gjson"
