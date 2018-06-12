@@ -3,12 +3,12 @@ package tile
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/fapian/geojson2svg/pkg/geojson2svg"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"image"
 	"image/png"
 	"io"
@@ -31,17 +31,17 @@ func ToFeatureCollection(in io.Reader, out io.Writer) error {
 	}
 
 	/*
-	layers := []string{
-		"boundaries",
-		"buildings",
-		"earth",
-		"landuse",
-		"places",
-		"pois",
-		"roads",
-		"transit",
-		"water",
-	}
+		layers := []string{
+			"boundaries",
+			"buildings",
+			"earth",
+			"landuse",
+			"places",
+			"pois",
+			"roads",
+			"transit",
+			"water",
+		}
 	*/
 
 	features := make([]interface{}, 0)

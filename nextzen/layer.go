@@ -2,9 +2,9 @@ package nextzen
 
 var Layers []string
 
-func init(){
+func init() {
 
-     Layers = []string{
+	Layers = []string{
 		"boundaries",
 		"buildings",
 		"earth",
@@ -14,5 +14,5 @@ func init(){
 		"roads",
 		"transit",
 		"water",
-     }
+	}
 }

@@ -29,8 +29,9 @@ deps:
 # weird... https://vanduuren.xyz/2017/golang-vendoring-interface-confusion/
 # (20170912/thisisaaronland)
 
-vendor-deps: rmdeps deps
-	if test ! -d vendor; then mkdir vendor; fi
+vendor-deps: 
+	@echo "nope"; exit 1
+	# rmdeps deps
 	if test -d vendor; then rm -rf vendor; fi
 	cp -r src vendor
 	find vendor -name '.git' -print -type d -exec rm -rf {} +
@@ -44,5 +45,4 @@ fmt:
 	go fmt nextzen/*.go
 
 bin: 	self
-	@GOPATH=$(GOPATH) go build -o bin/rasterzen cmd/tile2svg.go
 	@GOPATH=$(GOPATH) go build -o bin/rasterd cmd/rasterd.go
