@@ -1,0 +1,34 @@
+[Unit]
+Description=Who's On First raster tile daemon
+ConditionPathExists=/usr/local/bin/rasterd
+After=network.target
+ 
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+LimitNOFILE=1024
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+
+WorkingDirectory=/usr/local/bin
+ExecStart=/usr/local/bin/rasterd -stuff -stuff -stuff
+
+# These are (appear to be?) specific to Ubuntu and don't work, for
+# example, on CentOS - I'm not sure entirely convinced that's true
+# but I also haven't had time to really figure out what's going on
+# (20180611/thisisaaronland)
+#
+# make sure log directory exists and owned by syslog
+# PermissionsStartOnly=true
+# ExecStartPre=/bin/mkdir -p /var/log/rasterd
+# ExecStartPre=/bin/chown syslog:adm /var/log/rasterd
+# ExecStartPre=/bin/chmod 755 /var/log/rasterd
+# StandardOutput=syslog
+# StandardError=syslog
+# SyslogIdentifier=rasterd
+ 
+[Install]
+WantedBy=multi-user.target
