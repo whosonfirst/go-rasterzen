@@ -77,6 +77,8 @@ For example:
 
 ![](docs/images/20180612-rasterd-1.png)
 
+![](docs/images/20180611-rasterd-5.png)
+
 #### Using `rasterd` with Leaflet
 
 ```
