@@ -8,12 +8,15 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	_ "log"
 	"math"
 	"regexp"
 	"sort"
 	"strings"
 
 	geojson "github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/project"
 )
 
 // TODO release
@@ -302,21 +305,61 @@ func makeScaleFunc(width, height float64, padding Padding, ps [][]float64) scale
 		return func(x, y float64) (float64, float64) { return w / 2, h / 2 }
 	}
 
+	/*
 	minX := ps[0][0]
 	maxX := ps[0][0]
 	minY := ps[0][1]
 	maxY := ps[0][1]
+	*/
+
+	sw := orb.Point{ps[0][0], ps[0][1]}
+	ne := orb.Point{ps[0][0], ps[0][1]}
+	swm := project.Point(sw, project.WGS84.ToMercator)
+	nem := project.Point(ne, project.WGS84.ToMercator)
+
+	minX := swm[0]
+	maxX := nem[0]
+	minY := swm[1]
+	maxY := nem[1]
+
 	for _, p := range ps[1:] {
+
+		/*
 		minX = math.Min(minX, p[0])
 		maxX = math.Max(maxX, p[0])
 		minY = math.Min(minY, p[1])
 		maxY = math.Max(maxY, p[1])
+		*/
+		
+	pt := orb.Point{p[0], p[1]}
+	m := project.Point(pt, project.WGS84.ToMercator)
+
+		minX = math.Min(minX, m[0])
+		maxX = math.Max(maxX, m[0])
+		minY = math.Min(minY, m[1])
+		maxY = math.Max(maxY, m[1])
+
 	}
+
 	xRes := (maxX - minX) / w
 	yRes := (maxY - minY) / h
 	res := math.Max(xRes, yRes)
 
 	return func(x, y float64) (float64, float64) {
-		return (x-minX)/res + padding.Left, (maxY-y)/res + padding.Top
+
+
+	pt := orb.Point{x, y}
+	m := project.Point(pt, project.WGS84.ToMercator)
+
+	x = m[0]
+	y = m[1]
+
+	// x = (x - minX)/res 
+	// y = (maxY - y)/res
+
+	x = (x-minX)/res + padding.Left
+	y = (maxY-y)/res + padding.Top
+
+		return x, y
 	}
 }
