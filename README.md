@@ -71,7 +71,7 @@ Usage of ./bin/rasterd:
     	The port for rasterd to listen for requests on (default 8080)
 ```
 
-A simple HTTP server for rasterized Netzen vector tiles. **Remember: this doesn't work yet.**
+A simple HTTP server for delivering rasterized Netzen vector (TMS or "slippy map") tiles.
 
 For example:
 
