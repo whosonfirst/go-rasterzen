@@ -38,6 +38,7 @@ type SVG struct {
 	geometries         []*geojson.Geometry
 	features           []*geojson.Feature
 	featureCollections []*geojson.FeatureCollection
+	Mercator           bool
 }
 
 // Padding represents the possible padding of the SVG.
@@ -52,6 +53,7 @@ func New() *SVG {
 	return &SVG{
 		useProp:    func(prop string) bool { return prop == "class" },
 		attributes: make(map[string]string),
+		Mercator:   false,
 	}
 }
 
@@ -62,7 +64,14 @@ func (svg *SVG) Draw(width, height float64, opts ...Option) string {
 		o(svg)
 	}
 
-	sf := makeScaleFunc(width, height, svg.padding, svg.points())
+	var sf scaleFunc
+
+	if svg.Mercator {
+
+		sf = makeScaleFuncMercator(width, height, svg.padding, svg.points())
+	} else {
+		sf = makeScaleFunc(width, height, svg.padding, svg.points())
+	}
 
 	content := bytes.NewBufferString("")
 	for _, g := range svg.geometries {
@@ -305,39 +314,64 @@ func makeScaleFunc(width, height float64, padding Padding, ps [][]float64) scale
 		return func(x, y float64) (float64, float64) { return w / 2, h / 2 }
 	}
 
-	/*
 	minX := ps[0][0]
 	maxX := ps[0][0]
 	minY := ps[0][1]
 	maxY := ps[0][1]
-	*/
-
-	sw := orb.Point{ps[0][0], ps[0][1]}
-	ne := orb.Point{ps[0][0], ps[0][1]}
-	swm := project.Point(sw, project.WGS84.ToMercator)
-	nem := project.Point(ne, project.WGS84.ToMercator)
-
-	minX := swm[0]
-	maxX := nem[0]
-	minY := swm[1]
-	maxY := nem[1]
 
 	for _, p := range ps[1:] {
 
-		/*
 		minX = math.Min(minX, p[0])
 		maxX = math.Max(maxX, p[0])
 		minY = math.Min(minY, p[1])
 		maxY = math.Max(maxY, p[1])
-		*/
-		
-	pt := orb.Point{p[0], p[1]}
-	m := project.Point(pt, project.WGS84.ToMercator)
+	}
 
-		minX = math.Min(minX, m[0])
-		maxX = math.Max(maxX, m[0])
-		minY = math.Min(minY, m[1])
-		maxY = math.Max(maxY, m[1])
+	xRes := (maxX - minX) / w
+	yRes := (maxY - minY) / h
+	res := math.Max(xRes, yRes)
+
+	return func(x, y float64) (float64, float64) {
+
+		x = (x-minX)/res + padding.Left
+		y = (maxY-y)/res + padding.Top
+
+		return x, y
+	}
+}
+
+func makeScaleFuncMercator(width, height float64, padding Padding, ps [][]float64) scaleFunc {
+
+	w := width - padding.Left - padding.Right
+	h := width - padding.Top - padding.Bottom
+
+	if len(ps) == 0 {
+		return func(x, y float64) (float64, float64) { return x, y }
+	}
+
+	if len(ps) == 1 {
+		return func(x, y float64) (float64, float64) { return w / 2, h / 2 }
+	}
+
+	sw_pt := orb.Point{ps[0][0], ps[0][1]}
+	ne_pt := orb.Point{ps[0][0], ps[0][1]}
+	sw_merc := project.Point(sw_pt, project.WGS84.ToMercator)
+	ne_merc := project.Point(ne_pt, project.WGS84.ToMercator)
+
+	minX := sw_merc[0]
+	maxX := ne_merc[0]
+	minY := sw_merc[1]
+	maxY := ne_merc[1]
+
+	for _, p := range ps[1:] {
+
+		pt := orb.Point{p[0], p[1]}
+		merc := project.Point(pt, project.WGS84.ToMercator)
+
+		minX = math.Min(minX, merc[0])
+		maxX = math.Max(maxX, merc[0])
+		minY = math.Min(minY, merc[1])
+		maxY = math.Max(maxY, merc[1])
 
 	}
 
@@ -347,18 +381,14 @@ func makeScaleFunc(width, height float64, padding Padding, ps [][]float64) scale
 
 	return func(x, y float64) (float64, float64) {
 
+		pt := orb.Point{x, y}
+		merc := project.Point(pt, project.WGS84.ToMercator)
 
-	pt := orb.Point{x, y}
-	m := project.Point(pt, project.WGS84.ToMercator)
+		x = merc[0]
+		y = merc[1]
 
-	x = m[0]
-	y = m[1]
-
-	// x = (x - minX)/res 
-	// y = (maxY - y)/res
-
-	x = (x-minX)/res + padding.Left
-	y = (maxY-y)/res + padding.Top
+		x = (x-minX)/res + padding.Left
+		y = (maxY-y)/res + padding.Top
 
 		return x, y
 	}

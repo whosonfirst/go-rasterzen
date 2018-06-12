@@ -87,6 +87,7 @@ func ToSVG(in io.Reader, out io.Writer) error {
 	tile_size := 512.0
 
 	s := geojson2svg.New()
+	s.Mercator = true
 
 	use_props := map[string]bool{
 		// "id": true,
