@@ -101,7 +101,9 @@ Would yield something like this:
 
 `rasterd` support caching using one or more providers that implement the
 [go-whosonfirst-cache](https://github.com/whosonfirst/go-whosonfirst-cache)
-`cache.Cache` interface.
+`cache.Cache` interface. There is currently nothing that looks like
+sophisticated cache invalidation. That's left up to you to do manually, for
+now.
 
 Currently filesystem and in-memory (using [go-cache](https://github.com/patrickmn/go-cache)) caches are
 supported. You can invoke `rasterd` with multiple cache providers if you want.
