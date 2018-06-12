@@ -34,10 +34,7 @@ func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	fh := rsp.Body
-	defer fh.Close()
-
-	return CropTile(z, x, y, fh)
+	return rsp.Body, nil
 }
 
 func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {

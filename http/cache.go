@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"log"
 	gohttp "net/http"
+	"path/filepath"
 	"regexp"
 	"strconv"
 )
@@ -33,7 +35,6 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 
 	if err == nil {
 
-		log.Println("CACHE HIT", key)
 		defer data.Close()
 
 		for k, v := range h.Headers {
@@ -48,9 +49,7 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 		log.Println("CACHE ERROR", key, err)
 	}
 
-	log.Println("CACHE MISS", key)
-
-	fh, err := GetTileForRequest(req)
+	fh, err := h.GetTileForRequest(req)
 
 	if err != nil {
 		return err
@@ -75,15 +74,13 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 		return err
 	}
 
-	log.Println("CACHE SET", key)
 	go h.Cache.Set(key, cache.NewBytesReadCloser(b.Bytes()))
 	return nil
 }
 
-func GetTileForRequest(req *gohttp.Request) (io.ReadCloser, error) {
+func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, error) {
 
-	url := req.URL
-	path := url.Path
+	path := req.URL.Path
 
 	if !re_path.MatchString(path) {
 		return nil, errors.New("Invalid path")
@@ -109,12 +106,55 @@ func GetTileForRequest(req *gohttp.Request) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	query := url.Query()
-	api_key := query.Get("api_key")
+	key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
 
-	if api_key == "" {
-		return nil, errors.New("Missing API key")
+	nextzen_key := filepath.Join("nextzen", key)
+	rasterzen_key := filepath.Join("rasterzen", key)
+
+	var nextzen_data io.ReadCloser   // stuff sent back from nextzen.org
+	var rasterzen_data io.ReadCloser // nextzen.org data cropped and manipulated
+
+	rasterzen_data, err = h.Cache.Get(rasterzen_key)
+
+	if err == nil {
+		return rasterzen_data, nil
 	}
 
-	return nextzen.FetchTile(z, x, y, api_key)
+	nextzen_data, err = h.Cache.Get(nextzen_key)
+
+	if err != nil {
+
+		url := req.URL
+		query := url.Query()
+
+		api_key := query.Get("api_key")
+
+		if api_key == "" {
+			return nil, errors.New("Missing API key")
+		}
+
+		t, err := nextzen.FetchTile(z, x, y, api_key)
+
+		if err != nil {
+			return nil, err
+		}
+
+		defer t.Close()
+
+		nextzen_data, err = h.Cache.Set(nextzen_key, t)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	cr, err := nextzen.CropTile(z, x, y, nextzen_data)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer cr.Close()
+
+	return h.Cache.Set(rasterzen_key, cr)
 }
