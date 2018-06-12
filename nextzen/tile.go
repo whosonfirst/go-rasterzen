@@ -53,21 +53,9 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	// PLEASE RECONCILE ME WITH tile/geojson.go
+	// Layers is defined in nextzen/layers.go
 
-	layers := []string{
-		"boundaries",
-		"buildings",
-		"earth",
-		"landuse",
-		"places",
-		"pois",
-		"roads",
-		"transit",
-		"water",
-	}
-
-	for _, l := range layers {
+	for _, l := range Layers {
 
 		fc := gjson.GetBytes(body, l)
 

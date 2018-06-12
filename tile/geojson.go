@@ -3,6 +3,7 @@ package tile
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/fapian/geojson2svg/pkg/geojson2svg"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
@@ -29,6 +30,7 @@ func ToFeatureCollection(in io.Reader, out io.Writer) error {
 		return err
 	}
 
+	/*
 	layers := []string{
 		"boundaries",
 		"buildings",
@@ -40,10 +42,11 @@ func ToFeatureCollection(in io.Reader, out io.Writer) error {
 		"transit",
 		"water",
 	}
+	*/
 
 	features := make([]interface{}, 0)
 
-	for _, l := range layers {
+	for _, l := range nextzen.Layers {
 
 		fc := gjson.GetBytes(body, l)
 
@@ -83,18 +86,6 @@ func ToSVG(in io.Reader, out io.Writer) error {
 
 	tile_size := 512.0
 
-	layers := []string{
-		"boundaries",
-		"buildings",
-		"earth",
-		"landuse",
-		"places",
-		"pois",
-		"roads",
-		"transit",
-		"water",
-	}
-
 	s := geojson2svg.New()
 
 	use_props := map[string]bool{
@@ -103,7 +94,7 @@ func ToSVG(in io.Reader, out io.Writer) error {
 		"kind_detail": true,
 	}
 
-	for _, l := range layers {
+	for _, l := range nextzen.Layers {
 
 		fc := gjson.GetBytes(body, l)
 
@@ -156,7 +147,6 @@ func ToSVG(in io.Reader, out io.Writer) error {
 	rsp := s.Draw(tile_size, tile_size,
 		geojson2svg.WithAttribute("xmlns", "http://www.w3.org/2000/svg"),
 		geojson2svg.WithAttribute("viewBox", fmt.Sprintf("0 0 %d %d", int(tile_size), int(tile_size))),
-		// geojson2svg.WithAttribute("style", "border: solid thin;"),
 		geojson2svg.UseProperties(props),
 	)
 
