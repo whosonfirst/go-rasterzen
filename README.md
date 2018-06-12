@@ -110,12 +110,9 @@ Like this:
       var format = 'png';			// you can also request 'svg'
 
       var map = L.map('map').setView([37.613858, -122.37366], 13);
-      var layer = L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.svg?api_key=' + api_key, {maxZoom: 16});
+      var layer = L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.json?api_key=' + api_key, {maxZoom: 16});
 
       layer.addTo(map);
-
-      var g_layer = L.GeoJSONLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.svg?api_key=' + api_key, {maxZoom: 16});
-      g_layer.addTo(map);
       	  
     </script>
     
