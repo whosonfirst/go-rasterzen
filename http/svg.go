@@ -2,26 +2,27 @@ package http
 
 import (
 	"github.com/whosonfirst/go-rasterzen/tile"
+	"github.com/whosonfirst/go-whosonfirst-cache"
 	gohttp "net/http"
 )
 
-func SVGHandler() (gohttp.HandlerFunc, error) {
+func SVGHandler(c cache.Cache) (gohttp.HandlerFunc, error) {
+
+	headers := map[string]string{
+		"Content-Type":                "image/svg+xml",
+		"Access-Control-Allow-Origin": "*",
+	}
+
+	h := CacheHandler{
+		Cache:   c,
+		Func:    tile.ToSVG,
+		Headers: headers,
+	}
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-		fh, err := GetTileForRequest(req)
-
-		if err != nil {
-			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
-			return
-		}
-
-		defer fh.Close()
-
-		rsp.Header().Set("Content-Type", "image/svg+xml")
-		rsp.Header().Set("Access-Control-Allow-Origin", "*")
-
-		err = tile.ToSVG(fh, rsp)
+		key := req.URL.Path
+		err := h.HandleRequest(rsp, req, key)
 
 		if err != nil {
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
