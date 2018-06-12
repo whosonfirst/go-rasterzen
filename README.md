@@ -4,20 +4,21 @@ Tools for rendering raster tiles derived from Nextzen (Mapzen) Vector tiles.
 
 ## Important
 
-It's way too soon. This is full of bugs and hilarity (see below).
+It's way too soon. It works, kind of.
 
 This package uses a two-pass process to convert a Nextzen vector tile to an SVG
 document with embedded CSS style information and then to convert that SVG
-document to a PNG file. It uses the
-[geojson2svg](https://github.com/fapian/geojson2svg) and
+document to a PNG file. It uses (a patched version of) the
+[geojson2svg](https://github.com/whosonfirst/geojson2svg) and
 [oksvg](https://github.com/srwiley/oksvg) packages respectively to do this.
 
-There is no clipping during the MVT to SVG conversion which results in
-the hilarity mentioned above.
+Some important caveats:
 
-It's also not possible to style any of the data beyond black outlines with transparent backgrounds.
+* It's also not possible to style any of the data beyond black outlines with transparent backgrounds.
 
-Labels... it's easiest just to not even think about them yet.
+* Labels... it's easiest just to not even think about them yet.
+
+* There is no caching yet
 
 ## Install
 
@@ -36,7 +37,7 @@ package main
 
 import (
 	"flag"
-	"github.com/whosonfirst/go-rasterzen/mvt"
+	"github.com/whosonfirst/go-rasterzen/tile"
 	"log"
 	"os"
 )
@@ -50,7 +51,7 @@ func main() {
 		fh, _ := os.Open(path)
 		defer fh.Close()
 
-		mvt.ToSVG(fh, os.Stdout)
+		tile.ToSVG(fh, os.Stdout)
 	}
 }
 ```
@@ -72,19 +73,9 @@ Usage of ./bin/rasterd:
 
 A simple HTTP server for rasterized Netzen vector tiles. **Remember: this doesn't work yet.**
 
-Specifically:
+For example:
 
-* MVT tiles are not being cropped properly
-* The source MVT tiles are not being cached
-* There is no styling beyond block outlines with transparent fills
-
-Like this:
-
-![](docs/images/20180608-rasterd-1.png)
-
-![](docs/images/20180608-rasterd-2.png)
-
-![](docs/images/20180608-rasterd-3.png)
+![](docs/images/20180612-rasterd-1.png)
 
 #### Using `rasterd` with Leaflet
 
