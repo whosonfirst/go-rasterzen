@@ -4,7 +4,7 @@ Tools for rendering raster tiles derived from Nextzen (Mapzen) Vector tiles.
 
 ## Important
 
-It's way too soon. It works, kind of.
+It's way too soon. It works, kind of. I wouldn't be surprised if there are bugs.
 
 This package uses a two-pass process to convert a Nextzen vector tile to an SVG
 document with embedded CSS style information and then to convert that SVG
