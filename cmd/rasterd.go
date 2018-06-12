@@ -30,8 +30,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	geojson_handler, err := http.GeoJSONHandler()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	mux.Handle("/png/", png_handler)
 	mux.Handle("/svg/", svg_handler)
+	mux.Handle("/geojson/", geojson_handler)
 
 	endpoint := fmt.Sprintf("%s:%d", *host, *port)
 	log.Printf("listening for requests on %s\n", endpoint)

@@ -113,6 +113,10 @@ Like this:
       var layer = L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.svg?api_key=' + api_key, {maxZoom: 16});
 
       layer.addTo(map);
+
+      var g_layer = L.GeoJSONLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.svg?api_key=' + api_key, {maxZoom: 16});
+      g_layer.addTo(map);
+      	  
     </script>
     
   </body>

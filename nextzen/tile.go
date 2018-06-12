@@ -89,15 +89,10 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 				return nil, err
 			}
 
-			// SOMETHING SOMETHING SOMETHING WSG84 VERSUS SPHERICAL MERCATOR
-			// PLEASE FIX ME... (20180609/thisisaaronland)
-
 			geom := feature.Geometry
 
-			clipped := clip.Geometry(bounds, geom)
-			// log.Println(l, geom, "CLIPPED", clipped)
-
-			new_geom := geojson.NewGeometry(clipped)
+			orb_geom := clip.Geometry(bounds, geom)
+			new_geom := geojson.NewGeometry(orb_geom)
 
 			path := fmt.Sprintf("%s.features.%d.geometry", l, i)
 			body, err = sjson.SetBytes(body, path, new_geom)

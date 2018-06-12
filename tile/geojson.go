@@ -1,6 +1,7 @@
 package tile
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/fapian/geojson2svg/pkg/geojson2svg"
 	"github.com/srwiley/oksvg"
@@ -14,6 +15,63 @@ import (
 	_ "log"
 	"os"
 )
+
+type FeatureCollection struct {
+	Type     string        `json:"type"`
+	Features []interface{} `json:"features"`
+}
+
+func ToFeatureCollection(in io.Reader, out io.Writer) error {
+
+	body, err := ioutil.ReadAll(in)
+
+	if err != nil {
+		return err
+	}
+
+	layers := []string{
+		"boundaries",
+		"buildings",
+		"earth",
+		"landuse",
+		"places",
+		"pois",
+		"roads",
+		"transit",
+		"water",
+	}
+
+	features := make([]interface{}, 0)
+
+	for _, l := range layers {
+
+		fc := gjson.GetBytes(body, l)
+
+		if !fc.Exists() {
+			continue
+		}
+
+		gjson_features := fc.Get("features")
+
+		for _, f := range gjson_features.Array() {
+			features = append(features, f.Value())
+		}
+	}
+
+	fc := FeatureCollection{
+		Type:     "FeatureCollection",
+		Features: features,
+	}
+
+	b, err := json.Marshal(fc)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = out.Write(b)
+	return err
+}
 
 func ToSVG(in io.Reader, out io.Writer) error {
 
