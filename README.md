@@ -103,11 +103,11 @@ Would yield something like this:
 [go-whosonfirst-cache](https://github.com/whosonfirst/go-whosonfirst-cache)
 `cache.Cache` interface.
 
-Currently filesystem and in-memory (using [go-cache]()) caches are
+Currently filesystem and in-memory (using [go-cache](https://github.com/patrickmn/go-cache)) caches are
 supported. You can invoke `rasterd` with multiple cache providers if you want.
 
 Both the raw Nextzen tiles and the cropped "rasterzen" tiles are cached as is
-the output of each provider. For example:
+the output of each provider that `rasterd` is invoked with. For example:
 
 ```
 $> ll ./cache/
