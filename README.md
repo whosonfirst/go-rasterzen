@@ -75,6 +75,8 @@ Usage of ./bin/rasterd:
 	Cache tiles with an in-memory (go-cache) cache.
   -host string
     	The host for rasterd to listen for requests on. (default "localhost")
+  -no-cache
+	Disable all caching.
   -png-handler
 	Enable the PNG tile handler. (default true)
   -port int

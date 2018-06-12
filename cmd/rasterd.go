@@ -15,6 +15,7 @@ func main() {
 	var host = flag.String("host", "localhost", "The host for rasterd to listen for requests on.")
 	var port = flag.Int("port", 8080, "The port for rasterd to listen for requests on.")
 
+	no_cache := flag.Bool("no-cache", false, "Disable all caching.")
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
 	fs_root := flag.String("fs-root", "", "The root of your filesystem cache. If empty rasterd will try to use the current working directory.")
@@ -25,6 +26,14 @@ func main() {
 	geojson_handler := flag.Bool("geojson-handler", false, "Enable the GeoJSON tile handler.")
 
 	flag.Parse()
+
+	if *no_cache {
+
+		log.Println("disable all cache layers")
+
+		*go_cache = false
+		*fs_cache = false
+	}
 
 	caches := make([]cache.Cache, 0)
 
@@ -73,7 +82,8 @@ func main() {
 
 	if len(caches) == 0 {
 
-		log.Println("enable null cache layer")
+		// because we still need to pass a cache.Cache thingy
+		// around (20180612/thisisaaronland)
 
 		c, err := cache.NewNullCache()
 
