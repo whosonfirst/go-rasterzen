@@ -18,7 +18,7 @@ Some important caveats:
 
 * Labels... it's easiest just to not even think about them yet.
 
-* There is no caching yet
+* There is caching but no cache invalidation, yet
 
 ## Install
 
