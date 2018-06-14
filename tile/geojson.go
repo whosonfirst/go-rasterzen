@@ -1,8 +1,12 @@
 package tile
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	// we are using a forked/patched version - some day
+	// hopefully we will just be using this...
 	// "github.com/fapian/geojson2svg/pkg/geojson2svg"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
@@ -30,20 +34,6 @@ func ToFeatureCollection(in io.Reader, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-
-	/*
-		layers := []string{
-			"boundaries",
-			"buildings",
-			"earth",
-			"landuse",
-			"places",
-			"pois",
-			"roads",
-			"transit",
-			"water",
-		}
-	*/
 
 	features := make([]interface{}, 0)
 
@@ -94,6 +84,8 @@ func ToSVG(in io.Reader, out io.Writer) error {
 		// "id": true,
 		"kind":        true,
 		"kind_detail": true,
+		"sort_rank":   true, // would that SVG had a z-index attribute... applying sort_rank feels like it
+		// will be a whole lot of work inside geojson2svg (20180614/thisisaaronland)
 	}
 
 	for _, l := range nextzen.Layers {
@@ -120,10 +112,46 @@ func ToSVG(in io.Reader, out io.Writer) error {
 			// more explicit and easier to compose on a per-layer basis in the future
 			// (20180608/thisisaaronland)
 
+			stroke := "#000000"
+			fill := "#ffffff"
+			opacity := "0"
+
+			// where and how (if?) should we enable this...
+
+			dopplr_colours := false
+
+			if dopplr_colours {
+
+				kind := f.Get("properties.kind")
+
+				if kind.Exists() {
+					str_kind := kind.String()
+					stroke = str2hex(str_kind)
+				}
+
+				detail := f.Get("properties.kind_detail")
+
+				if detail.Exists() {
+					str_detail := detail.String()
+					fill = str2hex(str_detail)
+				}
+			}
+
+			geom_type := f.Get("geometry.type")
+
+			if geom_type.Exists() {
+
+				str_type := geom_type.String()
+
+				if str_type == "Polygon" || str_type == "MultiPolygon" {
+					opacity = "0.5"
+				}
+			}
+
 			props := map[string]string{
-				"stroke":       "#000000",
-				"fill":         "#ffffff", // "transparent",
-				"fill-opacity": "0.25",
+				"stroke":       stroke,
+				"fill":         fill,
+				"fill-opacity": opacity,
 			}
 
 			for k, v := range props {
@@ -207,4 +235,15 @@ func ToPNG(in io.Reader, out io.Writer) error {
 	}
 
 	return png.Encode(out, img)
+}
+
+func str2hex(text string) string {
+
+	hasher := md5.New()
+	hasher.Write([]byte(text))
+
+	enc := hex.EncodeToString(hasher.Sum(nil))
+	code := enc[0:6]
+
+	return fmt.Sprintf("#%s", code)
 }
