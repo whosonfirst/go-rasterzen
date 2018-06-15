@@ -1,5 +1,7 @@
 # go-rasterzen
 
+![](docs/images/20180615-rasterd-1.png)
+
 Tools for rendering raster tiles derived from Nextzen (Mapzen) Vector tiles.
 
 ## Important
