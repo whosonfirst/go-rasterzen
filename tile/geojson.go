@@ -18,7 +18,7 @@ import (
 	"image/png"
 	"io"
 	"io/ioutil"
-	_ "log"
+	"log"
 	"os"
 )
 
@@ -113,46 +113,68 @@ func ToSVG(in io.Reader, out io.Writer) error {
 			// (20180608/thisisaaronland)
 
 			stroke := "#000000"
+			stroke_opacity := "1"
+
 			fill := "#ffffff"
-			opacity := "0"
+			fill_opacity := "0"
+
+			kind := ""
+			detail := ""
+			geom_type := ""
+			sort_rank := int64(0)
+
+			gjson_kind := f.Get("properties.kind")
+
+			if gjson_kind.Exists() {
+				kind = gjson_kind.String()
+			}
+
+			gjson_detail := f.Get("properties.kind_detail")
+
+			if gjson_detail.Exists() {
+				detail = gjson_detail.String()
+			}
+
+			gjson_type := f.Get("geometry.type")
+
+			if gjson_type.Exists() {
+
+				geom_type = gjson_type.String()
+			}
+
+			gjson_sort := f.Get("properties.sort_rank")
+
+			if gjson_sort.Exists() {
+				sort_rank = gjson_sort.Int()
+			}
+
+			if geom_type == "Polygon" || geom_type == "MultiPolygon" {
+				fill_opacity = "0.5"
+			}
+
+			if kind == "ocean" {
+				// what?
+			}
+
+			log.Println(kind, detail, geom_type, sort_rank)
 
 			// where and how (if?) should we enable this...
 
 			dopplr_colours := false
 
 			if dopplr_colours {
-
-				kind := f.Get("properties.kind")
-
-				if kind.Exists() {
-					str_kind := kind.String()
-					stroke = str2hex(str_kind)
-				}
-
-				detail := f.Get("properties.kind_detail")
-
-				if detail.Exists() {
-					str_detail := detail.String()
-					fill = str2hex(str_detail)
-				}
-			}
-
-			geom_type := f.Get("geometry.type")
-
-			if geom_type.Exists() {
-
-				str_type := geom_type.String()
-
-				if str_type == "Polygon" || str_type == "MultiPolygon" {
-					opacity = "0.5"
-				}
+				stroke = str2hex(kind)
+				fill = str2hex(detail)
 			}
 
 			props := map[string]string{
-				"stroke":       stroke,
-				"fill":         fill,
-				"fill-opacity": opacity,
+				"stroke":         stroke,
+				"stroke_opacity": stroke_opacity,
+				"fill":           fill,
+				"fill-opacity":   fill_opacity,
 			}
+
+			log.Println(kind, props)
 
 			for k, v := range props {
 				path := fmt.Sprintf("properties.%s", k)
