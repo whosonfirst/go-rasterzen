@@ -9,8 +9,8 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"log"
-	_ "os"
 	gohttp "net/http"
+	_ "os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -34,11 +34,7 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 
 	data, err := h.Cache.Get(key)
 
-	log.Println("GET", key, err)
-
-	if err == nil {
-
-		log.Println("RETURN FROM CACHE", key, err)
+	if err == nil || cache.IsCacheMissMulti(err) {
 
 		defer data.Close()
 
@@ -46,24 +42,38 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 			rsp.Header().Set(k, v)
 		}
 
-		_, err = io.Copy(rsp, data)
-		return err
-	}
-
-	if err != nil && !cache.IsCacheMiss(err) && !cache.IsCacheMissMulti(err) {
-		log.Println("CACHE ERROR", key, err)
-	}
-
-	if !cache.IsCacheMissMulti(err) {
-
-		data, err = h.GetTileForRequest(req)
-
-		if err != nil {
+		if !cache.IsCacheMissMulti(err) {
+			_, err = io.Copy(rsp, data)
 			return err
 		}
 
-		defer data.Close()
+		var b bytes.Buffer
+		buf := bufio.NewWriter(&b)
+
+		wr := io.MultiWriter(rsp, buf)
+
+		_, err = io.Copy(wr, data)
+
+		buf.Flush()
+
+		if err == nil {
+			go h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
+		}
+
+		return err
 	}
+
+	if err != nil && !cache.IsCacheMiss(err) {
+		log.Println("CACHE ERROR", key, err)
+	}
+
+	fh, err := h.GetTileForRequest(req)
+
+	if err != nil {
+		return err
+	}
+
+	defer fh.Close()
 
 	for k, v := range h.Headers {
 		rsp.Header().Set(k, v)
@@ -74,7 +84,7 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 
 	wr := io.MultiWriter(rsp, buf)
 
-	err = h.Func(data, wr)
+	err = h.Func(fh, wr)
 
 	buf.Flush()
 
@@ -82,7 +92,6 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 		return err
 	}
 
-	log.Println(string(b.Bytes()))
 	go h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
 
 	return nil

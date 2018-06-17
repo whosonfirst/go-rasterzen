@@ -83,6 +83,12 @@ Usage of ./bin/rasterd:
 	Enable the PNG tile handler. (default true)
   -port int
     	The port for rasterd to listen for requests on. (default 8080)
+  -s3-cache
+	Cache tiles with a S3-based cache.
+  -s3-dsn string
+    	  A valid go-whosonfirst-aws DSN string
+  -s3-opts string
+    	   A valid go-whosonfirst-cache-s3 options string
   -svg-handler
 	Enable the SVG tile handler. (default true)
 ```
@@ -105,9 +111,9 @@ Would yield something like this:
 
 `rasterd` support caching using one or more providers that implement the
 [go-whosonfirst-cache](https://github.com/whosonfirst/go-whosonfirst-cache)
-`cache.Cache` interface. There is currently nothing that looks like
-sophisticated cache invalidation. That's left up to you to do manually, for
-now.
+`cache.Cache` interface. Caches are checked (and set) in the following order in `rasterd`: go-cache, fs-cache, s3-cache
+
+There is currently nothing that looks like sophisticated cache invalidation. That's left up to you to do manually, for now. 
 
 Currently filesystem and in-memory (using [go-cache](https://github.com/patrickmn/go-cache)) caches are
 supported. You can invoke `rasterd` with multiple cache providers if you want.
