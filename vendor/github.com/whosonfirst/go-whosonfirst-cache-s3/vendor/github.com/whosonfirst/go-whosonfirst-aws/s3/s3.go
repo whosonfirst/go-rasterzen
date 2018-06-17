@@ -68,12 +68,6 @@ func ValidS3CredentialsString() string {
 
 func NewS3ConfigFromString(str_config string) (*S3Config, error) {
 
-	parts := strings.Split(str_config, " ")
-
-	if len(parts) != 4 {
-		return nil, errors.New("Invalid count for config")
-	}
-
 	config := S3Config{
 		Bucket:      "",
 		Prefix:      "",
@@ -81,27 +75,45 @@ func NewS3ConfigFromString(str_config string) (*S3Config, error) {
 		Credentials: "",
 	}
 
-	for _, p := range parts {
+	str_config = strings.Trim(str_config, " ")
 
-		p = strings.Trim(p, " ")
-		kv := strings.Split(p, "=")
+	if str_config != "" {
+		parts := strings.Split(str_config, " ")
 
-		if len(kv) != 2 {
-			return nil, errors.New("Invalid count for config block")
+		for _, p := range parts {
+
+			p = strings.Trim(p, " ")
+			kv := strings.Split(p, "=")
+
+			if len(kv) != 2 {
+				return nil, errors.New("Invalid count for config block")
+			}
+
+			switch kv[0] {
+			case "bucket":
+				config.Bucket = kv[1]
+			case "prefix":
+				config.Prefix = kv[1]
+			case "region":
+				config.Region = kv[1]
+			case "credentials":
+				config.Credentials = kv[1]
+			default:
+				return nil, errors.New("Invalid key for config block")
+			}
 		}
+	}
 
-		switch kv[0] {
-		case "bucket":
-			config.Bucket = kv[1]
-		case "prefix":
-			config.Prefix = kv[1]
-		case "region":
-			config.Region = kv[1]
-		case "credentials":
-			config.Credentials = kv[1]
-		default:
-			return nil, errors.New("Invalid key for config block")
-		}
+	if config.Bucket == "" {
+		return nil, errors.New("Missing bucket config")
+	}
+
+	if config.Region == "" {
+		return nil, errors.New("Missing region config")
+	}
+
+	if config.Credentials == "" {
+		return nil, errors.New("Missing credentials config")
 	}
 
 	return &config, nil

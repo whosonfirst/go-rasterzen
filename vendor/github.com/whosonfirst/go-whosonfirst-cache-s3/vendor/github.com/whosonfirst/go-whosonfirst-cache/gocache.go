@@ -108,7 +108,7 @@ func (c *GoCache) Get(key string) (io.ReadCloser, error) {
 
 	body := data.([]byte)
 
-	return NewBytesReadCloser(body), nil
+	return NewReadCloser(body), nil
 }
 
 func (c *GoCache) Set(key string, fh io.ReadCloser) (io.ReadCloser, error) {
@@ -134,7 +134,7 @@ func (c *GoCache) Set(key string, fh io.ReadCloser) (io.ReadCloser, error) {
 	c.cache.Set(key, body, gocache.DefaultExpiration)
 	atomic.AddInt64(&c.keys, 1)
 
-	return NewBytesReadCloser(body), nil
+	return NewReadCloser(body), nil
 }
 
 func (c *GoCache) Unset(key string) error {

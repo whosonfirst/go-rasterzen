@@ -16,6 +16,20 @@ All of this package's dependencies are bundled with the code in the `vendor` dir
 
 This is not ready for you to use yet. It has not been properly tested yet.
 
+## DSN strings
+
+```
+bucket=BUCKET region={REGION} prefix={PREFIX} credentials={CREDENTIALS}
+```
+
+Valid credentials strings are:
+
+* `env:`
+
+* `iam:`
+
+* `{PATH}:{PROFILE}`
+
 ## See also
 
 * https://docs.aws.amazon.com/sdk-for-go/

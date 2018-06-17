@@ -11,7 +11,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
-	"log"
+	_ "log"
 	"strings"
 )
 
@@ -132,7 +132,6 @@ func (c *S3Cache) Set(key string, fh io.ReadCloser) (io.ReadCloser, error) {
 	// in go-whosonfirst-aws... (20180617/thisisaaronland)
 
 	key = fmt.Sprintf("%s#ACL=%s", key, c.opts.ACL)
-	log.Println("SET", key)
 
 	err := c.conn.Put(key, ioutil.NopCloser(r))
 
