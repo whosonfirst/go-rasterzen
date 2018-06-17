@@ -33,6 +33,8 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 
 	data, err := h.Cache.Get(key)
 
+	log.Println("GET", key, err)
+
 	if err == nil {
 
 		defer data.Close()
@@ -45,17 +47,21 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 		return err
 	}
 
-	if err != nil && !cache.IsCacheMiss(err) {
+	if err != nil && !cache.IsCacheMiss(err) && !cache.IsCacheMissMulti(err) {
 		log.Println("CACHE ERROR", key, err)
 	}
 
-	fh, err := h.GetTileForRequest(req)
+	if !cache.IsCacheMissMulti(err) {
 
-	if err != nil {
-		return err
+		fh, err := h.GetTileForRequest(req)
+
+		if err != nil {
+			return err
+		}
+
+		defer fh.Close()
+		data = fh
 	}
-
-	defer fh.Close()
 
 	for k, v := range h.Headers {
 		rsp.Header().Set(k, v)
@@ -66,7 +72,7 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 
 	wr := io.MultiWriter(rsp, buf)
 
-	err = h.Func(fh, wr)
+	err = h.Func(data, wr)
 
 	buf.Flush()
 
@@ -75,6 +81,7 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 	}
 
 	go h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
+
 	return nil
 }
 
