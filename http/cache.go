@@ -74,7 +74,7 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 		return err
 	}
 
-	go h.Cache.Set(key, cache.NewBytesReadCloser(b.Bytes()))
+	go h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
 	return nil
 }
 
