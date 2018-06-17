@@ -9,6 +9,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"log"
+	_ "os"
 	gohttp "net/http"
 	"path/filepath"
 	"regexp"
@@ -37,6 +38,8 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 
 	if err == nil {
 
+		log.Println("RETURN FROM CACHE", key, err)
+
 		defer data.Close()
 
 		for k, v := range h.Headers {
@@ -53,14 +56,13 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 
 	if !cache.IsCacheMissMulti(err) {
 
-		fh, err := h.GetTileForRequest(req)
+		data, err = h.GetTileForRequest(req)
 
 		if err != nil {
 			return err
 		}
 
-		defer fh.Close()
-		data = fh
+		defer data.Close()
 	}
 
 	for k, v := range h.Headers {
@@ -80,6 +82,7 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 		return err
 	}
 
+	log.Println(string(b.Bytes()))
 	go h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
 
 	return nil
