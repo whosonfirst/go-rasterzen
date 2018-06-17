@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/whosonfirst/go-rasterzen/http"
 	"github.com/whosonfirst/go-whosonfirst-cache"
+	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"log"
 	gohttp "net/http"
 	"os"
@@ -19,6 +20,9 @@ func main() {
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
 	fs_root := flag.String("fs-root", "", "The root of your filesystem cache. If empty rasterd will try to use the current working directory.")
+	s3_cache := flag.Bool("s3-cache", false, "Cache tiles with a S3-based cache.")
+	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
+
 	// fs_ttl := flag.Int("fs-ttl", 0, "The time-to-live (in seconds) for filesystem cache files. If 0 cached tiles will never expire.")
 
 	png_handler := flag.Bool("png-handler", true, "Enable the PNG tile handler.")
@@ -72,6 +76,19 @@ func main() {
 		}
 
 		c, err := cache.NewFSCache(*fs_root)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		caches = append(caches, c)
+	}
+
+	if *s3_cache {
+
+		log.Println("enable S3 cache layer")
+
+		c, err := s3.NewS3Cache(*s3_dsn)
 
 		if err != nil {
 			log.Fatal(err)
