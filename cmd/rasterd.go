@@ -22,6 +22,7 @@ func main() {
 	fs_root := flag.String("fs-root", "", "The root of your filesystem cache. If empty rasterd will try to use the current working directory.")
 	s3_cache := flag.Bool("s3-cache", false, "Cache tiles with a S3-based cache.")
 	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
+	s3_opts := flag.String("s3-opts", "", "...")
 
 	// fs_ttl := flag.Int("fs-ttl", 0, "The time-to-live (in seconds) for filesystem cache files. If 0 cached tiles will never expire.")
 
@@ -88,7 +89,13 @@ func main() {
 
 		log.Println("enable S3 cache layer")
 
-		c, err := s3.NewS3Cache(*s3_dsn)
+		opts, err := s3.NewS3CacheOptionsFromString(*s3_opts)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		c, err := s3.NewS3Cache(*s3_dsn, opts)
 
 		if err != nil {
 			log.Fatal(err)

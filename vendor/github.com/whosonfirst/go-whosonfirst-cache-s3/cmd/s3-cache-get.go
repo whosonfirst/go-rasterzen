@@ -11,17 +11,24 @@ import (
 func main() {
 
 	var dsn = flag.String("dsn", "", "A valid go-whosonfirst-aws DSN string")
+	var opts = flag.String("opts", "", "...")
 	var key = flag.String("key", "", "The name of the key you are setting")
 
 	flag.Parse()
 
-	c, err := s3.NewS3Cache(*dsn)
+	s3_opts, err := s3.NewS3CacheOptionsFromString(*opts)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	body, err := cache.GetString(c, *key)
+	s3_cache, err := s3.NewS3Cache(*dsn, s3_opts)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	body, err := cache.GetString(s3_cache, *key)
 
 	if err != nil {
 
