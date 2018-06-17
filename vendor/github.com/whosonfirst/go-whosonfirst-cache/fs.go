@@ -129,6 +129,13 @@ func (c *FSCache) Set(key string, fh io.ReadCloser) (io.ReadCloser, error) {
 		return nil, err
 	}
 
+	// would that we could do this but it always results in the following error:
+	// 2018/06/17 08:28:30 write /usr/local/whosonfirst/go-whosonfirst-cache/foo: file already closed
+
+	// defer out.Close()
+	// r := io.TeeReader(fh, out)
+	// return ioutil.NopCloser(r), nil
+
 	var b bytes.Buffer
 	buf := bufio.NewWriter(&b)
 
@@ -143,7 +150,7 @@ func (c *FSCache) Set(key string, fh io.ReadCloser) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	return NewBytesReadCloser(b.Bytes()), nil
+	return NewReadCloser(b.Bytes()), nil
 }
 
 func (c *FSCache) Unset(key string) error {

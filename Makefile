@@ -19,12 +19,13 @@ rmdeps:
 build:	fmt bin
 
 deps:
+	@GOPATH=$(GOPATH) go get -u "github.com/paulmach/orb"
 	@GOPATH=$(GOPATH) go get -u "github.com/srwiley/oksvg"
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/gjson"
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/sjson"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/geojson2svg/pkg/geojson2svg"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cache"
-	@GOPATH=$(GOPATH) go get -u "github.com/paulmach/orb"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cache-s3"
 
 # if you're wondering about the 'rm -rf' stuff below it's because Go is
 # weird... https://vanduuren.xyz/2017/golang-vendoring-interface-confusion/
