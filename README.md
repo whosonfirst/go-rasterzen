@@ -185,9 +185,18 @@ $> ll ./cache/nextzen/13/*/*.json
 </html>
 ```
 
+## Docker
+
+Not yet.
+
+## AWS Lambda
+
+Yes. See the [go-rasterzen-lambda](https://github.com/whosonfirst/go-rasterzen-lambda) package for details.
+
 ## See also
 
 * https://github.com/fapian/geojson2svg
 * https://github.com/srwiley/oksvg
 * https://developers.nextzen.org/
 * https://mapzen.com/documentation/vector-tiles/layers/
+* https://github.com/whosonfirst/go-rasterzen-lambda
