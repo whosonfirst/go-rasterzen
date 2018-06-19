@@ -156,7 +156,12 @@ func ToSVG(in io.Reader, out io.Writer) error {
 				// what?
 			}
 
-			log.Println(kind, detail, geom_type, sort_rank)
+			// because we are still working out the details for both
+			// logging and sorting features... (20180619/thisisaaronland)
+
+			if false {
+				log.Println(kind, detail, geom_type, sort_rank)
+			}
 
 			// where and how (if?) should we enable this...
 
@@ -173,8 +178,6 @@ func ToSVG(in io.Reader, out io.Writer) error {
 				"fill":           fill,
 				"fill-opacity":   fill_opacity,
 			}
-
-			log.Println(kind, props)
 
 			for k, v := range props {
 				path := fmt.Sprintf("properties.%s", k)
