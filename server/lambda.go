@@ -28,7 +28,7 @@ func (s *LambdaServer) Address() string {
 func (s *LambdaServer) ListenAndServe(mux *http.ServeMux) error {
 
 	// this cr^H^H^H stuff is important (20180713/thisisaaronland)
-	// go-whosonfirst-static/README.md#lambda-api-gateway-and-images#lambda-api-gateway-and-images
+	// go-rasterzen/README.md#lambda-api-gateway-and-images#lambda-api-gateway-and-images
 
 	lambda_opts := new(algnhsa.Options)
 	lambda_opts.BinaryContentTypes = []string{"image/png"}

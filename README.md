@@ -65,32 +65,46 @@ _Error handling has been removed for the sake of brevity._
 ### rasterd
 
 ```
-./bin/rasterd -h
+$> ./bin/rasterd -h
 Usage of ./bin/rasterd:
+  -config string
+    	Read some or all flags from an ini-style config file. Values in the config file take precedence over command line flags.
   -fs-cache
-	Cache tiles with a filesystem-based cache.
+    	Cache tiles with a filesystem-based cache.
   -fs-root string
-    	   The root of your filesystem cache. If empty rasterd will try to use the current working directory.
+    	The root of your filesystem cache. If empty rasterd will try to use the current working directory.
   -geojson-handler
-	Enable the GeoJSON tile handler.
+    	Enable the GeoJSON tile handler.
   -go-cache
-	Cache tiles with an in-memory (go-cache) cache.
+    	Cache tiles with an in-memory (go-cache) cache.
   -host string
     	The host for rasterd to listen for requests on. (default "localhost")
+  -httptest.serve string
+    	if non-empty, httptest.NewServer serves on this address and blocks
   -no-cache
-	Disable all caching.
+    	Disable all caching.
+  -path-geojson string
+    	The path that GeoJSON tiles should be served from (default "/geojson/")
+  -path-png string
+    	The path that PNG tiles should be served from (default "/png/")
+  -path-svg string
+    	The path that SVG tiles should be served from (default "/svg/")
   -png-handler
-	Enable the PNG tile handler. (default true)
+    	Enable the PNG tile handler. (default true)
   -port int
     	The port for rasterd to listen for requests on. (default 8080)
+  -protocol string
+    	The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda. (default "http")
   -s3-cache
-	Cache tiles with a S3-based cache.
+    	Cache tiles with a S3-based cache.
   -s3-dsn string
-    	  A valid go-whosonfirst-aws DSN string
+    	A valid go-whosonfirst-aws DSN string
   -s3-opts string
-    	   A valid go-whosonfirst-cache-s3 options string
+    	A valid go-whosonfirst-cache-s3 options string
+  -section string
+    	A valid ini-style config file section. (default "rasterd")
   -svg-handler
-	Enable the SVG tile handler. (default true)
+    	Enable the SVG tile handler. (default true)
 ```
 
 A simple HTTP server for delivering rasterized Netzen vector (TMS or "slippy map") tiles.
@@ -189,9 +203,51 @@ $> ll ./cache/nextzen/13/*/*.json
 
 Not yet.
 
-## AWS Lambda
+## Lambda
 
-Yes. See the [go-rasterzen-lambda](https://github.com/whosonfirst/go-rasterzen-lambda) package for details.
+Yes, it is possible to run `rasterd` as an AWS Lambda function.
+
+To create the Lambda function you're going to upload to AWS simply use the handy `lambda` target in the Makefile. This will create a file called `deployment.zip` which you will need to upload to AWS (those details are out of scope for this document).
+
+Your `wof-staticd` function should be configured with (Lambda) environment variables. Environment variables map to the standard command line flags as follows:
+
+* The command line flag is upper-cased
+* All instances of `-` are replaced with `_`
+* Each flag is prefixed with `RASTERD`
+
+For example the command line flag `-protocol` would be mapped to the `RASTERD_PROTOCOL` environment variable. Which is a good example because it is the one environment variable you _must_ to specify for `rasterd` to work as a Lambda function. Specifically you need to define the protocol as... "lambda". For example
+
+```
+RASTERD_PROTOCOL = lambda
+```
+
+In reality you'll need to specify other flags, like `RASTERD_S3_DSN` and `RASTERD_CACHE_OPTIONS`. For example here's how you might configure your function to render all the data and graphics formats (but not static HTML webpages) for your data:
+
+```
+RASTERD_CACHE_OPTIONS = ACL=public-read
+RASTERD_S3_DSN = bucket={BUCKET} prefix={PREFIX} region={REGION} credentials=iam:
+```
+
+### Lambda, API Gateway and images
+
+In order for requests to produce PNG output (rather than a base64 encoded string) you will need to do a few things.
+
+1. Make sure your API Gateway settings list `image/png` as a known and valid binary type:
+
+![](docs/images/20180625-agw-binary.png)
+
+2. If you've put a CloudFront distribution in front of your API Gateway then you
+will to ensure that you blanket enable all HTTP headers or whitelist the
+`Accept:` header , via the `Cache Based on Selected Request Headers` option (for
+the CloudFront behaviour that points to your gateway):
+
+![](docs/images/20180625-cf-cache.png)
+
+3. Make sure you pass an `Accept: image/png` header when you request the PNG rendering.
+
+4. If you add another image (or binary) handler to this package you'll need to
+repeat steps 1-3 _and_ update the `BinaryContentTypes` dictionary in
+[server/lambda.go](server/lambda.go) code accordingly. Good times...
 
 ## See also
 
@@ -199,4 +255,3 @@ Yes. See the [go-rasterzen-lambda](https://github.com/whosonfirst/go-rasterzen-l
 * https://github.com/srwiley/oksvg
 * https://developers.nextzen.org/
 * https://mapzen.com/documentation/vector-tiles/layers/
-* https://github.com/whosonfirst/go-rasterzen-lambda
