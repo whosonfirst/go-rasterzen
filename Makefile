@@ -11,6 +11,7 @@ self:   prep rmdeps
 	cp -r nextzen src/github.com/whosonfirst/go-rasterzen/
 	cp -r tile src/github.com/whosonfirst/go-rasterzen/
 	cp -r http src/github.com/whosonfirst/go-rasterzen/
+	cp -r server src/github.com/whosonfirst/go-rasterzen/
 	cp -r vendor/* src/
 
 rmdeps:
@@ -26,6 +27,7 @@ deps:
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/geojson2svg/pkg/geojson2svg"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cache"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cache-s3"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/algnhsa"
 
 # if you're wondering about the 'rm -rf' stuff below it's because Go is
 # weird... https://vanduuren.xyz/2017/golang-vendoring-interface-confusion/
@@ -42,6 +44,7 @@ fmt:
 	go fmt cmd/*.go
 	go fmt http/*.go
 	go fmt tile/*.go
+	go fmt server/*.go
 	go fmt nextzen/*.go
 
 bin: 	self
