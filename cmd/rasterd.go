@@ -37,6 +37,10 @@ func main() {
 	svg_handler := flag.Bool("svg-handler", true, "Enable the SVG tile handler.")
 	geojson_handler := flag.Bool("geojson-handler", false, "Enable the GeoJSON tile handler.")
 
+	var path_png = flag.String("path-png", "/png/", "The path that PNG tiles should be served from")
+	var path_svg = flag.String("path-svg", "/svg/", "The path that SVG tiles should be served from")
+	var path_geojson = flag.String("path-geojson", "/geojson/", "The path that GeoJSON tiles should be served from")
+
 	flag.Parse()
 
 	if *config != "" {
@@ -160,7 +164,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		mux.Handle("/png/", h)
+		mux.Handle(*path_png, h)
 	}
 
 	if *svg_handler {
@@ -173,7 +177,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		mux.Handle("/svg/", h)
+		mux.Handle(*path_svg, h)
 	}
 
 	if *geojson_handler {
@@ -186,7 +190,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		mux.Handle("/geojson/", h)
+		mux.Handle(*path_geojson, h)
 	}
 
 	address := fmt.Sprintf("http://%s:%d", *host, *port)
