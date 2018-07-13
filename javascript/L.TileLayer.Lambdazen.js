@@ -2,11 +2,11 @@ L.TileLayer.Lambdazen = L.TileLayer.extend({
 
     createTile: function (coords) {
 
+	var img = new Image();
+	img.setAttribute("height", 512);
+	img.setAttribute("width", 512);	
+	
 	var url = this.getTileUrl(coords);
-
-	var tile = L.DomUtil.create('canvas', 'leaflet-tile');
-        tile.width = 512;
-        tile.height = 512;
 		
 	var req = new XMLHttpRequest();	
 	req.open("GET", url, true);
@@ -25,20 +25,12 @@ L.TileLayer.Lambdazen = L.TileLayer.extend({
 	};
 	
 	req.onload = function(rsp){
-
-	    var blob = req.response;	    
-	    var img = new Image();
-	    
-	    img.onload = function(){
-		var context = tile.getContext('2d');		
-		context.drawImage(img, 0, 0);
-	    };
-
+	    var blob = req.response;	    	    
 	    img.src = URL.createObjectURL(blob);
 	};
 	
 	req.send();
-	return tile;
+	return img;
     }
     
 });
