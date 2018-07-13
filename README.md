@@ -6,7 +6,7 @@ Tools for rendering raster tiles derived from Nextzen (Mapzen) Vector tiles.
 
 ## Important
 
-It's way too soon. It works, kind of. I wouldn't be surprised if there are bugs.
+This works... until it doesn't. I wouldn't be surprised if there are bugs.
 
 This package uses a two-pass process to convert a Nextzen vector tile to an SVG
 document with embedded CSS style information and then to convert that SVG
@@ -256,17 +256,17 @@ repeat steps 1-3 _and_ update the `BinaryContentTypes` dictionary in
 The good news is that it works. You can use PNG tiles produced by `rasterd`
 inside a normal [Leaflet](https://leafletjs.com/) `Tile` layer. The bad news is
 that you need to use the bundled
-[javascript/L.TileLayer.Lambdazen.js](javascript/L.TileLayer.Lambdazen.js) 
+[L.TileLayer.Lambdazen.js](javascript/L.TileLayer.Lambdazen.js) 
 package (or equivalent) to do so, like this: 
 
 ```
-	// <script type="text/javascript" src="L.TileLayer.Lambdazen.js"></script>
+// <script type="text/javascript" src="L.TileLayer.Lambdazen.js"></script>
 	
-	var url = 'https://{SOME-LAMBDA-API-GATEWAY-URL}/png/{z}/{x}/{y}.' + format + '?api_key={API_KEY}';
-	var layer = new L.TileLayer.Lambdazen(url, { maxZoom: 16 });
+var url = 'https://{SOME-LAMBDA-API-GATEWAY-URL}/png/{z}/{x}/{y}.' + format + '?api_key={API_KEY}';
+var layer = new L.TileLayer.Lambdazen(url, { maxZoom: 16 });
 	
-	var map = L.map('map').setView([37.613858, -122.37366], 15);
-	layer.addTo(map);
+var map = L.map('map').setView([37.613858, -122.37366], 15);
+layer.addTo(map);
 ```
 
 This [redefines the default `createTile`
