@@ -10,3 +10,4 @@ bin
 .travis.yml
 *.db
 *.svg
+deployment.zip
