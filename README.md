@@ -253,22 +253,26 @@ repeat steps 1-3 _and_ update the `BinaryContentTypes` dictionary in
 
 ![](docs/images/20180713-rasterd-leaflet.png)
 
-The good news is that it works. You can use PNG tiles produced by `rasterd` inside a normal [Leaflet](https://leafletjs.com/) `Tile` layer.
-
-The bad news is that you need to use the [javascript/L.TileLayer.Lambdazen.js](javascript/L.TileLayer.Lambdazen.js) package to do so, like this:
+The good news is that it works. You can use PNG tiles produced by `rasterd`
+inside a normal [Leaflet](https://leafletjs.com/) `Tile` layer. The bad news is
+that you need to use the bundled
+[javascript/L.TileLayer.Lambdazen.js](javascript/L.TileLayer.Lambdazen.js) 
+package (or equivalent) to do so, like this: 
 
 ```
 	// <script type="text/javascript" src="L.TileLayer.Lambdazen.js"></script>
 	
-	var url = 'https://{SOME-LAMBDA-API-GATEWAY-URL}/tiles/png/{z}/{x}/{y}.' + format + '?api_key={API_KEY}';
-
+	var url = 'https://{SOME-LAMBDA-API-GATEWAY-URL}/png/{z}/{x}/{y}.' + format + '?api_key={API_KEY}';
 	var layer = new L.TileLayer.Lambdazen(url, { maxZoom: 16 });
 	
 	var map = L.map('map').setView([37.613858, -122.37366], 15);
 	layer.addTo(map);
 ```
 
-This [redefines the default `createTile` method](https://leafletjs.com/examples/extending/extending-2-layers.html) to fetch the tile in question _with the correct `Accept:` header_ discussed above and then hands the resulting image back to Leaflet. Computers, right...
+This [redefines the default `createTile`
+method](https://leafletjs.com/examples/extending/extending-2-layers.html) to
+fetch the tile in question with the correct `Accept:` header discussed above and
+then hands the resulting image back to Leaflet. Computers, right... ?
 
 ## See also
 
