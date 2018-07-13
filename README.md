@@ -262,7 +262,7 @@ package (or equivalent) to do so, like this:
 ```
 // <script type="text/javascript" src="L.TileLayer.Lambdazen.js"></script>
 	
-var url = 'https://{SOME-LAMBDA-API-GATEWAY-URL}/png/{z}/{x}/{y}.' + format + '?api_key={API_KEY}';
+var url = 'https://{SOME-LAMBDA-API-GATEWAY-URL}/png/{z}/{x}/{y}.png?api_key={API_KEY}';
 var layer = new L.TileLayer.Lambdazen(url, { maxZoom: 16 });
 	
 var map = L.map('map').setView([37.613858, -122.37366], 15);
