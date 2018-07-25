@@ -224,7 +224,9 @@ RASTERD_PROTOCOL = lambda
 In reality you'll need to specify other flags, like `RASTERD_S3_DSN` and `RASTERD_CACHE_OPTIONS`. For example here's how you might configure your function to render all the data and graphics formats (but not static HTML webpages) for your data:
 
 ```
-RASTERD_CACHE_OPTIONS = ACL=public-read
+RASTERD_PROTOCOL = lambda
+RASTERD_S3_CACHE = true
+RASTERD_S3_OPTS = ACL=public-read
 RASTERD_S3_DSN = bucket={BUCKET} prefix={PREFIX} region={REGION} credentials=iam:
 ```
 
