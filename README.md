@@ -129,7 +129,7 @@ Would yield something like this:
 
 There is currently nothing that looks like sophisticated cache invalidation. That's left up to you to do manually, for now. 
 
-Currently filesystem and in-memory (using [go-cache](https://github.com/patrickmn/go-cache)) caches are
+Currently filesystem, S3 and in-memory (using [go-cache](https://github.com/patrickmn/go-cache)) caches are
 supported. You can invoke `rasterd` with multiple cache providers if you want.
 
 Both the raw Nextzen tiles and the cropped "rasterzen" tiles are cached as is
