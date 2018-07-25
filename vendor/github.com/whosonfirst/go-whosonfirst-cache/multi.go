@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	_ "log"
+	"strings"
 	"sync"
 )
 
@@ -51,6 +52,17 @@ func NewMultiCache(caches []Cache) (Cache, error) {
 	}
 
 	return &mc, nil
+}
+
+func (mc *MultiCache) Name() string {
+
+	cache_names := make([]string, len(mc.caches))
+
+	for i, c := range mc.caches {
+		cache_names[i] = c.Name()
+	}
+
+	return fmt.Sprintf("multi#%s", strings.Join(cache_names, ";"))
 }
 
 func (mc *MultiCache) Get(key string) (io.ReadCloser, error) {

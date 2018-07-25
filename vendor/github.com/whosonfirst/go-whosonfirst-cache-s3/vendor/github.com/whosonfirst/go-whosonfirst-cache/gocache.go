@@ -92,6 +92,10 @@ func NewGoCache(opts *GoCacheOptions) (Cache, error) {
 	return &lc, nil
 }
 
+func (c *GoCache) Name() string {
+	return "gocache"
+}
+
 func (c *GoCache) Get(key string) (io.ReadCloser, error) {
 
 	// to do: timings that don't slow everything down the way

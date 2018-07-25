@@ -19,6 +19,10 @@ func NewNullCache() (Cache, error) {
 	return &lc, nil
 }
 
+func (c *NullCache) Name() string {
+	return "null"
+}
+
 func (c *NullCache) Get(key string) (io.ReadCloser, error) {
 	atomic.AddInt64(&c.misses, 1)
 	return nil, new(CacheMiss)

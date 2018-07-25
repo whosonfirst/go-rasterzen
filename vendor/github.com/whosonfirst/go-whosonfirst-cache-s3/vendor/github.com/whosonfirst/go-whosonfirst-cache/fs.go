@@ -58,6 +58,10 @@ func NewFSCache(root string) (Cache, error) {
 	return &c, nil
 }
 
+func (c *FSCache) Name() string {
+	return "fs"
+}
+
 func (c *FSCache) Get(key string) (io.ReadCloser, error) {
 
 	c.mu.RLock()
