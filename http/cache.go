@@ -38,7 +38,7 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 
 		defer data.Close()
 
-		log.Printf("REQ %s RETURN FROM CACHE\n", key)
+		// log.Printf("REQ %s RETURN FROM CACHE\n", key)
 
 		for k, v := range h.Headers {
 			rsp.Header().Set(k, v)
@@ -59,15 +59,16 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 		buf.Flush()
 
 		if err == nil {
-			go h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
+
+			_, cache_err := h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
+
+			if cache_err != nil {
+				log.Printf("%s %v\n", key, cache_err)
+			}
 		}
 
-		log.Printf("REQ %s UPDATE CACHE %v\n", key, err)
+		// log.Printf("REQ %s UPDATE CACHE %v\n", key, err)
 		return err
-	}
-
-	if err != nil && !cache.IsCacheMiss(err) {
-		log.Printf("CACHE ERROR %s %v\n", key, err)
 	}
 
 	fh, err := h.GetTileForRequest(req)
@@ -95,14 +96,11 @@ func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Reque
 		return err
 	}
 
-	go func() {
+	_, cache_err := h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
 
-		log.Printf("REQ FINAL SET %s\n", key)
-		
-		_, err := h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
-
-		log.Printf("REQ FINAL SET RSP %s %v\n", key, err)
-	}()
+	if cache_err != nil {
+		log.Printf("%s %v\n", key, cache_err)
+	}
 
 	return nil
 }
@@ -145,7 +143,7 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 	rasterzen_data, err = h.Cache.Get(rasterzen_key)
 
-	log.Printf("REQ RASTERZEN %s %v\n", rasterzen_key, err)
+	// log.Printf("REQ RASTERZEN %s %v\n", rasterzen_key, err)
 
 	if err == nil {
 		return rasterzen_data, nil
@@ -153,7 +151,7 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 	nextzen_data, err = h.Cache.Get(nextzen_key)
 
-	log.Printf("REQ NEXTZEN %s %v\n", nextzen_key, err)
+	// log.Printf("REQ NEXTZEN %s %v\n", nextzen_key, err)
 
 	if err != nil {
 
@@ -168,7 +166,7 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 		t, err := nextzen.FetchTile(z, x, y, api_key)
 
-		log.Printf("REQ NEXTZEN %d/%d/%d %v\n", z, x, y, err)
+		// log.Printf("REQ NEXTZEN %d/%d/%d %v\n", z, x, y, err)
 
 		if err != nil {
 			return nil, err
@@ -178,7 +176,7 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 		nextzen_data, err = h.Cache.Set(nextzen_key, t)
 
-		log.Printf("REQ NEXTZEN SET %s %v\n", nextzen_key, err)
+		// log.Printf("REQ NEXTZEN SET %s %v\n", nextzen_key, err)
 
 		if err != nil {
 			return nil, err
@@ -187,7 +185,7 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 	cr, err := nextzen.CropTile(z, x, y, nextzen_data)
 
-	log.Printf("REQ NEXTZEN CROP %d/%d/%d %v\n", z, x, y, err)
+	// log.Printf("REQ NEXTZEN CROP %d/%d/%d %v\n", z, x, y, err)
 
 	if err != nil {
 		return nil, err
@@ -197,7 +195,7 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 	fh, err := h.Cache.Set(rasterzen_key, cr)
 
-	log.Printf("REQ RASTERZEN SET %s %v\n", rasterzen_key, err)
+	// log.Printf("REQ RASTERZEN SET %s %v\n", rasterzen_key, err)
 
 	return fh, err
 }

@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
+	"log"
 	gohttp "net/http"
 )
 
@@ -25,6 +26,7 @@ func PNGHandler(c cache.Cache) (gohttp.HandlerFunc, error) {
 		err := h.HandleRequest(rsp, req, key)
 
 		if err != nil {
+			log.Printf("%s %v\n", key, err)
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)
 			return
 		}
