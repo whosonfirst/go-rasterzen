@@ -9,8 +9,8 @@ import (
 func PNGHandler(c cache.Cache) (gohttp.HandlerFunc, error) {
 
 	headers := map[string]string{
-		"Content-Type": "image/png",
-		"Access-Control-Allow-Origin": "*",		
+		"Content-Type":                "image/png",
+		"Access-Control-Allow-Origin": "*",
 	}
 
 	h := CacheHandler{
