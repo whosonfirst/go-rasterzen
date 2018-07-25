@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	_ "log"
+	"log"
 	"strings"
 	"sync"
 )
@@ -79,6 +79,8 @@ func (mc *MultiCache) Get(key string) (io.ReadCloser, error) {
 
 		fh, err = c.Get(key)
 
+		log.Println("GET %s %s %s %t", c.Name(), key, err, IsCacheMiss(err))
+		
 		if err != nil {
 
 			if IsCacheMiss(err) {
@@ -130,6 +132,8 @@ func (mc *MultiCache) Set(key string, fh io.ReadCloser) (io.ReadCloser, error) {
 
 		_, err := c.Set(key, ioutil.NopCloser(r))
 
+		log.Println("SET %s %s %s", c.Name(), key, err)
+		
 		if err != nil {
 
 			go mc.Unset(key)
@@ -151,6 +155,8 @@ func (mc *MultiCache) Unset(key string) error {
 
 		err := c.Unset(key)
 
+		log.Println("UNSET %s %s %s", c.Name(), key, err)
+		
 		if err != nil {
 			return err
 		}
