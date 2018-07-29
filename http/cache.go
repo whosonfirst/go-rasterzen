@@ -133,6 +133,9 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 		return nil, err
 	}
 
+	// this is the new new (I think...) but it doesn't work yet
+	// return rasterzen.GetTileWithCache(h.Cache, z, x, y)
+	
 	key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
 
 	nextzen_key := filepath.Join("nextzen", key)
