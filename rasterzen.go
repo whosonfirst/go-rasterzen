@@ -7,6 +7,12 @@ import (
        "io"
 )
 
+// Something something something GetTileWithLambda... but I'm not really sure what that means
+// yet... (20180801/thisisaaronland)
+//
+// https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/lambda-go-example-run-function.html
+// https://github.com/awsdocs/aws-doc-sdk-examples/blob/master/go/example_code/lambda/aws-go-sdk-lambda-example-run-function.go
+
 GetPNGTileWithCache(c Cache, z int, x int, y int) (io.ReadCloser, error) {
 
 	fh, err := GetSVGTileWithCache(c, z, x, y)
