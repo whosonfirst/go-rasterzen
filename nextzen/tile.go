@@ -11,14 +11,15 @@ import (
 	"github.com/tidwall/sjson"
 	"io"
 	"io/ioutil"
-	_ "log"
+	"log"
 	"net/http"
-	_ "net/http/httputil"
+	"net/http/httputil"
 )
 
 type Options struct {
 	ApiKey string
 	Origin string
+	Debug  bool
 }
 
 func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
@@ -39,8 +40,16 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 		req.Header.Set("Origin", opts.Origin)
 	}
 
-	// dump, _ := httputil.DumpRequest(req, true)
-	// log.Println("DUMP", string(dump))
+	if opts.Debug {
+
+		dump, err := httputil.DumpRequest(req, true)
+
+		if err != nil {
+			return nil, err
+		}
+
+		log.Println("DUMP", string(dump))
+	}
 
 	rsp, err := cl.Do(req)
 

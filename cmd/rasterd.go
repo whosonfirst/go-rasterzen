@@ -152,13 +152,22 @@ func main() {
 		log.Fatal(err)
 	}
 
+	ch, err := http.NewCacheHandler(c)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// ch.NextzenOptions.ApiKey = *api_key
+	// ch.NextzenOptions.Origin = *origin
+
 	mux := gohttp.NewServeMux()
 
 	if *png_handler {
 
 		log.Println("enable PNG handler")
 
-		h, err := http.PNGHandler(c)
+		h, err := http.PNGHandler(ch)
 
 		if err != nil {
 			log.Fatal(err)
@@ -171,7 +180,7 @@ func main() {
 
 		log.Println("enable SVG handler")
 
-		h, err := http.SVGHandler(c)
+		h, err := http.SVGHandler(ch)
 
 		if err != nil {
 			log.Fatal(err)
@@ -184,7 +193,7 @@ func main() {
 
 		log.Println("enable GeoJSON handler")
 
-		h, err := http.GeoJSONHandler(c)
+		h, err := http.GeoJSONHandler(ch)
 
 		if err != nil {
 			log.Fatal(err)

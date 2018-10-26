@@ -2,23 +2,19 @@ package http
 
 import (
 	"github.com/whosonfirst/go-rasterzen/tile"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"log"
 	gohttp "net/http"
 )
 
-func GeoJSONHandler(c cache.Cache) (gohttp.HandlerFunc, error) {
+func GeoJSONHandler(h *CacheHandler) (gohttp.HandlerFunc, error) {
 
 	headers := map[string]string{
 		"Content-Type":                "text/json",
 		"Access-Control-Allow-Origin": "*",
 	}
 
-	h := CacheHandler{
-		Cache:   c,
-		Func:    tile.ToFeatureCollection,
-		Headers: headers,
-	}
+	h.Func = tile.ToFeatureCollection
+	h.Headers = headers
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 

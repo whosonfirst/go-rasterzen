@@ -2,23 +2,19 @@ package http
 
 import (
 	"github.com/whosonfirst/go-rasterzen/tile"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"log"
 	gohttp "net/http"
 )
 
-func SVGHandler(c cache.Cache) (gohttp.HandlerFunc, error) {
+func SVGHandler(h *CacheHandler) (gohttp.HandlerFunc, error) {
 
 	headers := map[string]string{
 		"Content-Type":                "image/svg+xml",
 		"Access-Control-Allow-Origin": "*",
 	}
 
-	h := CacheHandler{
-		Cache:   c,
-		Func:    tile.ToSVG,
-		Headers: headers,
-	}
+	h.Func = tile.ToSVG
+	h.Headers = headers
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
