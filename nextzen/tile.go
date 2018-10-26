@@ -11,8 +11,8 @@ import (
 	"github.com/tidwall/sjson"
 	"io"
 	"io/ioutil"
-	"log"
-	_ "net/http"
+	_ "log"
+	"net/http"
 )
 
 type nopCloser struct {
