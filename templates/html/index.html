@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>rasterd</title>
+    
+    <link rel="stylesheet" href="/static/css/leaflet.css" />
+    <script src="/static/javascript/leaflet.js"></script>
+    
+    <style type="text/css">
+      #map { width:100%; height:600px; }
+      .leaflet-tile { border: dashed red 1px; }
+    </style>
+  </head>
+  
+  <body>
+    <div id="map"></div>
+    
+    <script>
+      var api_key = '{{ .NextzenAPIKey }}';
+      var format = 'svg';
+
+      var map = L.map('map').setView([37.613858, -122.37366], 13);
+      var layer = L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.json?api_key=' + api_key, {maxZoom: 16});
+
+      layer.addTo(map);
+      	  
+    </script>
+    
+  </body>
+</html>
