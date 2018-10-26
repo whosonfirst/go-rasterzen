@@ -28,6 +28,7 @@ type CacheHandler struct {
 	Cache   cache.Cache
 	Func    CacheHandlerFunc
 	Headers map[string]string
+	Origin  string
 }
 
 func (h CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Request, key string) error {
@@ -133,6 +134,9 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 		return nil, err
 	}
 
+	head := req.Header
+	log.Println("HEADER", head)
+
 	key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
 
 	nextzen_key := filepath.Join("nextzen", key)
@@ -164,7 +168,12 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 			return nil, errors.New("Missing API key")
 		}
 
-		t, err := nextzen.FetchTile(z, x, y, api_key)
+		opts := &nextzen.Options{
+			ApiKey: api_key,
+			Origin: h.Origin,
+		}
+
+		t, err := nextzen.FetchTile(z, x, y, opts)
 
 		// log.Printf("REQ NEXTZEN %d/%d/%d %v\n", z, x, y, err)
 

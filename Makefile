@@ -50,6 +50,7 @@ fmt:
 
 bin: 	self
 	@GOPATH=$(GOPATH) go build -o bin/rasterd cmd/rasterd.go
+	@GOPATH=$(GOPATH) go build -o bin/seed cmd/seed.go
 
 lambda:	
 	@make self

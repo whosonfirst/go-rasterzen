@@ -12,24 +12,37 @@ import (
 	"io"
 	"io/ioutil"
 	_ "log"
-	_ "net/http"
+	"net/http"
+	_ "net/http/httputil"
 )
 
-func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
+type Options struct {
+	ApiKey string
+	Origin string
+}
+
+func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	layer := "all"
 
-	url := fmt.Sprintf("https://tile.nextzen.org/tilezen/vector/v1/256/%s/%d/%d/%d.json?api_key=%s", layer, z, x, y, api_key)
+	url := fmt.Sprintf("https://tile.nextzen.org/tilezen/vector/v1/256/%s/%d/%d/%d.json?api_key=%s", layer, z, x, y, opts.ApiKey)
 
-	// rsp, err := http.Get(url)
+	cl := new(http.Client)
 
-	cl, err := NewHTTPClient()
+	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := cl.Get(url)
+	if opts.Origin != "" {
+		req.Header.Set("Origin", opts.Origin)
+	}
+
+	// dump, _ := httputil.DumpRequest(req, true)
+	// log.Println("DUMP", string(dump))
+
+	rsp, err := cl.Do(req)
 
 	if err != nil {
 		return nil, err
