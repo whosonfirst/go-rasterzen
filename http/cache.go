@@ -157,7 +157,7 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 	// this is the new new (I think...) but it doesn't work yet
 	// return rasterzen.GetTileWithCache(h.Cache, z, x, y)
-	
+
 	key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
 
 	nextzen_key := filepath.Join("nextzen", key)
@@ -180,17 +180,21 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 	if err != nil {
 
+		opts := h.NextzenOptions
+
 		url := req.URL
 		query := url.Query()
 
-		api_key := query.Get("api_key")
+		if opts.ApiKey == "" {
+			
+			api_key := query.Get("api_key")
 
-		if api_key == "" {
-			return nil, errors.New("Missing API key")
+			if api_key == "" {
+				return nil, errors.New("Missing API key")
+			}
+
+			opts.ApiKey = api_key
 		}
-
-		opts := h.NextzenOptions
-		opts.ApiKey = api_key
 
 		// check for and set 'Origin' header?
 

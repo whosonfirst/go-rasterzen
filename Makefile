@@ -49,6 +49,7 @@ fmt:
 	go fmt nextzen/*.go
 
 bin: 	self
+	rm -rf bin/*
 	@GOPATH=$(GOPATH) go build -o bin/rasterd cmd/rasterd.go
 	@GOPATH=$(GOPATH) go build -o bin/seed cmd/seed.go
 

@@ -42,19 +42,23 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	if opts.Debug {
 
-		dump, err := httputil.DumpRequest(req, true)
+		dump, err := httputil.DumpRequest(req, false)
 
 		if err != nil {
 			return nil, err
 		}
 
-		log.Println("DUMP", string(dump))
+		log.Println(string(dump))
 	}
 
 	rsp, err := cl.Do(req)
 
 	if err != nil {
 		return nil, err
+	}
+
+	if opts.Debug {
+		log.Println(url, rsp.Status)
 	}
 
 	// for reasons I don't understand the following does not appear
