@@ -11,3 +11,4 @@ bin
 *.db
 *.svg
 deployment.zip
+cache

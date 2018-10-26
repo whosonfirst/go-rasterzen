@@ -1,6 +1,8 @@
 package flags
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -8,7 +10,7 @@ import (
 type MultiString []string
 
 func (m *MultiString) String() string {
-	return strings.Join(*m, "\n")
+	return fmt.Sprintf("%v", *m)
 }
 
 func (m *MultiString) Set(value string) error {
@@ -26,6 +28,61 @@ func (m *MultiString) Contains(value string) bool {
 	}
 
 	return false
+}
+
+type MultiDSNString []map[string]string
+
+func (m *MultiDSNString) String() string {
+
+	dsn_strings := make([]string, 0)
+
+	for _, dict := range *m {
+
+		pairs := make([]string, 0)
+
+		for k, v := range dict {
+			pairs = append(pairs, fmt.Sprintf("%s=%s", k, v))
+		}
+
+		dsn_strings = append(dsn_strings, strings.Join(pairs, " "))
+	}
+
+	return strings.Join(dsn_strings, ";;")
+}
+
+func (m *MultiDSNString) Set(value string) error {
+
+	value = strings.Trim(value, " ")
+
+	// this is largely so that we can define multiple -dsn-string flags in
+	// a single environment variable (20180822/thisisaaronland)
+
+	for _, str_dsn := range strings.Split(value, ";;") {
+
+		str_dsn = strings.Trim(str_dsn, " ")
+		pairs := strings.Split(str_dsn, " ")
+
+		dict := make(map[string]string)
+
+		for _, str_pair := range pairs {
+
+			str_pair = strings.Trim(str_pair, " ")
+			pair := strings.Split(str_pair, "=")
+
+			if len(pair) != 2 {
+				return errors.New("Invalid pair")
+			}
+
+			k := pair[0]
+			v := pair[1]
+
+			dict[k] = v
+		}
+
+		*m = append(*m, dict)
+	}
+
+	return nil
 }
 
 type MultiInt64 []int64

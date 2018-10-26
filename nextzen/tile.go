@@ -11,8 +11,8 @@ import (
 	"github.com/tidwall/sjson"
 	"io"
 	"io/ioutil"
-	_ "log"
-	"net/http"
+	"log"
+	_ "net/http"
 )
 
 type nopCloser struct {
@@ -21,8 +21,6 @@ type nopCloser struct {
 
 func (nopCloser) Close() error { return nil }
 
-// PLEASE CACHE ME...
-
 func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 
 	layer := "all"
@@ -30,6 +28,16 @@ func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 	url := fmt.Sprintf("https://tile.nextzen.org/tilezen/vector/v1/256/%s/%d/%d/%d.json?api_key=%s", layer, z, x, y, api_key)
 
 	rsp, err := http.Get(url)
+
+	/*
+		cl, err := NewHTTPClient()
+
+		if err != nil {
+			return nil, err
+		}
+
+		rsp, err := cl.Get(url)
+	*/
 
 	if err != nil {
 		return nil, err
@@ -47,7 +55,7 @@ func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 	// < x-amz-cf-id: m42n6AwT9N-kBNzKnrKxe1eXfQITapw0BAfE8kG89vPNn0rQ2TQKTg==
 
 	if rsp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("Nextzen returned a non-200 response '%s'", rsp.Status))
+		return nil, errors.New(fmt.Sprintf("Nextzen returned a non-200 response fetching %s/%d/%d/%d : '%s'", layer, z, x, y, rsp.Status))
 	}
 
 	return rsp.Body, nil

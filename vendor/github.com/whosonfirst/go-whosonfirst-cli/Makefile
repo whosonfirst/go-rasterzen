@@ -26,8 +26,9 @@ vendor-deps: rmdeps deps
 	rm -rf src
 
 fmt:
+	go fmt cmd/*.go
 	go fmt flags/*.go
 
 bin: 	self
 	rm -rf bin/*
-	# @GOPATH=$(GOPATH) go build -o bin/wof-staticd cmd/wof-staticd.go
+	@GOPATH=$(GOPATH) go build -o bin/wof-cli cmd/wof-cli.go
