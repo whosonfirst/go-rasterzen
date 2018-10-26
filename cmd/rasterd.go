@@ -31,6 +31,9 @@ func main() {
 	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
 	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
+	nextzen_apikey := flag.String("nextzen-apikey", "", "...")
+	nextzen_origin := flag.String("nextzen-origin", "", "...")	
+	
 	// fs_ttl := flag.Int("fs-ttl", 0, "The time-to-live (in seconds) for filesystem cache files. If 0 cached tiles will never expire.")
 
 	png_handler := flag.Bool("png-handler", true, "Enable the PNG tile handler.")
@@ -158,9 +161,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// ch.NextzenOptions.ApiKey = *api_key
-	// ch.NextzenOptions.Origin = *origin
+	if *nextzen_apikey != "" {
+		ch.NextzenOptions.ApiKey = *nextzen_apikey
+	}
 
+	if *nextzen_origin != "" {	
+	ch.NextzenOptions.Origin = *nextzen_origin
+	}
+	
 	mux := gohttp.NewServeMux()
 
 	if *png_handler {
