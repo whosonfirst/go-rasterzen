@@ -12,14 +12,8 @@ import (
 	"io"
 	"io/ioutil"
 	_ "log"
-	"net/http"
+	_ "net/http"
 )
-
-type nopCloser struct {
-	io.Reader
-}
-
-func (nopCloser) Close() error { return nil }
 
 func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 
@@ -27,17 +21,15 @@ func FetchTile(z int, x int, y int, api_key string) (io.ReadCloser, error) {
 
 	url := fmt.Sprintf("https://tile.nextzen.org/tilezen/vector/v1/256/%s/%d/%d/%d.json?api_key=%s", layer, z, x, y, api_key)
 
-	rsp, err := http.Get(url)
+	// rsp, err := http.Get(url)
 
-	/*
-		cl, err := NewHTTPClient()
+	cl, err := NewHTTPClient()
 
-		if err != nil {
-			return nil, err
-		}
+	if err != nil {
+		return nil, err
+	}
 
-		rsp, err := cl.Get(url)
-	*/
+	rsp, err := cl.Get(url)
 
 	if err != nil {
 		return nil, err
@@ -113,5 +105,5 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 	}
 
 	r := bytes.NewReader(body)
-	return nopCloser{r}, nil
+	return ioutil.NopCloser(r), nil
 }

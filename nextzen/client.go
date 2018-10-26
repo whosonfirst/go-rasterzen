@@ -19,5 +19,4 @@ func NewHTTPClient() (*http.Client, error) {
 	}
 
 	return client, nil
-
 }
