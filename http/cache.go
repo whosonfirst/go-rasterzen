@@ -186,7 +186,7 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 		query := url.Query()
 
 		if opts.ApiKey == "" {
-			
+
 			api_key := query.Get("api_key")
 
 			if api_key == "" {

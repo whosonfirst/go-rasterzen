@@ -24,6 +24,7 @@ deps:
 	@GOPATH=$(GOPATH) go get -u "github.com/srwiley/oksvg"
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/gjson"
 	@GOPATH=$(GOPATH) go get -u "github.com/tidwall/sjson"
+	@GOPATH=$(GOPATH) go get -u "github.com/go-spatial/geom"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/geojson2svg/pkg/geojson2svg"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cache-s3"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cli"
@@ -51,7 +52,7 @@ fmt:
 bin: 	self
 	rm -rf bin/*
 	@GOPATH=$(GOPATH) go build -o bin/rasterd cmd/rasterd.go
-	@GOPATH=$(GOPATH) go build -o bin/seed cmd/seed.go
+	@GOPATH=$(GOPATH) go build -o bin/rasterzen-seed cmd/rasterzen-seed.go
 
 lambda:	
 	@make self
