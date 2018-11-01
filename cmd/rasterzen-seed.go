@@ -85,8 +85,8 @@ func parse_extent(str_extent string) (*geom.Extent, error) {
 
 func main() {
 
-	var zoom_levels flags.MultiInt64
-	flag.Var(&zoom_levels, "zoom", "One or more zoom levels to fetch (for an extent).")
+	var min_zoom = flag.Int("min-zoom", 1, "")
+	var max_zoom = flag.Int("max-zoom", 16, "")
 
 	var extents flags.MultiString
 	flag.Var(&extents, "extent", "One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.")
@@ -224,7 +224,7 @@ func main() {
 				log.Fatal(err)
 			}
 
-			for _, z := range zoom_levels {
+			for z := *min_zoom; z < *max_zoom; z++ {
 
 				for _, t := range slippy.FromBounds(ex, uint(z)) {
 					tileset.AddTile(t)
