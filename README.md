@@ -199,6 +199,54 @@ $> ll ./cache/nextzen/13/*/*.json
 </html>
 ```
 
+### rasterzen-seed
+
+Pre-seed one or more rasterzen tiles (and their SVG or PNG derivatives).
+
+```
+$> ./bin/rasterzen-seed -h
+Usage of ../bin/rasterzen-seed:
+  -extent value
+    	One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.
+  -fs-cache
+    	Cache tiles with a filesystem-based cache.
+  -fs-root string
+    	The root of your filesystem cache. If empty rasterd will try to use the current working directory.
+  -go-cache
+    	Cache tiles with an in-memory (go-cache) cache.
+  -mode string
+    	Valid modes are: extent, tiles. (default "tiles")
+  -nextzen-apikey string
+    	A valid 
+  -origin string
+    	...
+  -s3-cache
+    	Cache tiles with a S3-based cache.
+  -s3-dsn string
+    	A valid go-whosonfirst-aws DSN string
+  -s3-opts string
+    	A valid go-whosonfirst-cache-s3 options string
+  -seed-png
+    	Seed PNG tiles.
+  -seed-svg
+    	Seed SVG tiles. (default true)
+  -zoom value
+    	One or more zoom levels to fetch (for an extent).
+```
+
+For example:
+
+```
+$> ./bin/rasterzen-seed -fs-cache -fs-root cache -nextzen-apikey {NEXTZEN_APIKEY} -mode extent -extent '-73.9475518701 45.4145906777 -73.4761975429 45.7037982616' -zoom 10 -zoom 11 -zoom 12 -seed-png
+2018/11/01 12:35:27 enable filesystem cache layer
+2018/11/01 12:35:27 BUNK GEOMETRY (collect)
+2018/11/01 12:35:27 BUNK GEOMETRY (process)
+2018/11/01 12:36:22 OK {10 303 365}
+2018/11/01 12:36:28 OK {12 1206 1462}
+2018/11/01 12:36:29 OK {12 1206 1463}
+...and so on
+```
+
 ## Docker
 
 Not yet.

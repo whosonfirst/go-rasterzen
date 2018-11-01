@@ -19,30 +19,6 @@ import (
 	"sync/atomic"
 )
 
-// this is basically the http/cache.go GetTileForRequest() function so once we
-// have it working here then we should reconcile the two pieces of code...
-// (20181101/thisisaaronland)
-
-// something something something what to do about SVG and PNG tiles?
-// (20181101/thisisaaronland)
-
-func seed_tile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) error {
-
-	_, err := seed.SeedSVG(t, c, nz_opts)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = seed.SeedPNG(t, c, nz_opts)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func parse_zxy(str_zxy string) (int, int, int, error) {
 
 	parts := strings.Split(str_zxy, "/")
@@ -113,15 +89,15 @@ func parse_extent(str_extent string) (*geom.Extent, error) {
 func main() {
 
 	var zoom_levels flags.MultiInt64
-	flag.Var(&zoom_levels, "zoom", "...")
+	flag.Var(&zoom_levels, "zoom", "One or more zoom levels to fetch (for an extent).")
 
 	var extents flags.MultiString
-	flag.Var(&extents, "extent", "...")
+	flag.Var(&extents, "extent", "One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.")
 
-	var api_key = flag.String("nextzen-apikey", "", "...")
+	var api_key = flag.String("nextzen-apikey", "", "A valid ")
 	var origin = flag.String("origin", "", "...")
 
-	var mode = flag.String("mode", "tiles", "...")
+	var mode = flag.String("mode", "tiles", "Valid modes are: extent, tiles.")
 
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
@@ -129,6 +105,9 @@ func main() {
 	s3_cache := flag.Bool("s3-cache", false, "Cache tiles with a S3-based cache.")
 	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
 	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
+
+	seed_svg := flag.Bool("seed-svg", true, "Seed SVG tiles.")
+	seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
 
 	flag.Parse()
 
@@ -268,6 +247,15 @@ func main() {
 		log.Fatal("Invalid or unsupported mode")
 	}
 
+	ts, err := seed.NewTileSower(c, nz_opts)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ts.SeedSVG = *seed_svg
+	ts.SeedPNG = *seed_png
+
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
 
@@ -285,7 +273,7 @@ func main() {
 				done_ch <- true
 			}()
 
-			err := seed_tile(t, c, nz_opts)
+			err := ts.SeedTile(t)
 
 			if err != nil {
 				msg := fmt.Sprintf("Unabled to seed %v because %s", t, err)
