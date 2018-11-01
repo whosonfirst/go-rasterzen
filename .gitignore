@@ -12,3 +12,4 @@ bin
 *.svg
 deployment.zip
 cache
+debug

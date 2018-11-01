@@ -29,7 +29,18 @@ import (
 func seed_tile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) error {
 
 	_, err := seed.SeedSVG(t, c, nz_opts)
-	return err
+
+	if err != nil {
+		return err
+	}
+
+	_, err = seed.SeedPNG(t, c, nz_opts)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func parse_zxy(str_zxy string) (int, int, int, error) {
