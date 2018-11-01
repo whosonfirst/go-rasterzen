@@ -7,13 +7,12 @@ import (
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
+	"github.com/whosonfirst/go-rasterzen/seed"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
-	"io"
 	"log"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -27,54 +26,9 @@ import (
 // something something something what to do about SVG and PNG tiles?
 // (20181101/thisisaaronland)
 
-func seed(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) error {
+func seed_tile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) error {
 
-	z := int(t.Z)
-	x := int(t.X)
-	y := int(t.Y)
-
-	key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
-
-	nextzen_key := filepath.Join("nextzen", key)
-	rasterzen_key := filepath.Join("rasterzen", key)
-
-	var nextzen_data io.ReadCloser // stuff sent back from nextzen.org
-
-	_, err := c.Get(rasterzen_key)
-
-	if err == nil {
-		return nil
-	}
-
-	nextzen_data, err = c.Get(nextzen_key)
-
-	if err != nil {
-
-		t, err := nextzen.FetchTile(z, x, y, nz_opts)
-
-		if err != nil {
-			return err
-		}
-
-		defer t.Close()
-
-		nextzen_data, err = c.Set(nextzen_key, t)
-
-		if err != nil {
-			return err
-		}
-	}
-
-	cr, err := nextzen.CropTile(z, x, y, nextzen_data)
-
-	if err != nil {
-		return err
-	}
-
-	defer cr.Close()
-
-	_, err = c.Set(rasterzen_key, cr)
-
+	_, err := seed.SeedSVG(t, c, nz_opts)
 	return err
 }
 
@@ -320,7 +274,7 @@ func main() {
 				done_ch <- true
 			}()
 
-			err := seed(t, c, nz_opts)
+			err := seed_tile(t, c, nz_opts)
 
 			if err != nil {
 				msg := fmt.Sprintf("Unabled to seed %v because %s", t, err)

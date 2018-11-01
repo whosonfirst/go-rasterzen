@@ -11,6 +11,7 @@ self:   prep rmdeps
 	cp -r nextzen src/github.com/whosonfirst/go-rasterzen/
 	cp -r tile src/github.com/whosonfirst/go-rasterzen/
 	cp -r http src/github.com/whosonfirst/go-rasterzen/
+	cp -r seed src/github.com/whosonfirst/go-rasterzen/
 	cp -r server src/github.com/whosonfirst/go-rasterzen/
 	cp -r vendor/* src/
 
@@ -45,6 +46,7 @@ fmt:
 	go fmt *.go
 	go fmt cmd/*.go
 	go fmt http/*.go
+	go fmt seed/*.go
 	go fmt tile/*.go
 	go fmt server/*.go
 	go fmt nextzen/*.go
