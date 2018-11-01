@@ -7,15 +7,76 @@ import (
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
+	"github.com/whosonfirst/go-whosonfirst-cache"
+	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
-	"sync/atomic"	
+	"sync/atomic"
 )
+
+// this is basically the http/cache.go GetTileForRequest() function so once we
+// have it working here then we should reconcile the two pieces of code...
+// (20181101/thisisaaronland)
+
+// something something something what to do about SVG and PNG tiles?
+// (20181101/thisisaaronland)
+
+func seed(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) error {
+
+	z := int(t.Z)
+	x := int(t.X)
+	y := int(t.Y)
+
+	key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
+
+	nextzen_key := filepath.Join("nextzen", key)
+	rasterzen_key := filepath.Join("rasterzen", key)
+
+	var nextzen_data io.ReadCloser // stuff sent back from nextzen.org
+
+	_, err := c.Get(rasterzen_key)
+
+	if err == nil {
+		return nil
+	}
+
+	nextzen_data, err = c.Get(nextzen_key)
+
+	if err != nil {
+
+		t, err := nextzen.FetchTile(z, x, y, nz_opts)
+
+		if err != nil {
+			return err
+		}
+
+		defer t.Close()
+
+		nextzen_data, err = c.Set(nextzen_key, t)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	cr, err := nextzen.CropTile(z, x, y, nextzen_data)
+
+	if err != nil {
+		return err
+	}
+
+	defer cr.Close()
+
+	_, err = c.Set(rasterzen_key, cr)
+
+	return err
+}
 
 func parse_zxy(str_zxy string) (int, int, int, error) {
 
@@ -97,11 +158,102 @@ func main() {
 
 	var mode = flag.String("mode", "tiles", "...")
 
+	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
+	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
+	fs_root := flag.String("fs-root", "", "The root of your filesystem cache. If empty rasterd will try to use the current working directory.")
+	s3_cache := flag.Bool("s3-cache", false, "Cache tiles with a S3-based cache.")
+	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
+	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
+
 	flag.Parse()
 
 	nz_opts := &nextzen.Options{
 		ApiKey: *api_key,
 		Origin: *origin,
+	}
+
+	caches := make([]cache.Cache, 0)
+
+	if *go_cache {
+
+		log.Println("enable go-cache cache layer")
+
+		opts, err := cache.DefaultGoCacheOptions()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		c, err := cache.NewGoCache(opts)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		caches = append(caches, c)
+	}
+
+	if *fs_cache {
+
+		log.Println("enable filesystem cache layer")
+
+		if *fs_root == "" {
+
+			cwd, err := os.Getwd()
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			*fs_root = cwd
+		}
+
+		c, err := cache.NewFSCache(*fs_root)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		caches = append(caches, c)
+	}
+
+	if *s3_cache {
+
+		log.Println("enable S3 cache layer")
+
+		opts, err := s3.NewS3CacheOptionsFromString(*s3_opts)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		c, err := s3.NewS3Cache(*s3_dsn, opts)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		caches = append(caches, c)
+	}
+
+	if len(caches) == 0 {
+
+		// because we still need to pass a cache.Cache thingy
+		// around (20180612/thisisaaronland)
+
+		c, err := cache.NewNullCache()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		caches = append(caches, c)
+	}
+
+	c, err := cache.NewMultiCache(caches)
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	tile_map := new(sync.Map)
@@ -142,7 +294,7 @@ func main() {
 				X: uint(x),
 				Y: uint(y),
 			}
-			
+
 			k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
 			tile_map.LoadOrStore(k, t)
 		}
@@ -153,37 +305,25 @@ func main() {
 
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
-	
+
 	remaining := int32(0)
 
 	tile_func := func(key, value interface{}) bool {
 
 		atomic.AddInt32(&remaining, 1)
-		
-		t := value.(slippy.Tile)
-		
-		go func(t slippy.Tile) {
 
-			// log.Println("FETCH", t)
+		t := value.(slippy.Tile)
+
+		go func(t slippy.Tile) {
 
 			defer func() {
 				done_ch <- true
 			}()
 
-			fh, err := nextzen.FetchTile(int(t.Z), int(t.X), int(t.Y), nz_opts)
+			err := seed(t, c, nz_opts)
 
 			if err != nil {
-				msg := fmt.Sprintf("Unable to fetch %v because %s", t, err)
-				err_ch <- errors.New(msg)
-				return
-			}
-
-			defer fh.Close()
-
-			_, err = io.Copy(os.Stdout, fh)
-
-			if err != nil {
-				msg := fmt.Sprintf("Unabled to write %v because %s", t, err)
+				msg := fmt.Sprintf("Unabled to seed %v because %s", t, err)
 				err_ch <- errors.New(msg)
 				return
 			}
@@ -193,7 +333,7 @@ func main() {
 
 		return true
 	}
-	
+
 	tile_map.Range(tile_func)
 
 	for remaining > 0 {
