@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
@@ -15,8 +14,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
-	"sync/atomic"
 )
 
 func parse_zxy(str_zxy string) (int, int, int, error) {
@@ -200,7 +197,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tile_map := new(sync.Map)
+	seeder, err := seed.NewTileSeeder(c, nz_opts)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	seeder.SeedSVG = *seed_svg
+	seeder.SeedPNG = *seed_png
+
+	tileset, err := seed.NewTileSet()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	switch strings.ToUpper(*mode) {
 
@@ -217,8 +227,7 @@ func main() {
 			for _, z := range zoom_levels {
 
 				for _, t := range slippy.FromBounds(ex, uint(z)) {
-					k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
-					tile_map.LoadOrStore(k, t)
+					tileset.AddTile(t)
 				}
 			}
 		}
@@ -239,65 +248,12 @@ func main() {
 				Y: uint(y),
 			}
 
-			k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
-			tile_map.LoadOrStore(k, t)
+			tileset.AddTile(t)
 		}
 
 	default:
 		log.Fatal("Invalid or unsupported mode")
 	}
 
-	ts, err := seed.NewTileSower(c, nz_opts)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ts.SeedSVG = *seed_svg
-	ts.SeedPNG = *seed_png
-
-	done_ch := make(chan bool)
-	err_ch := make(chan error)
-
-	remaining := int32(0)
-
-	tile_func := func(key, value interface{}) bool {
-
-		atomic.AddInt32(&remaining, 1)
-
-		t := value.(slippy.Tile)
-
-		go func(t slippy.Tile) {
-
-			defer func() {
-				done_ch <- true
-			}()
-
-			err := ts.SeedTile(t)
-
-			if err != nil {
-				msg := fmt.Sprintf("Unabled to seed %v because %s", t, err)
-				err_ch <- errors.New(msg)
-				return
-			}
-
-			log.Println("OK", t)
-		}(t)
-
-		return true
-	}
-
-	tile_map.Range(tile_func)
-
-	for remaining > 0 {
-		select {
-		case <-done_ch:
-			remaining -= 1
-		case e := <-err_ch:
-			log.Println(e)
-		default:
-			//
-		}
-	}
-
+	seeder.SeedTileSet(tileset)
 }
