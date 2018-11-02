@@ -31,6 +31,9 @@ deps:
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cli"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-log"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/algnhsa"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata/"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata-html-template"
+	rm -rf src/github.com/whosonfirst/go-bindata/testdata
 	mv src/github.com/whosonfirst/go-whosonfirst-cache-s3/vendor/github.com/whosonfirst/go-whosonfirst-cache src/github.com/whosonfirst/
 
 # if you're wondering about the 'rm -rf' stuff below it's because Go is
