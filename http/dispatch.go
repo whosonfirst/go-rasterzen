@@ -110,7 +110,7 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 
 	// something something something API key
 
-	fh, err := seed.SeedGeoJSON(*t, h.Cache, h.NextzenOptions)
+	fh, err := seed.SeedRasterzen(*t, h.Cache, h.NextzenOptions)
 
 	if err != nil {
 		return err

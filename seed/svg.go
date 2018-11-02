@@ -30,7 +30,7 @@ func SeedSVG(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadClo
 		return svg_data, nil
 	}
 
-	geojson_fh, err := SeedGeoJSON(t, c, nz_opts)
+	geojson_fh, err := SeedRasterzen(t, c, nz_opts)
 
 	if err != nil {
 		return nil, err

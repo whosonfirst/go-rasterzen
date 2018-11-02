@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-func SeedGeoJSON(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
+func SeedRasterzen(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
 
 	z := int(t.Z)
 	x := int(t.X)

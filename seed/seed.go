@@ -60,7 +60,6 @@ type TileSeeder struct {
 	Cache          cache.Cache
 	Seeders        int
 	NextzenOptions *nextzen.Options
-	SeedGeoJSON    bool
 	SeedSVG        bool
 	SeedPNG        bool
 	Timings        bool
@@ -171,7 +170,7 @@ func (s *TileSeeder) SeedTile(t slippy.Tile) error {
 
 	if !s.SeedSVG && !s.SeedPNG {
 
-		_, err := SeedGeoJSON(t, s.Cache, s.NextzenOptions)
+		_, err := SeedRasterzen(t, s.Cache, s.NextzenOptions)
 
 		if err != nil {
 			return err

@@ -30,7 +30,7 @@ func SeedPNG(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadClo
 		return png_data, nil
 	}
 
-	geojson_fh, err := SeedGeoJSON(t, c, nz_opts)
+	geojson_fh, err := SeedRasterzen(t, c, nz_opts)
 
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func SeedPNG(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadClo
 
 	return c.Set(png_key, png_fh)
 
-	// it might seem weird and inefficient to be starting from SeedGeoJSON
+	// it might seem weird and inefficient to be starting from SeedRasterzen
 	// rather than SeedSVG() and it probably is but the way the tile/*.go code
 	// is written now coupled with the fact that oksvg doesn't accept io.Reader
 	// thingies (only files) coupled with the fact that maybe you don't _want_
