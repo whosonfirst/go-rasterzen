@@ -348,7 +348,7 @@ then hands the resulting image back to Leaflet. Computers, right... ?
 
 The default Nextzen URI template looks like this:
 
-``
+```
 https://tile.nextzen.org/tilezen/vector/v1/256/{layer}/{z}/{x}/{y}.json?api_key={apikey}
 ```
 
