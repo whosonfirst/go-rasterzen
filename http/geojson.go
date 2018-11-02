@@ -6,7 +6,7 @@ import (
 	gohttp "net/http"
 )
 
-func GeoJSONHandler(h *CacheHandler) (gohttp.HandlerFunc, error) {
+func GeoJSONHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 
 	headers := map[string]string{
 		"Content-Type":                "text/json",

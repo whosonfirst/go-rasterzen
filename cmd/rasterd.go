@@ -158,21 +158,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ch, err := http.NewCacheHandler(c)
+	dh, err := http.NewDispatchHandler(c)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if *nextzen_apikey != "" {
-		ch.NextzenOptions.ApiKey = *nextzen_apikey
+		dh.NextzenOptions.ApiKey = *nextzen_apikey
 	}
 
 	if *nextzen_origin != "" {
-		ch.NextzenOptions.Origin = *nextzen_origin
+		dh.NextzenOptions.Origin = *nextzen_origin
 	}
 
-	ch.NextzenOptions.Debug = *nextzen_debug
+	dh.NextzenOptions.Debug = *nextzen_debug
 
 	mux := gohttp.NewServeMux()
 
@@ -180,7 +180,7 @@ func main() {
 
 		log.Println("enable PNG handler")
 
-		h, err := http.PNGHandler(ch)
+		h, err := http.PNGHandler(dh)
 
 		if err != nil {
 			log.Fatal(err)
@@ -193,7 +193,7 @@ func main() {
 
 		log.Println("enable SVG handler")
 
-		h, err := http.SVGHandler(ch)
+		h, err := http.SVGHandler(dh)
 
 		if err != nil {
 			log.Fatal(err)
@@ -206,7 +206,7 @@ func main() {
 
 		log.Println("enable GeoJSON handler")
 
-		h, err := http.GeoJSONHandler(ch)
+		h, err := http.GeoJSONHandler(dh)
 
 		if err != nil {
 			log.Fatal(err)
@@ -217,21 +217,22 @@ func main() {
 
 	if *do_www {
 
+		log.Println("enable WWW handler")
+		
 		static_h, err := http.StaticHandler()
 
 		if err != nil {
 			log.Fatal(err)
 		}
-
- 		mux.Handle("/javascript/", static_h)
- 		mux.Handle("/css/", static_h)		
 		
 		www_h, err := http.WWWHandler(*nextzen_apikey)
 
 		if err != nil {
 			log.Fatal(err)
 		}
-		
+
+ 		mux.Handle("/javascript/", static_h)
+ 		mux.Handle("/css/", static_h)				
 		mux.Handle("/", www_h)		
 	}
 	

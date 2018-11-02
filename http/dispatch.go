@@ -21,16 +21,16 @@ func init() {
 	re_path = regexp.MustCompile(`/(.*)/(\d+)/(\d+)/(\d+).(\w+)$`)
 }
 
-type CacheHandlerFunc func(io.Reader, io.Writer) error
+type DispatchFunc func(io.Reader, io.Writer) error
 
-type CacheHandler struct {
+type DispatchHandler struct {
 	Cache          cache.Cache
-	Func           CacheHandlerFunc
+	Func           DispatchFunc
 	Headers        map[string]string
 	NextzenOptions *nextzen.Options
 }
 
-func NewCacheHandler(c cache.Cache) (*CacheHandler, error) {
+func NewDispatchHandler(c cache.Cache) (*DispatchHandler, error) {
 
 	default_opts := new(nextzen.Options)
 
@@ -41,7 +41,7 @@ func NewCacheHandler(c cache.Cache) (*CacheHandler, error) {
 		return err
 	}
 
-	h := CacheHandler{
+	h := DispatchHandler{
 		Cache:          c,
 		NextzenOptions: default_opts,
 		Func:           default_func,
@@ -51,7 +51,7 @@ func NewCacheHandler(c cache.Cache) (*CacheHandler, error) {
 	return &h, nil
 }
 
-func (h *CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Request, key string) error {
+func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Request, key string) error {
 
 	data, err := h.Cache.Get(key)
 
@@ -141,7 +141,7 @@ func (h *CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Requ
 	return nil
 }
 
-func (h CacheHandler) GetSlippyTileForRequest(req *gohttp.Request) (*slippy.Tile, error) {
+func (h DispatchHandler) GetSlippyTileForRequest(req *gohttp.Request) (*slippy.Tile, error) {
 
 	path := req.URL.Path
 
@@ -181,7 +181,7 @@ func (h CacheHandler) GetSlippyTileForRequest(req *gohttp.Request) (*slippy.Tile
 // deprecated
 
 /*
-func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, error) {
+func (h DispatchHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, error) {
 
 	path := req.URL.Path
 

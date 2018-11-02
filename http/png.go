@@ -6,7 +6,7 @@ import (
 	gohttp "net/http"
 )
 
-func PNGHandler(h *CacheHandler) (gohttp.HandlerFunc, error) {
+func PNGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 
 	headers := map[string]string{
 		"Content-Type":                "image/png",

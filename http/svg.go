@@ -6,7 +6,7 @@ import (
 	gohttp "net/http"
 )
 
-func SVGHandler(h *CacheHandler) (gohttp.HandlerFunc, error) {
+func SVGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 
 	headers := map[string]string{
 		"Content-Type":                "image/svg+xml",
