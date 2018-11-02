@@ -31,7 +31,8 @@ deps:
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cli"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-log"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/algnhsa"
-	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata/"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata-assetfs"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata-html-template"
 	rm -rf src/github.com/whosonfirst/go-bindata/testdata
 	mv src/github.com/whosonfirst/go-whosonfirst-cache-s3/vendor/github.com/whosonfirst/go-whosonfirst-cache src/github.com/whosonfirst/
@@ -54,6 +55,13 @@ fmt:
 	go fmt tile/*.go
 	go fmt server/*.go
 	go fmt nextzen/*.go
+
+assets:	self
+	@GOPATH=$(GOPATH) go build -o bin/go-bindata ./vendor/github.com/whosonfirst/go-bindata/go-bindata/
+	@GOPATH=$(GOPATH) go build -o bin/go-bindata-assetfs vendor/github.com/whosonfirst/go-bindata-assetfs/go-bindata-assetfs/main.go
+	rm -f www/*~ www/css/*~ www/javascript/*~
+	@PATH=$(PATH):$(CWD)/bin bin/go-bindata-assetfs -pkg http www www/javascript www/css
+	mv bindata.go http/static.go
 
 bin: 	self
 	rm -rf bin/*

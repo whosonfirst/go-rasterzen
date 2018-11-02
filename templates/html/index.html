@@ -4,6 +4,7 @@
     
     <link rel="stylesheet" href="/static/css/leaflet.css" />
     <script src="/static/javascript/leaflet.js"></script>
+    <script src="/static/javascript/leaflet-hash.js"></script>    
     
     <style type="text/css">
       #map { width:100%; height:600px; }
@@ -22,7 +23,9 @@
       var layer = L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.json?api_key=' + api_key, {maxZoom: 16});
 
       layer.addTo(map);
-      	  
+
+     var hash = new L.Hash(map);
+     
     </script>
     
   </body>
