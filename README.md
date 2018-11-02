@@ -342,6 +342,16 @@ method](https://leafletjs.com/examples/extending/extending-2-layers.html) to
 fetch the tile in question with the correct `Accept:` header discussed above and
 then hands the resulting image back to Leaflet. Computers, right... ?
 
+## Nextzen options
+
+### URI Templates
+
+The default Nextzen URI template looks like this:
+
+``
+https://tile.nextzen.org/tilezen/vector/v1/256/{layer}/{z}/{x}/{y}.json?api_key={apikey}
+```
+
 ## See also
 
 * https://github.com/fapian/geojson2svg
