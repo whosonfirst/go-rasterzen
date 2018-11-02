@@ -8,6 +8,7 @@ self:   prep rmdeps
 	if test ! -d src; then mkdir src; fi
 	mkdir -p src/github.com/whosonfirst/go-rasterzen
 	cp *.go src/github.com/whosonfirst/go-rasterzen/
+	cp -r assets src/github.com/whosonfirst/go-rasterzen/
 	cp -r nextzen src/github.com/whosonfirst/go-rasterzen/
 	cp -r tile src/github.com/whosonfirst/go-rasterzen/
 	cp -r http src/github.com/whosonfirst/go-rasterzen/
@@ -59,9 +60,11 @@ fmt:
 assets:	self
 	@GOPATH=$(GOPATH) go build -o bin/go-bindata ./vendor/github.com/whosonfirst/go-bindata/go-bindata/
 	@GOPATH=$(GOPATH) go build -o bin/go-bindata-assetfs vendor/github.com/whosonfirst/go-bindata-assetfs/go-bindata-assetfs/main.go
-	rm -f www/*~ www/css/*~ www/javascript/*~
-	@PATH=$(PATH):$(CWD)/bin bin/go-bindata-assetfs -pkg http www www/javascript www/css
-	mv bindata.go http/static.go
+	rm -f www/static/*~ www/static/css/*~ www/static/javascript/*~
+	@PATH=$(PATH):$(CWD)/bin bin/go-bindata-assetfs -pkg http static/javascript static/css
+	mv bindata.go http/assetfs.go
+	rm -rf templates/html/*~
+	@GOPATH=$(GOPATH) bin/go-bindata -pkg templates -o assets/templates/html.go templates/html
 
 bin: 	self
 	rm -rf bin/*

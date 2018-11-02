@@ -23,6 +23,8 @@ func main() {
 	var host = flag.String("host", "localhost", "The host for rasterd to listen for requests on.")
 	var port = flag.Int("port", 8080, "The port for rasterd to listen for requests on.")
 
+	do_www := flag.Bool("www", false, "...")
+	
 	no_cache := flag.Bool("no-cache", false, "Disable all caching.")
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
@@ -213,6 +215,26 @@ func main() {
 		mux.Handle(*path_geojson, h)
 	}
 
+	if *do_www {
+
+		static_h, err := http.StaticHandler()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+ 		mux.Handle("/javascript/", static_h)
+ 		mux.Handle("/css/", static_h)		
+		
+		www_h, err := http.WWWHandler(*nextzen_apikey)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		
+		mux.Handle("/", www_h)		
+	}
+	
 	address := fmt.Sprintf("http://%s:%d", *host, *port)
 
 	u, err := gourl.Parse(address)
