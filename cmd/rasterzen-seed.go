@@ -10,7 +10,8 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
-	"log"
+	"github.com/whosonfirst/go-whosonfirst-log"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -85,14 +86,14 @@ func parse_extent(str_extent string) (*geom.Extent, error) {
 
 func main() {
 
-	var min_zoom = flag.Int("min-zoom", 1, "")
-	var max_zoom = flag.Int("max-zoom", 16, "")
+	var min_zoom = flag.Int("min-zoom", 1, "The minimum zoom level to fetch for a tile extent.")
+	var max_zoom = flag.Int("max-zoom", 16, "The maximum zoom level to fetch for a tile extent.")
 
 	var extents flags.MultiString
 	flag.Var(&extents, "extent", "One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.")
 
-	var api_key = flag.String("nextzen-apikey", "", "A valid ")
-	var origin = flag.String("origin", "", "...")
+	var api_key = flag.String("nextzen-apikey", "", "A valid Nextzen API key.")
+	var origin = flag.String("origin", "", "An optional HTTP 'Origin' host to pass along with your Nextzen requests.")
 
 	var mode = flag.String("mode", "tiles", "Valid modes are: extent, tiles.")
 
@@ -108,6 +109,11 @@ func main() {
 
 	flag.Parse()
 
+	logger := log.SimpleWOFLogger()
+
+	writer := io.MultiWriter(os.Stdout)
+	logger.AddLogger(writer, "status")
+	
 	nz_opts := &nextzen.Options{
 		ApiKey: *api_key,
 		Origin: *origin,
@@ -117,18 +123,18 @@ func main() {
 
 	if *go_cache {
 
-		log.Println("enable go-cache cache layer")
+		logger.Info("enable go-cache cache layer")
 
 		opts, err := cache.DefaultGoCacheOptions()
 
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal(err)
 		}
 
 		c, err := cache.NewGoCache(opts)
 
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal(err)
 		}
 
 		caches = append(caches, c)
@@ -136,14 +142,14 @@ func main() {
 
 	if *fs_cache {
 
-		log.Println("enable filesystem cache layer")
+		logger.Info("enable filesystem cache layer")
 
 		if *fs_root == "" {
 
 			cwd, err := os.Getwd()
 
 			if err != nil {
-				log.Fatal(err)
+				logger.Fatal(err)
 			}
 
 			*fs_root = cwd
@@ -152,7 +158,7 @@ func main() {
 		c, err := cache.NewFSCache(*fs_root)
 
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal(err)
 		}
 
 		caches = append(caches, c)
@@ -160,18 +166,18 @@ func main() {
 
 	if *s3_cache {
 
-		log.Println("enable S3 cache layer")
+		logger.Info("enable S3 cache layer")
 
 		opts, err := s3.NewS3CacheOptionsFromString(*s3_opts)
 
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal(err)
 		}
 
 		c, err := s3.NewS3Cache(*s3_dsn, opts)
 
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal(err)
 		}
 
 		caches = append(caches, c)
@@ -185,7 +191,7 @@ func main() {
 		c, err := cache.NewNullCache()
 
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal(err)
 		}
 
 		caches = append(caches, c)
@@ -194,22 +200,23 @@ func main() {
 	c, err := cache.NewMultiCache(caches)
 
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	seeder, err := seed.NewTileSeeder(c, nz_opts)
 
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	seeder.SeedSVG = *seed_svg
 	seeder.SeedPNG = *seed_png
-
+	seeder.Logger = logger
+	
 	tileset, err := seed.NewTileSet()
 
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	switch strings.ToUpper(*mode) {
@@ -221,7 +228,7 @@ func main() {
 			ex, err := parse_extent(str_extent)
 
 			if err != nil {
-				log.Fatal(err)
+				logger.Fatal(err)
 			}
 
 			for z := *min_zoom; z < *max_zoom; z++ {
@@ -239,7 +246,7 @@ func main() {
 			z, x, y, err := parse_zxy(str_zxy)
 
 			if err != nil {
-				log.Fatal(err)
+				logger.Fatal(err)
 			}
 
 			t := slippy.Tile{
@@ -252,8 +259,19 @@ func main() {
 		}
 
 	default:
-		log.Fatal("Invalid or unsupported mode")
+		logger.Fatal("Invalid or unsupported mode")
 	}
 
-	seeder.SeedTileSet(tileset)
+	ok, errs := seeder.SeedTileSet(tileset)
+
+	if !ok {
+
+		for _, e := range errs {
+			logger.Warning(e)
+		}
+
+		os.Exit(1)
+	}
+
+	os.Exit(0)
 }
