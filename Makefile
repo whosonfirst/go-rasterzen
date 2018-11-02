@@ -58,6 +58,8 @@ fmt:
 	go fmt server/*.go
 	go fmt nextzen/*.go
 
+# See notes in cmd/rasterd.go (20181102/thisisaaronland)
+
 assets:	self
 	@GOPATH=$(GOPATH) go build -o bin/go-bindata ./vendor/github.com/whosonfirst/go-bindata/go-bindata/
 	@GOPATH=$(GOPATH) go build -o bin/go-bindata-assetfs vendor/github.com/whosonfirst/go-bindata-assetfs/go-bindata-assetfs/main.go

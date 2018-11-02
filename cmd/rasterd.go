@@ -229,6 +229,21 @@ func main() {
 
 	if *do_www {
 
+		// We have (need) two separate handlers (and by extension bundled assets
+		// in ur go binary tools) for the www handler which is not great but that's
+		// it goes sometimes. The first is a standard "static" assets (js, css)
+		// wrapper than unfortunately needs to be stored in http/assetsfs.go because
+		// of namespaces and private function names. The second is a bundled Go
+		// template (index.html) specifically so we can assign a nextzen API key.
+		// I suppose we could have also written a middleware handler to modify
+		// something coming out of the (first) static asset bundle but I'm not convinced
+		// that isn't more confusing that this set up. The static bundle depends
+		// on 'go-bindata-assetfs' and the template bundle uses 'go-bindata-html-template'.
+		// As the names suggest everything uses 'go-bindata'. If you make changes to any
+		// of the static assets or the templates you'll need to rebuild them using the
+		// handy 'make assets bin' or 'make rebuild' Makefile targets. Good times...
+		// (20181102/thisisaaronland)
+		
 		if *nextzen_apikey == "" {
 			log.Fatal("You must pass a -nextzen-apikey parameter for the local www server to work")
 		}
