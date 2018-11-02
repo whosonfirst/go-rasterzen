@@ -9,32 +9,52 @@ import (
 	"github.com/paulmach/orb/maptile"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"github.com/jtacoma/uritemplates"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/http/httputil"
+	"net/http/httputil"	
 )
 
 type Options struct {
 	ApiKey string
 	Origin string
 	Debug  bool
-	URI    string // PLEASE MAKE THIS IS A PROPER URI TEMPLATE
+	URI    *uritemplates.UriTemplate
+}
+
+var default_endpoint *uritemplates.UriTemplate
+
+func init() {
+
+	template := "https://tile.nextzen.org/tilezen/vector/v1/256/{layer}/{z}/{x}/{y}.json?api_key={apikey}"
+	default_endpoint, _ = uritemplates.Parse(template)	
 }
 
 func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	layer := "all"
 
-	uri := opts.URI
+	values := make(map[string]interface{})
+	values["layer"] = "all"
+	values["apikey"] = opts.ApiKey	
+	values["z"] = z
+	values["x"] = x
+	values["y"] = y
+	
+	endpoint := default_endpoint
 
-	if uri == "" {
-		uri = "https://tile.nextzen.org/tilezen/vector/v1/256/%s/%d/%d/%d.json?api_key=%s"
+	if opts.URI != nil {
+		endpoint = opts.URI
 	}
-
-	url := fmt.Sprintf(uri, layer, z, x, y, opts.ApiKey)
-
+	
+	url, err := endpoint.Expand(values)
+	
+	if err != nil {
+		return nil, err
+	}	
+	
 	cl := new(http.Client)
 
 	req, err := http.NewRequest("GET", url, nil)

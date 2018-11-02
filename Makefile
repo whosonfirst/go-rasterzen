@@ -35,6 +35,7 @@ deps:
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata-assetfs"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata-html-template"
+	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
 	rm -rf src/github.com/whosonfirst/go-bindata/testdata
 	mv src/github.com/whosonfirst/go-whosonfirst-cache-s3/vendor/github.com/whosonfirst/go-whosonfirst-cache src/github.com/whosonfirst/
 
