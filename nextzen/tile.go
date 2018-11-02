@@ -4,24 +4,24 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/jtacoma/uritemplates"
 	"github.com/paulmach/orb/clip"
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/maptile"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"github.com/jtacoma/uritemplates"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/http/httputil"	
+	"net/http/httputil"
 )
 
 type Options struct {
-	ApiKey string
-	Origin string
-	Debug  bool
-	URI    *uritemplates.UriTemplate
+	ApiKey      string
+	Origin      string
+	Debug       bool
+	URITemplate *uritemplates.UriTemplate
 }
 
 var default_endpoint *uritemplates.UriTemplate
@@ -29,7 +29,7 @@ var default_endpoint *uritemplates.UriTemplate
 func init() {
 
 	template := "https://tile.nextzen.org/tilezen/vector/v1/256/{layer}/{z}/{x}/{y}.json?api_key={apikey}"
-	default_endpoint, _ = uritemplates.Parse(template)	
+	default_endpoint, _ = uritemplates.Parse(template)
 }
 
 func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
@@ -38,23 +38,23 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	values := make(map[string]interface{})
 	values["layer"] = "all"
-	values["apikey"] = opts.ApiKey	
+	values["apikey"] = opts.ApiKey
 	values["z"] = z
 	values["x"] = x
 	values["y"] = y
-	
+
 	endpoint := default_endpoint
 
-	if opts.URI != nil {
-		endpoint = opts.URI
+	if opts.URITemplate != nil {
+		endpoint = opts.URITemplate
 	}
-	
+
 	url, err := endpoint.Expand(values)
-	
+
 	if err != nil {
 		return nil, err
-	}	
-	
+	}
+
 	cl := new(http.Client)
 
 	req, err := http.NewRequest("GET", url, nil)

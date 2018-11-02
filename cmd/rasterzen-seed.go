@@ -5,6 +5,7 @@ import (
 	"flag"
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
+	"github.com/jtacoma/uritemplates"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/seed"
 	"github.com/whosonfirst/go-whosonfirst-cache"
@@ -92,8 +93,10 @@ func main() {
 	var extents flags.MultiString
 	flag.Var(&extents, "extent", "One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.")
 
-	var api_key = flag.String("nextzen-apikey", "", "A valid Nextzen API key.")
-	var origin = flag.String("origin", "", "An optional HTTP 'Origin' host to pass along with your Nextzen requests.")
+	nextzen_apikey := flag.String("nextzen-apikey", "", "A valid Nextzen API key.")
+	nextzen_origin := flag.String("nextzen-origin", "", "An optional HTTP 'Origin' host to pass along with your Nextzen requests.")
+	nextzen_debug := flag.Bool("nextzen-debug", false, "Log requests (to STDOUT) to Nextzen tile servers.")
+	nextzen_uri := flag.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
 
 	var mode = flag.String("mode", "tiles", "Valid modes are: extent, tiles.")
 
@@ -115,8 +118,20 @@ func main() {
 	logger.AddLogger(writer, "status")
 
 	nz_opts := &nextzen.Options{
-		ApiKey: *api_key,
-		Origin: *origin,
+		ApiKey: *nextzen_apikey,
+		Origin: *nextzen_origin,
+		Debug:  *nextzen_debug,
+	}
+
+	if *nextzen_uri != "" {
+
+		template, err := uritemplates.Parse(*nextzen_uri)
+
+		if err != nil {
+			logger.Fatal(err)
+		}
+
+		nz_opts.URITemplate = template
 	}
 
 	caches := make([]cache.Cache, 0)
