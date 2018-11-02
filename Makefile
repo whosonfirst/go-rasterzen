@@ -71,6 +71,10 @@ bin: 	self
 	@GOPATH=$(GOPATH) go build -o bin/rasterd cmd/rasterd.go
 	@GOPATH=$(GOPATH) go build -o bin/rasterzen-seed cmd/rasterzen-seed.go
 
+rebuild:
+	@make assets
+	@make bin
+
 lambda:	
 	@make self
 	if test -f main; then rm -f main; fi

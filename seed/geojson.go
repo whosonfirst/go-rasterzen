@@ -7,6 +7,7 @@ import (
 	_ "github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
+	_ "log"
 	"path/filepath"
 )
 

@@ -24,7 +24,7 @@ func main() {
 	var port = flag.Int("port", 8080, "The port for rasterd to listen for requests on.")
 
 	do_www := flag.Bool("www", false, "...")
-	
+
 	no_cache := flag.Bool("no-cache", false, "Disable all caching.")
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
@@ -218,24 +218,24 @@ func main() {
 	if *do_www {
 
 		log.Println("enable WWW handler")
-		
+
 		static_h, err := http.StaticHandler()
 
 		if err != nil {
 			log.Fatal(err)
 		}
-		
+
 		www_h, err := http.WWWHandler(*nextzen_apikey)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
- 		mux.Handle("/javascript/", static_h)
- 		mux.Handle("/css/", static_h)				
-		mux.Handle("/", www_h)		
+		mux.Handle("/javascript/", static_h)
+		mux.Handle("/css/", static_h)
+		mux.Handle("/", www_h)
 	}
-	
+
 	address := fmt.Sprintf("http://%s:%d", *host, *port)
 
 	u, err := gourl.Parse(address)

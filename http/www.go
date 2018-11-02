@@ -1,9 +1,9 @@
 package http
 
 import (
-	gohttp "net/http"
 	"github.com/whosonfirst/go-bindata-html-template"
 	"github.com/whosonfirst/go-rasterzen/assets/templates"
+	gohttp "net/http"
 )
 
 func WWWHandler(apikey string) (gohttp.HandlerFunc, error) {
@@ -24,7 +24,7 @@ func WWWHandler(apikey string) (gohttp.HandlerFunc, error) {
 	vars := TemplateVars{
 		NextzenAPIKey: apikey,
 	}
-	
+
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		err = t.Execute(rsp, vars)
@@ -37,5 +37,5 @@ func WWWHandler(apikey string) (gohttp.HandlerFunc, error) {
 		return
 	}
 
-	return gohttp.HandlerFunc(fn), nil	
+	return gohttp.HandlerFunc(fn), nil
 }
