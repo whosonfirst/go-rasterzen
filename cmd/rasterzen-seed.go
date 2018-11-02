@@ -113,7 +113,7 @@ func main() {
 
 	writer := io.MultiWriter(os.Stdout)
 	logger.AddLogger(writer, "status")
-	
+
 	nz_opts := &nextzen.Options{
 		ApiKey: *api_key,
 		Origin: *origin,
@@ -212,7 +212,7 @@ func main() {
 	seeder.SeedSVG = *seed_svg
 	seeder.SeedPNG = *seed_png
 	seeder.Logger = logger
-	
+
 	tileset, err := seed.NewTileSet()
 
 	if err != nil {

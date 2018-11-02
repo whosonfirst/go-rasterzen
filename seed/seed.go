@@ -6,7 +6,7 @@ import (
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-whosonfirst-cache"
-	"github.com/whosonfirst/go-whosonfirst-log"	
+	"github.com/whosonfirst/go-whosonfirst-log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -32,7 +32,7 @@ func (ts *TileSet) AddTile(t slippy.Tile) error {
 	if t.Z > 16 {
 		return errors.New("Tiles > zoom 16 can not be rendered at this time.")
 	}
-	
+
 	k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
 	ts.tile_map.LoadOrStore(k, t)
 	return nil
@@ -63,13 +63,13 @@ type TileSeeder struct {
 	SeedGeoJSON    bool
 	SeedSVG        bool
 	SeedPNG        bool
-	Timings		bool
-	Logger		*log.WOFLogger
+	Timings        bool
+	Logger         *log.WOFLogger
 }
 
 func NewTileSeeder(c cache.Cache, nz_opts *nextzen.Options) (*TileSeeder, error) {
 
-	logger := log.SimpleWOFLogger()	
+	logger := log.SimpleWOFLogger()
 
 	s := TileSeeder{
 		Cache:          c,
@@ -77,8 +77,8 @@ func NewTileSeeder(c cache.Cache, nz_opts *nextzen.Options) (*TileSeeder, error)
 		SeedSVG:        true,
 		SeedPNG:        false,
 		Seeders:        100,
-		Timings: false,
-		Logger: logger,
+		Timings:        false,
+		Logger:         logger,
 	}
 
 	return &s, nil
@@ -89,12 +89,12 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 	if s.Timings {
 
 		t1 := time.Now()
-		
-		defer func(){
+
+		defer func() {
 			s.Logger.Status("Time to seed all tiles %v\n", time.Since(t1))
 		}()
 	}
-	
+
 	throttle := make(chan bool, s.Seeders)
 
 	for i := 0; i < s.Seeders; i++ {
@@ -115,14 +115,14 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 			<-throttle
 
 			if s.Timings {
-				
+
 				t1 := time.Now()
-				
-				defer func(){
+
+				defer func() {
 					s.Logger.Status("Time to seed tile (%v) %v\n", t, time.Since(t1))
-				}()				
+				}()
 			}
-			
+
 			defer func() {
 				done_ch <- true
 				throttle <- true
@@ -144,7 +144,7 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 	ts.Range(tile_func)
 
 	errors := make([]error, 0)
-	
+
 	for remaining > 0 {
 		select {
 		case <-done_ch:
@@ -156,7 +156,7 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 		}
 	}
 
-	ok := len(errors) == 0 
+	ok := len(errors) == 0
 	return ok, errors
 }
 

@@ -4,14 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
+	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
+	"github.com/whosonfirst/go-rasterzen/seed"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"log"
 	gohttp "net/http"
-	_ "os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 )
@@ -93,7 +92,19 @@ func (h *CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Requ
 		return err
 	}
 
-	fh, err := h.GetTileForRequest(req)
+	if err != nil {
+		return err
+	}
+
+	t, err := h.GetSlippyTileForRequest(req)
+
+	if err != nil {
+		return err
+	}
+
+	// something something something API key
+
+	fh, err := seed.SeedGeoJSON(*t, h.Cache, h.NextzenOptions)
 
 	if err != nil {
 		return err
@@ -109,6 +120,9 @@ func (h *CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Requ
 	buf := bufio.NewWriter(&b)
 
 	wr := io.MultiWriter(rsp, buf)
+
+	// this is the thing that transforms the rasterzen
+	// tile in to geojson, svg, png, etc.
 
 	err = h.Func(fh, wr)
 
@@ -127,6 +141,46 @@ func (h *CacheHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Requ
 	return nil
 }
 
+func (h CacheHandler) GetSlippyTileForRequest(req *gohttp.Request) (*slippy.Tile, error) {
+
+	path := req.URL.Path
+
+	if !re_path.MatchString(path) {
+		return nil, errors.New("Invalid path")
+	}
+
+	m := re_path.FindStringSubmatch(path)
+
+	z, err := strconv.Atoi(m[2])
+
+	if err != nil {
+		return nil, err
+	}
+
+	x, err := strconv.Atoi(m[3])
+
+	if err != nil {
+		return nil, err
+	}
+
+	y, err := strconv.Atoi(m[4])
+
+	if err != nil {
+		return nil, err
+	}
+
+	t := slippy.Tile{
+		Z: uint(z),
+		X: uint(x),
+		Y: uint(y),
+	}
+
+	return &t, nil
+}
+
+// deprecated
+
+/*
 func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, error) {
 
 	path := req.URL.Path
@@ -233,3 +287,5 @@ func (h CacheHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, err
 
 	return fh, err
 }
+
+*/
