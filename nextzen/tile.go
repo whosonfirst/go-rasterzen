@@ -20,13 +20,20 @@ type Options struct {
 	ApiKey string
 	Origin string
 	Debug  bool
+	URI    string // PLEASE MAKE THIS IS A PROPER URI TEMPLATE
 }
 
 func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	layer := "all"
 
-	url := fmt.Sprintf("https://tile.nextzen.org/tilezen/vector/v1/256/%s/%d/%d/%d.json?api_key=%s", layer, z, x, y, opts.ApiKey)
+	uri := opts.URI
+
+	if uri == "" {
+		uri = "https://tile.nextzen.org/tilezen/vector/v1/256/%s/%d/%d/%d.json?api_key=%s"
+	}
+
+	url := fmt.Sprintf(uri, layer, z, x, y, opts.ApiKey)
 
 	cl := new(http.Client)
 

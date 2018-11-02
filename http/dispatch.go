@@ -104,9 +104,23 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 		return err
 	}
 
-	// something something something API key
+	nz_opts := h.NextzenOptions
 
-	fh, err := seed.SeedRasterzen(*t, h.Cache, h.NextzenOptions)
+	if nz_opts.ApiKey == "" {
+
+		url := req.URL
+		query := url.Query()
+
+		api_key := query.Get("api_key")
+
+		if api_key == "" {
+			return errors.New("Missing API key")
+		}
+
+		nz_opts.ApiKey = api_key
+	}
+
+	fh, err := seed.SeedRasterzen(*t, h.Cache, nz_opts)
 
 	if err != nil {
 		return err
@@ -179,115 +193,3 @@ func (h DispatchHandler) GetSlippyTileForRequest(req *gohttp.Request) (*slippy.T
 
 	return &t, nil
 }
-
-// deprecated
-
-/*
-func (h DispatchHandler) GetTileForRequest(req *gohttp.Request) (io.ReadCloser, error) {
-
-	path := req.URL.Path
-
-	if !re_path.MatchString(path) {
-		return nil, errors.New("Invalid path")
-	}
-
-	m := re_path.FindStringSubmatch(path)
-
-	z, err := strconv.Atoi(m[2])
-
-	if err != nil {
-		return nil, err
-	}
-
-	x, err := strconv.Atoi(m[3])
-
-	if err != nil {
-		return nil, err
-	}
-
-	y, err := strconv.Atoi(m[4])
-
-	if err != nil {
-		return nil, err
-	}
-
-	// this is the new new (I think...) but it doesn't work yet
-	// return rasterzen.GetTileWithCache(h.Cache, z, x, y)
-
-	key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
-
-	nextzen_key := filepath.Join("nextzen", key)
-	rasterzen_key := filepath.Join("rasterzen", key)
-
-	var nextzen_data io.ReadCloser   // stuff sent back from nextzen.org
-	var rasterzen_data io.ReadCloser // nextzen.org data cropped and manipulated
-
-	rasterzen_data, err = h.Cache.Get(rasterzen_key)
-
-	// log.Printf("REQ RASTERZEN %s %v\n", rasterzen_key, err)
-
-	if err == nil {
-		return rasterzen_data, nil
-	}
-
-	nextzen_data, err = h.Cache.Get(nextzen_key)
-
-	// log.Printf("REQ NEXTZEN %s %v\n", nextzen_key, err)
-
-	if err != nil {
-
-		opts := h.NextzenOptions
-
-		url := req.URL
-		query := url.Query()
-
-		if opts.ApiKey == "" {
-
-			api_key := query.Get("api_key")
-
-			if api_key == "" {
-				return nil, errors.New("Missing API key")
-			}
-
-			opts.ApiKey = api_key
-		}
-
-		// check for and set 'Origin' header?
-
-		t, err := nextzen.FetchTile(z, x, y, opts)
-
-		// log.Printf("REQ NEXTZEN %d/%d/%d %v\n", z, x, y, err)
-
-		if err != nil {
-			return nil, err
-		}
-
-		defer t.Close()
-
-		nextzen_data, err = h.Cache.Set(nextzen_key, t)
-
-		// log.Printf("REQ NEXTZEN SET %s %v\n", nextzen_key, err)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	cr, err := nextzen.CropTile(z, x, y, nextzen_data)
-
-	// log.Printf("REQ NEXTZEN CROP %d/%d/%d %v\n", z, x, y, err)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer cr.Close()
-
-	fh, err := h.Cache.Set(rasterzen_key, cr)
-
-	// log.Printf("REQ RASTERZEN SET %s %v\n", rasterzen_key, err)
-
-	return fh, err
-}
-
-*/
