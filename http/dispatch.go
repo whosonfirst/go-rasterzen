@@ -53,54 +53,50 @@ func NewDispatchHandler(c cache.Cache) (*DispatchHandler, error) {
 
 func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Request, key string) error {
 
-	_, err := h.Cache.Get(key)
+	data, err := h.Cache.Get(key)
+
+	// log.Println("GET", key, err, cache.IsCacheMiss(err), cache.IsCacheMissMulti(err))
+
+	if err == nil || cache.IsCacheMissMulti(err) {
+
+		defer data.Close()
+
+		// log.Printf("REQ %s RETURN FROM CACHE\n", key)
+
+		for k, v := range h.Headers {
+			rsp.Header().Set(k, v)
+		}
+
+		if !cache.IsCacheMissMulti(err) {
+			_, err = io.Copy(rsp, data)
+			return err
+		}
+
+		var b bytes.Buffer
+		buf := bufio.NewWriter(&b)
+
+		wr := io.MultiWriter(rsp, buf)
+
+		_, err = io.Copy(wr, data)
+
+		buf.Flush()
+
+		if err == nil {
+
+			_, cache_err := h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
+
+			if cache_err != nil {
+				log.Printf("%s %v\n", key, cache_err)
+			}
+		}
+
+		// log.Printf("REQ %s UPDATE CACHE %v\n", key, err)
+		return err
+	}
 
 	if err != nil && !cache.IsCacheMiss(err) {
 		return err
 	}
-
-	/*
-		if err == nil || cache.IsCacheMissMulti(err) {
-
-			defer data.Close()
-
-			// log.Printf("REQ %s RETURN FROM CACHE\n", key)
-
-			for k, v := range h.Headers {
-				rsp.Header().Set(k, v)
-			}
-
-			if !cache.IsCacheMissMulti(err) {
-				_, err = io.Copy(rsp, data)
-				return err
-			}
-
-			var b bytes.Buffer
-			buf := bufio.NewWriter(&b)
-
-			wr := io.MultiWriter(rsp, buf)
-
-			_, err = io.Copy(wr, data)
-
-			buf.Flush()
-
-			if err == nil {
-
-				_, cache_err := h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
-
-				if cache_err != nil {
-					log.Printf("%s %v\n", key, cache_err)
-				}
-			}
-
-			// log.Printf("REQ %s UPDATE CACHE %v\n", key, err)
-			return err
-		}
-
-		if err != nil {
-			return err
-		}
-	*/
 
 	t, err := h.GetSlippyTileForRequest(req)
 
