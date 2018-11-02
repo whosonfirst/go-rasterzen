@@ -58,7 +58,7 @@ func (ts *TileSet) Count() int32 {
 
 type TileSeeder struct {
 	Cache          cache.Cache
-	Seeders        int
+	MaxWorkers        int
 	NextzenOptions *nextzen.Options
 	SeedSVG        bool
 	SeedPNG        bool
@@ -75,7 +75,7 @@ func NewTileSeeder(c cache.Cache, nz_opts *nextzen.Options) (*TileSeeder, error)
 		NextzenOptions: nz_opts,
 		SeedSVG:        true,
 		SeedPNG:        false,
-		Seeders:        100,
+		MaxWorkers:        100,
 		Timings:        false,
 		Logger:         logger,
 	}
@@ -94,9 +94,9 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 		}()
 	}
 
-	throttle := make(chan bool, s.Seeders)
+	throttle := make(chan bool, s.MaxWorkers)
 
-	for i := 0; i < s.Seeders; i++ {
+	for i := 0; i < s.MaxWorkers; i++ {
 		throttle <- true
 	}
 

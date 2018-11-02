@@ -81,6 +81,14 @@ Usage of ./bin/rasterd:
     	The host for rasterd to listen for requests on. (default "localhost")
   -httptest.serve string
     	if non-empty, httptest.NewServer serves on this address and blocks
+  -nextzen-apikey string
+    	A valid Nextzen API key.
+  -nextzen-debug
+    	Log requests (to STDOUT) to Nextzen tile servers.
+  -nextzen-origin string
+    	An optional HTTP 'Origin' host to pass along with your Nextzen requests.
+  -nextzen-uri string
+    	A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.
   -no-cache
     	Disable all caching.
   -path-geojson string
@@ -105,6 +113,8 @@ Usage of ./bin/rasterd:
     	A valid ini-style config file section. (default "rasterd")
   -svg-handler
     	Enable the SVG tile handler. (default true)
+  -www
+    	Enable a simple web interface with a slippy map (at /) for testing and debugging.
 ```
 
 A simple HTTP server for delivering rasterized Netzen vector (TMS or "slippy map") tiles.
@@ -205,7 +215,7 @@ Pre-seed one or more rasterzen tiles (and their SVG or PNG derivatives).
 
 ```
 $> ./bin/rasterzen-seed -h
-Usage of ../bin/rasterzen-seed:
+Usage of ./bin/rasterzen-seed:
   -extent value
     	One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.
   -fs-cache
@@ -214,12 +224,20 @@ Usage of ../bin/rasterzen-seed:
     	The root of your filesystem cache. If empty rasterd will try to use the current working directory.
   -go-cache
     	Cache tiles with an in-memory (go-cache) cache.
+  -max-zoom int
+    	The maximum zoom level to fetch for a tile extent. (default 16)
+  -min-zoom int
+    	The minimum zoom level to fetch for a tile extent. (default 1)
   -mode string
     	Valid modes are: extent, tiles. (default "tiles")
   -nextzen-apikey string
-    	A valid 
-  -origin string
-    	...
+    	A valid Nextzen API key.
+  -nextzen-debug
+    	Log requests (to STDOUT) to Nextzen tile servers.
+  -nextzen-origin string
+    	An optional HTTP 'Origin' host to pass along with your Nextzen requests.
+  -nextzen-uri string
+    	A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.
   -s3-cache
     	Cache tiles with a S3-based cache.
   -s3-dsn string
@@ -230,8 +248,8 @@ Usage of ../bin/rasterzen-seed:
     	Seed PNG tiles.
   -seed-svg
     	Seed SVG tiles. (default true)
-  -zoom value
-    	One or more zoom levels to fetch (for an extent).
+  -seed-workers int
+    	The maximum number of concurrent workers to invoke when seeding tiles (default 100)
 ```
 
 For example:

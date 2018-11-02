@@ -25,7 +25,7 @@ func main() {
 	var host = flag.String("host", "localhost", "The host for rasterd to listen for requests on.")
 	var port = flag.Int("port", 8080, "The port for rasterd to listen for requests on.")
 
-	do_www := flag.Bool("www", false, "...")
+	do_www := flag.Bool("www", false, "Enable a simple web interface with a slippy map (at /) for testing and debugging.")
 
 	no_cache := flag.Bool("no-cache", false, "Disable all caching.")
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")

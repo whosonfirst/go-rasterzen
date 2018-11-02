@@ -109,7 +109,8 @@ func main() {
 
 	seed_svg := flag.Bool("seed-svg", true, "Seed SVG tiles.")
 	seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
-
+	seed_workers := flag.Int("seed-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
+	
 	flag.Parse()
 
 	logger := log.SimpleWOFLogger()
@@ -226,8 +227,9 @@ func main() {
 
 	seeder.SeedSVG = *seed_svg
 	seeder.SeedPNG = *seed_png
+	seeder.MaxWorkers = *seed_workers
 	seeder.Logger = logger
-
+	
 	tileset, err := seed.NewTileSet()
 
 	if err != nil {
