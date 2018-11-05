@@ -265,6 +265,12 @@ $> ./bin/rasterzen-seed -fs-cache -fs-root cache -nextzen-apikey {NEXTZEN_APIKEY
 ...and so on
 ```
 
+Or:
+
+```
+$> ./bin/rasterzen-seed -mode extent -extent '-122.405228 37.604481 -122.355044 37.645194' -min-zoom 2 -max-zoom 16 -nextzen-apikey {NEXTZEN_APIKEY} -fs-cache -fs-root ./cache2 -seed-worker lambda -lambda-function Rasterzen -lambda-dsn 'credentials=session region=us-west-2' -timings
+```
+
 ## Docker
 
 Not yet.
