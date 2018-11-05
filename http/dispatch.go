@@ -60,14 +60,14 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 
 	var out io.Writer
 	out = rsp
-	
+
 	url := req.URL
 	query := url.Query()
 
 	if query.Get("discard") != "" {
 		out = ioutil.Discard
 	}
-	
+
 	if err == nil || cache.IsCacheMissMulti(err) {
 
 		defer data.Close()

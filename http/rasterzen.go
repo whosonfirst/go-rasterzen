@@ -16,7 +16,7 @@ func RasterzenHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 	h.Headers = headers
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
-		
+
 		key := req.URL.Path
 		err := h.HandleRequest(rsp, req, key)
 

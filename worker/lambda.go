@@ -23,14 +23,14 @@ type seedResponse struct {
 }
 
 type seedRequest struct {
-	Resource    string           `json:"resource"`
 	Path        string           `json:"path"`
 	HTTPMethod  string           `json:"httpMethod"`
 	QueryString seedRequestQuery `json:"queryStringParameters"`
 }
 
 type seedRequestQuery struct {
-	ApiKey string `json:"api_key"`
+	ApiKey  string `json:"api_key"`
+	Discard string `json:"discard,omitempty"`
 }
 
 type LambdaWorker struct {
@@ -89,8 +89,15 @@ func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 		ApiKey: api_key,
 	}
 
+	// if we are a (local) null cache then don't bother asking the
+	// lambda/proxy endpoint to return any data across the wire
+	// (20181105/thisisaaronland)
+
+	if w.cache.Name() == "multi#null" {
+		query.Discard = "1"
+	}
+
 	req := seedRequest{
-		Resource:    "/{proxy+}",
 		HTTPMethod:  "GET",
 		Path:        uri,
 		QueryString: query,
@@ -128,6 +135,8 @@ func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 	if err != nil {
 		return err
 	}
+
+	// log.Println("LAMBDA", cache_key, len(rsp.Body))
 
 	r := strings.NewReader(rsp.Body)
 	fh := ioutil.NopCloser(r)

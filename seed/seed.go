@@ -87,7 +87,7 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 		t1 := time.Now()
 
 		defer func() {
-			s.Logger.Status("Time to seed all tiles %v\n", time.Since(t1))
+			s.Logger.Status("Time to seed all tiles %v", time.Since(t1))
 		}()
 	}
 
@@ -115,7 +115,7 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 				t1 := time.Now()
 
 				defer func() {
-					s.Logger.Status("Time to seed tile (%v) %v\n", t, time.Since(t1))
+					s.Logger.Status("Time to seed tile (%v) %v", t, time.Since(t1))
 				}()
 			}
 
