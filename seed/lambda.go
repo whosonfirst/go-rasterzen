@@ -7,7 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
+	// "github.com/aws/aws-sdk-go/aws/session"
+	"github.com/whosonfirst/go-whosonfirst-aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/go-spatial/geom/slippy"
 	"log"
@@ -43,15 +44,23 @@ func NewSeedRequest(s *TileSeeder, t slippy.Tile) (*SeedRequest, error) {
 
 func SeedTileLambda(s *TileSeeder, t slippy.Tile) error {
 
+	creds := "session"
 	region := "us-west-2"
+	
 	function := "RasterzenDebug"
+	
+	sess, err := session.NewSessionWithCredentials(creds, region)
 
+	/*
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
 	client := lambda.New(sess, &aws.Config{Region: aws.String(region)})
+	*/
 
+	client := lambda.New(sess)
+	
 	request, err := NewSeedRequest(s, t)
 
 	if err != nil {
@@ -59,11 +68,13 @@ func SeedTileLambda(s *TileSeeder, t slippy.Tile) error {
 	}
 	
 	payload, err := json.Marshal(request)
-
+	
 	if err != nil {
 		return err
 	}
 
+	log.Println(string(payload))
+	
 	input := &lambda.InvokeInput{
 		FunctionName: aws.String(function),
 		Payload:      payload,

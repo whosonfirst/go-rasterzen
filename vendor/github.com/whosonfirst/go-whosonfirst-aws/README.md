@@ -14,7 +14,7 @@ All of this package's dependencies are bundled with the code in the `vendor` dir
 
 ## Important
 
-This is not ready for you to use yet. It has not been properly tested yet.
+This works. Until it doesn't. It has not been properly documented yet.
 
 ## DSN strings
 

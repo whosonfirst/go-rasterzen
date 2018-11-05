@@ -220,6 +220,9 @@ type RDSAPI interface {
 	DescribeDBClustersWithContext(aws.Context, *rds.DescribeDBClustersInput, ...request.Option) (*rds.DescribeDBClustersOutput, error)
 	DescribeDBClustersRequest(*rds.DescribeDBClustersInput) (*request.Request, *rds.DescribeDBClustersOutput)
 
+	DescribeDBClustersPages(*rds.DescribeDBClustersInput, func(*rds.DescribeDBClustersOutput, bool) bool) error
+	DescribeDBClustersPagesWithContext(aws.Context, *rds.DescribeDBClustersInput, func(*rds.DescribeDBClustersOutput, bool) bool, ...request.Option) error
+
 	DescribeDBEngineVersions(*rds.DescribeDBEngineVersionsInput) (*rds.DescribeDBEngineVersionsOutput, error)
 	DescribeDBEngineVersionsWithContext(aws.Context, *rds.DescribeDBEngineVersionsInput, ...request.Option) (*rds.DescribeDBEngineVersionsOutput, error)
 	DescribeDBEngineVersionsRequest(*rds.DescribeDBEngineVersionsInput) (*request.Request, *rds.DescribeDBEngineVersionsOutput)
@@ -371,6 +374,10 @@ type RDSAPI interface {
 	ListTagsForResourceWithContext(aws.Context, *rds.ListTagsForResourceInput, ...request.Option) (*rds.ListTagsForResourceOutput, error)
 	ListTagsForResourceRequest(*rds.ListTagsForResourceInput) (*request.Request, *rds.ListTagsForResourceOutput)
 
+	ModifyCurrentDBClusterCapacity(*rds.ModifyCurrentDBClusterCapacityInput) (*rds.ModifyCurrentDBClusterCapacityOutput, error)
+	ModifyCurrentDBClusterCapacityWithContext(aws.Context, *rds.ModifyCurrentDBClusterCapacityInput, ...request.Option) (*rds.ModifyCurrentDBClusterCapacityOutput, error)
+	ModifyCurrentDBClusterCapacityRequest(*rds.ModifyCurrentDBClusterCapacityInput) (*request.Request, *rds.ModifyCurrentDBClusterCapacityOutput)
+
 	ModifyDBCluster(*rds.ModifyDBClusterInput) (*rds.ModifyDBClusterOutput, error)
 	ModifyDBClusterWithContext(aws.Context, *rds.ModifyDBClusterInput, ...request.Option) (*rds.ModifyDBClusterOutput, error)
 	ModifyDBClusterRequest(*rds.ModifyDBClusterInput) (*request.Request, *rds.ModifyDBClusterOutput)
@@ -475,9 +482,17 @@ type RDSAPI interface {
 	RevokeDBSecurityGroupIngressWithContext(aws.Context, *rds.RevokeDBSecurityGroupIngressInput, ...request.Option) (*rds.RevokeDBSecurityGroupIngressOutput, error)
 	RevokeDBSecurityGroupIngressRequest(*rds.RevokeDBSecurityGroupIngressInput) (*request.Request, *rds.RevokeDBSecurityGroupIngressOutput)
 
+	StartDBCluster(*rds.StartDBClusterInput) (*rds.StartDBClusterOutput, error)
+	StartDBClusterWithContext(aws.Context, *rds.StartDBClusterInput, ...request.Option) (*rds.StartDBClusterOutput, error)
+	StartDBClusterRequest(*rds.StartDBClusterInput) (*request.Request, *rds.StartDBClusterOutput)
+
 	StartDBInstance(*rds.StartDBInstanceInput) (*rds.StartDBInstanceOutput, error)
 	StartDBInstanceWithContext(aws.Context, *rds.StartDBInstanceInput, ...request.Option) (*rds.StartDBInstanceOutput, error)
 	StartDBInstanceRequest(*rds.StartDBInstanceInput) (*request.Request, *rds.StartDBInstanceOutput)
+
+	StopDBCluster(*rds.StopDBClusterInput) (*rds.StopDBClusterOutput, error)
+	StopDBClusterWithContext(aws.Context, *rds.StopDBClusterInput, ...request.Option) (*rds.StopDBClusterOutput, error)
+	StopDBClusterRequest(*rds.StopDBClusterInput) (*request.Request, *rds.StopDBClusterOutput)
 
 	StopDBInstance(*rds.StopDBInstanceInput) (*rds.StopDBInstanceOutput, error)
 	StopDBInstanceWithContext(aws.Context, *rds.StopDBInstanceInput, ...request.Option) (*rds.StopDBInstanceOutput, error)

@@ -127,7 +127,8 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 				throttle <- true
 			}()
 
-			err := s.SeedTile(t)
+			err := SeedTileLambda(s, t)
+			// err := s.SeedTile(t)
 
 			if err != nil {
 				msg := fmt.Sprintf("Unabled to seed %v because %s", t, err)
