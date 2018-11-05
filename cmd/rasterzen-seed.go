@@ -118,6 +118,8 @@ func main() {
 
 	lambda_function := flag.String("lambda-function", "rasterzen", "...")
 
+	timings := flag.Bool("timings", false, "...")
+
 	flag.Parse()
 
 	logger := log.SimpleWOFLogger()
@@ -252,6 +254,7 @@ func main() {
 
 	seeder.MaxWorkers = *max_workers
 	seeder.Logger = logger
+	seeder.Timings = *timings
 
 	tileset, err := seed.NewTileSet()
 
@@ -271,7 +274,7 @@ func main() {
 				logger.Fatal(err)
 			}
 
-			for z := *min_zoom; z < *max_zoom; z++ {
+			for z := *min_zoom; z <= *max_zoom; z++ {
 
 				for _, t := range slippy.FromBounds(ex, uint(z)) {
 					tileset.AddTile(t)

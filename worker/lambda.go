@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,12 +13,13 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io/ioutil"
 	_ "log"
+	"strings"
 )
 
 type seedResponse struct {
 	StatusCode int               `json:"statusCode"`
 	Headers    map[string]string `json:"headers"`
-	Body       []byte            `json:"body"`
+	Body       string            `json:"body"`
 }
 
 type seedRequest struct {
@@ -64,9 +64,10 @@ func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache, nz_o
 	client := lambda.New(sess)
 
 	w := LambdaWorker{
-		client:   client,
-		function: function,
-		cache:    c,
+		client:          client,
+		function:        function,
+		cache:           c,
+		nextzen_options: nz_opts,
 	}
 
 	return &w, nil
@@ -79,10 +80,10 @@ func (w *LambdaWorker) SeedTile(t slippy.Tile) error {
 
 func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 
-	api_key := w.nextzen_options.ApiKey
+	cache_key := tile.CacheKey(t, format, format)
+	uri := fmt.Sprintf("/%s", cache_key)
 
-	key := tile.CacheKey(t, format, format)
-	uri := fmt.Sprintf("/%s", key)
+	api_key := w.nextzen_options.ApiKey
 
 	query := seedRequestQuery{
 		ApiKey: api_key,
@@ -128,9 +129,9 @@ func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 		return err
 	}
 
-	r := bytes.NewReader(rsp.Body)
+	r := strings.NewReader(rsp.Body)
 	fh := ioutil.NopCloser(r)
 
-	_, err = w.cache.Set(key, fh)
+	_, err = w.cache.Set(cache_key, fh)
 	return err
 }
