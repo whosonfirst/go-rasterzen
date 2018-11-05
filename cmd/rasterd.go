@@ -40,15 +40,15 @@ func main() {
 	nextzen_debug := flag.Bool("nextzen-debug", false, "Log requests (to STDOUT) to Nextzen tile servers.")
 	nextzen_uri := flag.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
 
-	// fs_ttl := flag.Int("fs-ttl", 0, "The time-to-live (in seconds) for filesystem cache files. If 0 cached tiles will never expire.")
-
 	png_handler := flag.Bool("png-handler", true, "Enable the PNG tile handler.")
 	svg_handler := flag.Bool("svg-handler", true, "Enable the SVG tile handler.")
+	rasterzen_handler := flag.Bool("rasterzen-handler", false, "Enable the Rasterzen tile handler.")	
 	geojson_handler := flag.Bool("geojson-handler", false, "Enable the GeoJSON tile handler.")
 
 	var path_png = flag.String("path-png", "/png/", "The path that PNG tiles should be served from")
 	var path_svg = flag.String("path-svg", "/svg/", "The path that SVG tiles should be served from")
 	var path_geojson = flag.String("path-geojson", "/geojson/", "The path that GeoJSON tiles should be served from")
+	var path_rasterzen = flag.String("path-rasterzen", "/rasterzen/", "The path that Rasterzen tiles should be served from")	
 
 	flag.Parse()
 
@@ -227,6 +227,19 @@ func main() {
 		mux.Handle(*path_geojson, h)
 	}
 
+	if *rasterzen_handler {
+
+		log.Println("enable Rasterzen handler")
+
+		h, err := http.RasterzenHandler(dh)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mux.Handle(*path_rasterzen, h)
+	}
+	
 	if *do_www {
 
 		// We have (need) two separate handlers (and by extension bundled assets
