@@ -35,7 +35,7 @@ func SeedPNG(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadClo
 	var buf bytes.Buffer
 	png_wr := bufio.NewWriter(&buf)
 
-	err = GeoJSONToPNG(geojson_fh, png_wr)
+	err = RasterzenToPNG(geojson_fh, png_wr)
 
 	if err != nil {
 		return nil, err

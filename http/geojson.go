@@ -13,7 +13,7 @@ func GeoJSONHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 		"Access-Control-Allow-Origin": "*",
 	}
 
-	h.Func = tile.GeoJSONToFeatureCollection
+	h.Func = tile.RasterzenToFeatureCollection
 	h.Headers = headers
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
