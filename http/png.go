@@ -21,6 +21,8 @@ func PNGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 		key := req.URL.Path
 		err := h.HandleRequest(rsp, req, key)
 
+		log.Println("PNG", key, err)
+
 		if err != nil {
 			log.Printf("%s %v\n", key, err)
 			gohttp.Error(rsp, err.Error(), gohttp.StatusInternalServerError)

@@ -12,7 +12,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-aws/session"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io/ioutil"
-	_ "log"
+	"log"
 	"strings"
 )
 
@@ -75,13 +75,15 @@ func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache, nz_o
 
 func (w *LambdaWorker) SeedTile(t slippy.Tile) error {
 
-	return w.seedTile(t, "svg")
+	return w.seedTile(t, "png")
 }
 
 func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 
-	cache_key := tile.CacheKey(t, format, format)
+	cache_key := tile.CacheKeyForTile(t, format, format)
 	uri := fmt.Sprintf("/%s", cache_key)
+
+	log.Println("SEED", format, uri)
 
 	api_key := w.nextzen_options.ApiKey
 

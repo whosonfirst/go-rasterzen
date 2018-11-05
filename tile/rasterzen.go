@@ -1,12 +1,10 @@
 package tile
 
 import (
-	"fmt"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
-	"path/filepath"
 )
 
 func SeedRasterzen(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
@@ -15,10 +13,12 @@ func SeedRasterzen(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.R
 	x := int(t.X)
 	y := int(t.Y)
 
-	key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
+	// key := fmt.Sprintf("%d/%d/%d.json", z, x, y)
+	// nextzen_key := filepath.Join("nextzen", key)
+	// rasterzen_key := filepath.Join("rasterzen", key)
 
-	nextzen_key := filepath.Join("nextzen", key)
-	rasterzen_key := filepath.Join("rasterzen", key)
+	nextzen_key := CacheKeyForTile(t, "nextzen", "json")
+	rasterzen_key := CacheKeyForTile(t, "rasterzen", "json")
 
 	var nextzen_data io.ReadCloser   // stuff sent back from nextzen.org
 	var rasterzen_data io.ReadCloser // stuff sent back from nextzen.org

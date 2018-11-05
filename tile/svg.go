@@ -3,7 +3,6 @@ package tile
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-whosonfirst-cache"
@@ -14,11 +13,7 @@ import (
 
 func SeedSVG(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
 
-	z := int(t.Z)
-	x := int(t.X)
-	y := int(t.Y)
-
-	svg_key := fmt.Sprintf("svg/%d/%d/%d.svg", z, x, y)
+	svg_key := CacheKeyForTile(t, "svg", "svg")
 
 	var svg_data io.ReadCloser
 	var err error
