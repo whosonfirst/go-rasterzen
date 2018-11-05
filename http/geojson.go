@@ -1,10 +1,24 @@
 package http
 
 import (
+	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
+	"github.com/whosonfirst/go-whosonfirst-cache"
 	"log"
 	gohttp "net/http"
 )
+
+func NewGeoJSONHandler(c cache.Cache, nz_opts *nextzen.Options) (gohttp.HandlerFunc, error) {
+
+	d, err := NewDispatchHandler(c)
+
+	if err != nil {
+		return nil, err
+	}
+
+	d.NextzenOptions = nz_opts
+	return GeoJSONHandler(d)
+}
 
 func GeoJSONHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 

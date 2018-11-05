@@ -178,21 +178,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dh, err := http.NewDispatchHandler(c)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	dh.NextzenOptions = nz_opts
-
 	mux := gohttp.NewServeMux()
 
 	if *png_handler {
 
 		log.Println("enable PNG handler")
 
-		h, err := http.PNGHandler(dh)
+		h, err := http.NewPNGHandler(c, nz_opts)
 
 		if err != nil {
 			log.Fatal(err)
@@ -205,7 +197,7 @@ func main() {
 
 		log.Println("enable SVG handler")
 
-		h, err := http.SVGHandler(dh)
+		h, err := http.NewSVGHandler(c, nz_opts)
 
 		if err != nil {
 			log.Fatal(err)
@@ -218,7 +210,7 @@ func main() {
 
 		log.Println("enable GeoJSON handler")
 
-		h, err := http.GeoJSONHandler(dh)
+		h, err := http.NewGeoJSONHandler(c, nz_opts)
 
 		if err != nil {
 			log.Fatal(err)
@@ -231,7 +223,7 @@ func main() {
 
 		log.Println("enable Rasterzen handler")
 
-		h, err := http.RasterzenHandler(dh)
+		h, err := http.NewRasterzenHandler(c, nz_opts)
 
 		if err != nil {
 			log.Fatal(err)
