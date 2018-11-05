@@ -226,7 +226,7 @@ func GeoJSONToImage(in io.Reader) (image.Image, error) {
 		}
 	}()
 
-	err = ToSVG(in, tmpfile)
+	err = GeoJSONToSVG(in, tmpfile)
 
 	if err != nil {
 		return nil, err
@@ -253,7 +253,7 @@ func GeoJSONToImage(in io.Reader) (image.Image, error) {
 
 func GeoJSONToPNG(in io.Reader, out io.Writer) error {
 
-	img, err := ToImage(in)
+	img, err := GeoJSONToImage(in)
 
 	if err != nil {
 		return err

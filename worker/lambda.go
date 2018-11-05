@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-whosonfirst-aws/session"
+	"github.com/whosonfirst/go-whosonfirst-cache"
 	"log"
 )
 
@@ -29,12 +30,13 @@ type seedRequestQuery struct {
 }
 
 type LambdaWorker struct {
-	SeedWorker
+	Worker
 	function string
 	client   *lambda.Lambda
+	cache    cache.Cache
 }
 
-func NewLambdaWorker(dsn map[string]string, function string) (SeedWorker, error) {
+func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache) (Worker, error) {
 
 	creds, ok := dsn["credentials"]
 
@@ -59,17 +61,18 @@ func NewLambdaWorker(dsn map[string]string, function string) (SeedWorker, error)
 	w := LambdaWorker{
 		client:   client,
 		function: function,
+		cache:    c,
 	}
 
 	return &w, nil
 }
 
-func (w *LambdaWorker) SeedTile(t slippy.Tile, c cache.Cache) error {
+func (w *LambdaWorker) SeedTile(t slippy.Tile) error {
 
-	return w.seedTile(t, c, "svg")
+	return w.seedTile(t, "svg")
 }
 
-func (w *LambdaWorker) seedTile(t slippy.Tile, c cache.Cache, format string) error {
+func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 
 	api_key := s.NextzenOptions.ApiKey
 
