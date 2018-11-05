@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/worker"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"sync"
 	"sync/atomic"
@@ -57,22 +56,19 @@ func (ts *TileSet) Count() int32 {
 }
 
 type TileSeeder struct {
-	worker         worker.Worker
-	Cache          cache.Cache
-	MaxWorkers     int
-	NextzenOptions *nextzen.Options
-	SeedSVG        bool
-	SeedPNG        bool
-	Timings        bool
-	Logger         *log.WOFLogger
+	worker     worker.Worker
+	MaxWorkers int
+	SeedSVG    bool
+	SeedPNG    bool
+	Timings    bool
+	Logger     *log.WOFLogger
 }
 
-func NewTileSeeder(w SeedWorker, c cache.Cache) (*TileSeeder, error) {
+func NewTileSeeder(w worker.Worker) (*TileSeeder, error) {
 
 	logger := log.SimpleWOFLogger()
 
 	s := TileSeeder{
-		Cache:      c,
 		worker:     w,
 		SeedSVG:    true,
 		SeedPNG:    false,

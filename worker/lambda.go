@@ -1,15 +1,19 @@
 package worker
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/go-spatial/geom/slippy"
+	"github.com/whosonfirst/go-rasterzen/nextzen"
+	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-aws/session"
 	"github.com/whosonfirst/go-whosonfirst-cache"
-	"log"
+	"io/ioutil"
+	_ "log"
 )
 
 type seedResponse struct {
@@ -31,12 +35,13 @@ type seedRequestQuery struct {
 
 type LambdaWorker struct {
 	Worker
-	function string
-	client   *lambda.Lambda
-	cache    cache.Cache
+	function        string
+	client          *lambda.Lambda
+	cache           cache.Cache
+	nextzen_options *nextzen.Options
 }
 
-func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache) (Worker, error) {
+func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache, nz_opts *nextzen.Options) (Worker, error) {
 
 	creds, ok := dsn["credentials"]
 
@@ -74,9 +79,9 @@ func (w *LambdaWorker) SeedTile(t slippy.Tile) error {
 
 func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 
-	api_key := s.NextzenOptions.ApiKey
+	api_key := w.nextzen_options.ApiKey
 
-	key := fmt.Sprintf("%s/%d/%d/%d.%s", format, t.Z, t.X, t.Y, format)
+	key := tile.CacheKey(t, format, format)
 	uri := fmt.Sprintf("/%s", key)
 
 	query := seedRequestQuery{
@@ -95,8 +100,6 @@ func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 	if err != nil {
 		return err
 	}
-
-	log.Println(string(payload))
 
 	input := &lambda.InvokeInput{
 		FunctionName: aws.String(w.function),
@@ -125,5 +128,9 @@ func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
 		return err
 	}
 
-	return c.Set(key, rsp.Body)
+	r := bytes.NewReader(rsp.Body)
+	fh := ioutil.NopCloser(r)
+
+	_, err = w.cache.Set(key, fh)
+	return err
 }

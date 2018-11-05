@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
@@ -8,23 +9,29 @@ import (
 
 type LocalWorker struct {
 	Worker
-	NextzenOptions *nextzen.Options
+	nextzen_options *nextzen.Options
+	cache           cache.Cache
+	SeedSVG         bool
+	SeedPNG         bool
 }
 
-func NewLocalWorker(opts *SeedOptions) (Worker, error) {
+func NewLocalWorker(c cache.Cache, nz_opts *nextzen.Options) (Worker, error) {
 
-	w := LocalWorkers{
-		options: opts,
+	w := LocalWorker{
+		cache:           c,
+		nextzen_options: nz_opts,
+		SeedSVG:         true,
+		SeedPNG:         false,
 	}
 
 	return &w, nil
 }
 
-func (w *LocalWorker) SeedTile(t slippy.Tile, c cache.Cache) error {
+func (w *LocalWorker) SeedTile(t slippy.Tile) error {
 
-	if !w.opts.SeedSVG && !w.opts.SeedPNG {
+	if !w.SeedSVG && !w.SeedPNG {
 
-		_, err := tile.SeedRasterzen(t, c, w.NextzenOptions)
+		_, err := tile.SeedRasterzen(t, w.cache, w.nextzen_options)
 
 		if err != nil {
 			return err
@@ -33,7 +40,7 @@ func (w *LocalWorker) SeedTile(t slippy.Tile, c cache.Cache) error {
 
 	if w.SeedSVG {
 
-		_, err := tile.SeedSVG(t, c, w.NextzenOptions)
+		_, err := tile.SeedSVG(t, w.cache, w.nextzen_options)
 
 		if err != nil {
 			return err
@@ -43,7 +50,7 @@ func (w *LocalWorker) SeedTile(t slippy.Tile, c cache.Cache) error {
 
 	if w.SeedPNG {
 
-		_, err := tile.SeedPNG(t, c, w.NextzenOptions)
+		_, err := tile.SeedPNG(t, w.cache, w.nextzen_options)
 
 		if err != nil {
 			return err

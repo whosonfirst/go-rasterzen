@@ -1,10 +1,9 @@
 package worker
 
-type Options struct {
-	SeedSVG bool
-	SeedPNG bool
-}
+import (
+	"github.com/go-spatial/geom/slippy"
+)
 
 type Worker interface {
-	SeedTile(slippy.Tile, cache.Cache) error
+	SeedTile(slippy.Tile) error
 }

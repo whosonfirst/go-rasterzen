@@ -6,7 +6,7 @@ import (
 	"errors"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/whosonfirst/go-rasterzen/seed"
+	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"log"
@@ -120,7 +120,7 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 		nz_opts.ApiKey = api_key
 	}
 
-	fh, err := seed.SeedRasterzen(*t, h.Cache, nz_opts)
+	fh, err := tile.SeedRasterzen(*t, h.Cache, nz_opts)
 
 	if err != nil {
 		return err

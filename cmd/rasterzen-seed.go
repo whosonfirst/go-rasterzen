@@ -113,7 +113,10 @@ func main() {
 	seed_worker := flag.String("seed-worker", "local", "...")
 	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
 
-	lambda_dsn := flag.String("lambda-dsn", "", "A valid go-whosonfirst-aws DSN string")
+	var lambda_dsn flags.DSNString
+	flag.Var(&lambda_dsn, "lambda-dsn", "")
+
+	lambda_function := flag.String("lambda-function", "rasterzen", "...")
 
 	flag.Parse()
 
@@ -227,12 +230,14 @@ func main() {
 	var w_err error
 
 	switch strings.ToUpper(*seed_worker) {
+
 	case "LAMBDA":
-		w, w_err = worker.NewLambdaWorker(*lambda_dsn, *lambda_function)
+		w, w_err = worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, c, nz_opts)
 	case "LOCAL":
-		w, w_err = worker.NewLocalWorker(c)
+		w, w_err = worker.NewLocalWorker(c, nz_opts)
 	default:
 		w_err = errors.New("Invalid worker")
+
 	}
 
 	if w_err != nil {

@@ -13,7 +13,7 @@ func SVGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 		"Access-Control-Allow-Origin": "*",
 	}
 
-	h.Func = tile.ToSVG
+	h.Func = tile.GeoJSONToSVG
 	h.Headers = headers
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {

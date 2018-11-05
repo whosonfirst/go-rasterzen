@@ -13,7 +13,7 @@ func PNGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 		"Access-Control-Allow-Origin": "*",
 	}
 
-	h.Func = tile.ToPNG
+	h.Func = tile.GeoJSONToPNG
 	h.Headers = headers
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {

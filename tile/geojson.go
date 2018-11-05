@@ -1,5 +1,8 @@
 package tile
 
+// PLEASE MOVE ALL THIS CODE IN TO rasterzen.go AND RENAME ALL THE FUNCTIONS
+// (20181105/thisisaaronland)
+
 import (
 	"crypto/md5"
 	"encoding/hex"
