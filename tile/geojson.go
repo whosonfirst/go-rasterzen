@@ -27,7 +27,7 @@ type FeatureCollection struct {
 	Features []interface{} `json:"features"`
 }
 
-func ToFeatureCollection(in io.Reader, out io.Writer) error {
+func GeoJSONToFeatureCollection(in io.Reader, out io.Writer) error {
 
 	body, err := ioutil.ReadAll(in)
 
@@ -67,7 +67,7 @@ func ToFeatureCollection(in io.Reader, out io.Writer) error {
 	return err
 }
 
-func ToSVG(in io.Reader, out io.Writer) error {
+func GeoJSONToSVG(in io.Reader, out io.Writer) error {
 
 	body, err := ioutil.ReadAll(in)
 
@@ -209,7 +209,7 @@ func ToSVG(in io.Reader, out io.Writer) error {
 	return err
 }
 
-func ToImage(in io.Reader) (image.Image, error) {
+func GeoJSONToImage(in io.Reader) (image.Image, error) {
 
 	tmpfile, err := ioutil.TempFile("", "svg")
 
@@ -251,7 +251,7 @@ func ToImage(in io.Reader) (image.Image, error) {
 	return img, nil
 }
 
-func ToPNG(in io.Reader, out io.Writer) error {
+func GeoJSONToPNG(in io.Reader, out io.Writer) error {
 
 	img, err := ToImage(in)
 

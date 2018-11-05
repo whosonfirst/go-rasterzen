@@ -9,11 +9,12 @@ self:   prep rmdeps
 	mkdir -p src/github.com/whosonfirst/go-rasterzen
 	cp *.go src/github.com/whosonfirst/go-rasterzen/
 	cp -r assets src/github.com/whosonfirst/go-rasterzen/
-	cp -r nextzen src/github.com/whosonfirst/go-rasterzen/
-	cp -r tile src/github.com/whosonfirst/go-rasterzen/
 	cp -r http src/github.com/whosonfirst/go-rasterzen/
+	cp -r nextzen src/github.com/whosonfirst/go-rasterzen/
 	cp -r seed src/github.com/whosonfirst/go-rasterzen/
 	cp -r server src/github.com/whosonfirst/go-rasterzen/
+	cp -r tile src/github.com/whosonfirst/go-rasterzen/
+	cp -r worker src/github.com/whosonfirst/go-rasterzen/
 	cp -r vendor/* src/
 
 rmdeps:
@@ -63,6 +64,7 @@ fmt:
 	go fmt tile/*.go
 	go fmt server/*.go
 	go fmt nextzen/*.go
+	go fmt worker/*.go
 
 # See notes in cmd/rasterd.go (20181102/thisisaaronland)
 

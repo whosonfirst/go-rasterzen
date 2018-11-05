@@ -1,4 +1,4 @@
-package seed
+package tile
 
 import (
 	"bufio"
@@ -41,7 +41,7 @@ func SeedSVG(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadClo
 	var buf bytes.Buffer
 	svg_wr := bufio.NewWriter(&buf)
 
-	err = tile.ToSVG(geojson_fh, svg_wr)
+	err = GeoJSONToSVG(geojson_fh, svg_wr)
 
 	if err != nil {
 		return nil, err

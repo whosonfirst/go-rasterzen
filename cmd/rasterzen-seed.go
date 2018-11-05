@@ -8,6 +8,7 @@ import (
 	"github.com/jtacoma/uritemplates"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/seed"
+	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
@@ -107,9 +108,12 @@ func main() {
 	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
 	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
-	seed_svg := flag.Bool("seed-svg", true, "Seed SVG tiles.")
-	seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
-	seed_workers := flag.Int("seed-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
+	// seed_svg := flag.Bool("seed-svg", true, "Seed SVG tiles.")
+	// seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
+	seed_worker := flag.String("seed-worker", "local", "...")
+	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
+
+	lambda_dsn := flag.String("lambda-dsn", "", "A valid go-whosonfirst-aws DSN string")
 
 	flag.Parse()
 
@@ -219,15 +223,29 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	seeder, err := seed.NewTileSeeder(c, nz_opts)
+	var w worker.Worker
+	var w_err error
+
+	switch strings.ToUpper(*seed_worker) {
+	case "LAMBDA":
+		w, w_err = worker.NewLambdaWorker(*lambda_dsn, *lambda_function)
+	case "LOCAL":
+		w, w_err = worker.NewLocalWorker(c)
+	default:
+		w_err = errors.New("Invalid worker")
+	}
+
+	if w_err != nil {
+		logger.Fatal(w_err)
+	}
+
+	seeder, err := seed.NewTileSeeder(w)
 
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	seeder.SeedSVG = *seed_svg
-	seeder.SeedPNG = *seed_png
-	seeder.MaxWorkers = *seed_workers
+	seeder.MaxWorkers = *max_workers
 	seeder.Logger = logger
 
 	tileset, err := seed.NewTileSet()

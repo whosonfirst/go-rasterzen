@@ -1,4 +1,4 @@
-package seed
+package tile
 
 import (
 	"fmt"

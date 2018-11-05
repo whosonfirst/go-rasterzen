@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-spatial/geom/slippy"
-	"github.com/whosonfirst/go-rasterzen/nextzen"
+	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"sync"
@@ -57,6 +57,7 @@ func (ts *TileSet) Count() int32 {
 }
 
 type TileSeeder struct {
+	worker         worker.Worker
 	Cache          cache.Cache
 	MaxWorkers     int
 	NextzenOptions *nextzen.Options
@@ -66,18 +67,18 @@ type TileSeeder struct {
 	Logger         *log.WOFLogger
 }
 
-func NewTileSeeder(c cache.Cache, nz_opts *nextzen.Options) (*TileSeeder, error) {
+func NewTileSeeder(w SeedWorker, c cache.Cache) (*TileSeeder, error) {
 
 	logger := log.SimpleWOFLogger()
 
 	s := TileSeeder{
-		Cache:          c,
-		NextzenOptions: nz_opts,
-		SeedSVG:        true,
-		SeedPNG:        false,
-		MaxWorkers:     100,
-		Timings:        false,
-		Logger:         logger,
+		Cache:      c,
+		worker:     w,
+		SeedSVG:    true,
+		SeedPNG:    false,
+		MaxWorkers: 100,
+		Timings:    false,
+		Logger:     logger,
 	}
 
 	return &s, nil
@@ -127,8 +128,7 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 				throttle <- true
 			}()
 
-			err := SeedTileLambda(s, t)
-			// err := s.SeedTile(t)
+			err := s.worker.SeedTile(t)
 
 			if err != nil {
 				msg := fmt.Sprintf("Unabled to seed %v because %s", t, err)
@@ -158,38 +158,4 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 
 	ok := len(errors) == 0
 	return ok, errors
-}
-
-func (s *TileSeeder) SeedTile(t slippy.Tile) error {
-
-	if !s.SeedSVG && !s.SeedPNG {
-
-		_, err := SeedRasterzen(t, s.Cache, s.NextzenOptions)
-
-		if err != nil {
-			return err
-		}
-	}
-
-	if s.SeedSVG {
-
-		_, err := SeedSVG(t, s.Cache, s.NextzenOptions)
-
-		if err != nil {
-			return err
-		}
-
-	}
-
-	if s.SeedPNG {
-
-		_, err := SeedPNG(t, s.Cache, s.NextzenOptions)
-
-		if err != nil {
-			return err
-		}
-
-	}
-
-	return nil
 }

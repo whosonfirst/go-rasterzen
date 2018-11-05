@@ -1,4 +1,4 @@
-package seed
+package tile
 
 import (
 	"bufio"
@@ -41,7 +41,7 @@ func SeedPNG(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadClo
 	var buf bytes.Buffer
 	png_wr := bufio.NewWriter(&buf)
 
-	err = tile.ToPNG(geojson_fh, png_wr)
+	err = GeoJSONToPNG(geojson_fh, png_wr)
 
 	if err != nil {
 		return nil, err
