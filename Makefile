@@ -37,6 +37,7 @@ deps:
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-bindata-html-template"
 	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
 	rm -rf src/github.com/whosonfirst/go-bindata/testdata
+	mv src/github.com/whosonfirst/go-whosonfirst-cache-s3/vendor/github.com/whosonfirst/go-whosonfirst-aws src/github.com/whosonfirst/ 
 	mv src/github.com/whosonfirst/go-whosonfirst-cache-s3/vendor/github.com/whosonfirst/go-whosonfirst-cache src/github.com/whosonfirst/
 	mv src/github.com/whosonfirst/go-whosonfirst-cache-s3/vendor/github.com/aws/aws-sdk-go src/github.com/aws/
 
