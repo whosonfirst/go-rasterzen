@@ -58,7 +58,7 @@ func (ts *TileSet) Count() int32 {
 
 type TileSeeder struct {
 	Cache          cache.Cache
-	MaxWorkers        int
+	MaxWorkers     int
 	NextzenOptions *nextzen.Options
 	SeedSVG        bool
 	SeedPNG        bool
@@ -75,7 +75,7 @@ func NewTileSeeder(c cache.Cache, nz_opts *nextzen.Options) (*TileSeeder, error)
 		NextzenOptions: nz_opts,
 		SeedSVG:        true,
 		SeedPNG:        false,
-		MaxWorkers:        100,
+		MaxWorkers:     100,
 		Timings:        false,
 		Logger:         logger,
 	}
@@ -158,13 +158,6 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 	ok := len(errors) == 0
 	return ok, errors
 }
-
-// this is basically the http/cache.go GetTileForRequest() function so once we
-// have it working here then we should reconcile the two pieces of code...
-// (20181101/thisisaaronland)
-
-// something something something what to do about SVG and PNG tiles?
-// (20181101/thisisaaronland)
 
 func (s *TileSeeder) SeedTile(t slippy.Tile) error {
 

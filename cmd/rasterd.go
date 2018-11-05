@@ -243,11 +243,11 @@ func main() {
 		// of the static assets or the templates you'll need to rebuild them using the
 		// handy 'make assets bin' or 'make rebuild' Makefile targets. Good times...
 		// (20181102/thisisaaronland)
-		
+
 		if *nextzen_apikey == "" {
 			log.Fatal("You must pass a -nextzen-apikey parameter for the local www server to work")
 		}
-		
+
 		log.Println("enable WWW handler")
 
 		static_h, err := http.StaticHandler()
