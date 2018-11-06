@@ -56,7 +56,7 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 
 	data, err := h.Cache.Get(key)
 
-	log.Println("GET", key, err, cache.IsCacheMiss(err), cache.IsCacheMissMulti(err))
+	// log.Println("GET", key, err, cache.IsCacheMiss(err), cache.IsCacheMissMulti(err))
 
 	var out io.Writer
 	out = rsp
@@ -159,12 +159,12 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 		return err
 	}
 
-	log.Println("SET CACHE", key)
+	// log.Println("SET CACHE", key)
 
 	_, cache_err := h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
 
 	if cache_err != nil {
-		log.Printf("%s %v\n", key, cache_err)
+		log.Printf("FAILED TO SET %s %v\n", key, cache_err)
 	}
 
 	return nil
