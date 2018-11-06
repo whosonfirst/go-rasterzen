@@ -36,34 +36,6 @@ make bin
 
 All of this package's dependencies are bundled with the code in the `vendor` directory.
 
-## Example
-
-```
-package main
-
-import (
-	"flag"
-	"github.com/whosonfirst/go-rasterzen/tile"
-	"log"
-	"os"
-)
-
-func main() {
-
-	flag.Parse()
-
-	for _, path := range flag.Args() {
-
-		fh, _ := os.Open(path)
-		defer fh.Close()
-
-		tile.ToSVG(fh, os.Stdout)
-	}
-}
-```
-
-_Error handling has been removed for the sake of brevity._
-
 ## Tools
 
 ### rasterd
