@@ -56,12 +56,13 @@ func (ts *TileSet) Count() int32 {
 }
 
 type TileSeeder struct {
-	worker     worker.Worker
-	MaxWorkers int
-	SeedSVG    bool
-	SeedPNG    bool
-	Timings    bool
-	Logger     *log.WOFLogger
+	worker        worker.Worker
+	MaxWorkers    int
+	SeedRasterzen bool
+	SeedSVG       bool
+	SeedPNG       bool
+	Timings       bool
+	Logger        *log.WOFLogger
 }
 
 func NewTileSeeder(w worker.Worker) (*TileSeeder, error) {
@@ -69,12 +70,13 @@ func NewTileSeeder(w worker.Worker) (*TileSeeder, error) {
 	logger := log.SimpleWOFLogger()
 
 	s := TileSeeder{
-		worker:     w,
-		SeedSVG:    true,
-		SeedPNG:    false,
-		MaxWorkers: 100,
-		Timings:    false,
-		Logger:     logger,
+		worker:        w,
+		SeedRasterzen: true,
+		SeedSVG:       true,
+		SeedPNG:       false,
+		MaxWorkers:    100,
+		Timings:       false,
+		Logger:        logger,
 	}
 
 	return &s, nil
@@ -124,12 +126,14 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 				throttle <- true
 			}()
 
-			err := s.worker.SeedTile(t)
+			ok, errs := s.seedTiles(t)
 
-			if err != nil {
-				msg := fmt.Sprintf("Unabled to seed %v because %s", t, err)
-				err_ch <- errors.New(msg)
-				return
+			if !ok {
+
+				for _, e := range errs {
+					msg := fmt.Sprintf("Unabled to seed %v because %s", t, e)
+					err_ch <- errors.New(msg)
+				}
 			}
 
 		}(t, throttle, done_ch, err_ch)
@@ -149,6 +153,70 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 			errors = append(errors, e)
 		default:
 			//
+		}
+	}
+
+	ok := len(errors) == 0
+	return ok, errors
+}
+
+func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
+
+	if s.SeedRasterzen {
+
+		err := s.worker.RenderRasterzenTile(t)
+
+		if err != nil {
+			return false, []error{err}
+		}
+	}
+
+	done_ch := make(chan bool)
+	err_ch := make(chan error)
+
+	remaining := 0
+
+	if s.SeedPNG {
+
+		remaining += 1
+
+		go func() {
+			err := s.worker.RenderPNGTile(t)
+
+			if err != nil {
+				err_ch <- err
+			}
+
+			done_ch <- true
+		}()
+	}
+
+	if s.SeedSVG {
+
+		remaining += 1
+
+		go func() {
+
+			err := s.worker.RenderSVGTile(t)
+
+			if err != nil {
+				err_ch <- err
+			}
+
+			done_ch <- true
+		}()
+	}
+
+	errors := make([]error, 0)
+
+	for remaining > 0 {
+		select {
+		case <-done_ch:
+			remaining -= 1
+		case e := <-err_ch:
+			errors = append(errors, e)
+		default:
+			// pass
 		}
 	}
 

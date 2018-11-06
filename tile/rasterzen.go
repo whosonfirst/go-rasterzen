@@ -29,7 +29,7 @@ type FeatureCollection struct {
 	Features []interface{} `json:"features"`
 }
 
-func SeedRasterzen(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
+func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
 
 	z := int(t.Z)
 	x := int(t.X)

@@ -175,46 +175,12 @@ $> ll ./cache/nextzen/13/*/*.json
 -rw-r--r--  1 wof  staff  202508 Jun 12 12:29 ./cache/nextzen/13/1313/3172.json
 ```
 
-#### Using `rasterd` with Leaflet
-
-```
-<html>
-  <head>
-    <title>rasterd</title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
-    
-    <style type="text/css">
-      #map { width:100%; height:600px; }
-      .leaflet-tile { border: dashed red 1px; }
-    </style>
-  </head>
-  
-  <body>
-    <div id="map"></div>
-    
-    <script>
-      var api_key = 'NEXTZEN_API_KEY';		// https://developers.nextzen.org/
-      var format = 'png';			// you can also request 'svg'
-
-      var map = L.map('map').setView([37.613858, -122.37366], 13);
-      var layer = L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.json?api_key=' + api_key, {maxZoom: 16});
-
-      layer.addTo(map);
-      	  
-    </script>
-    
-  </body>
-</html>
-```
-
 ### rasterzen-seed
 
 Pre-seed one or more rasterzen tiles (and their SVG or PNG derivatives).
 
 ```
-$> ./bin/rasterzen-seed -h
+./bin/rasterzen-seed -h
 Usage of ./bin/rasterzen-seed:
   -extent value
     	One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.
@@ -224,12 +190,16 @@ Usage of ./bin/rasterzen-seed:
     	The root of your filesystem cache. If empty rasterd will try to use the current working directory.
   -go-cache
     	Cache tiles with an in-memory (go-cache) cache.
+  -lambda-dsn value
+    	A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION'
+  -lambda-function string
+    	A valid AWS Lambda function name. (default "Rasterzen")
   -max-zoom int
     	The maximum zoom level to fetch for a tile extent. (default 16)
   -min-zoom int
     	The minimum zoom level to fetch for a tile extent. (default 1)
   -mode string
-    	Valid modes are: extent, tiles. (default "tiles")
+    	The mode to use when calculating tiles. Valid modes are: extent, tiles. (default "tiles")
   -nextzen-apikey string
     	A valid Nextzen API key.
   -nextzen-debug
@@ -244,12 +214,20 @@ Usage of ./bin/rasterzen-seed:
     	A valid go-whosonfirst-aws DSN string
   -s3-opts string
     	A valid go-whosonfirst-cache-s3 options string
+  -seed-all
+    	See all the tile formats
+  -seed-max-workers int
+    	The maximum number of concurrent workers to invoke when seeding tiles (default 100)
   -seed-png
     	Seed PNG tiles.
+  -seed-rasterzen
+    	Seed Rasterzen tiles.
   -seed-svg
-    	Seed SVG tiles. (default true)
-  -seed-workers int
-    	The maximum number of concurrent workers to invoke when seeding tiles (default 100)
+    	Seed SVG tiles.
+  -seed-worker string
+    	The type of worker for seeding tiles. Valid workers are: lambda, local. (default "local")
+  -timings
+    	Display timings for tile seeding.
 ```
 
 For example:
@@ -265,15 +243,24 @@ $> ./bin/rasterzen-seed -fs-cache -fs-root cache -nextzen-apikey {NEXTZEN_APIKEY
 ...and so on
 ```
 
-Or:
+Or, if you've deployed `rasterd` as a AWS Lambda function (see below) you can use that function as your tile seed "worker". For example:
 
 ```
-$> ./bin/rasterzen-seed -mode extent -extent '-122.405228 37.604481 -122.355044 37.645194' -min-zoom 2 -max-zoom 16 -nextzen-apikey {NEXTZEN_APIKEY} -fs-cache -fs-root ./cache2 -seed-worker lambda -lambda-function Rasterzen -lambda-dsn 'credentials=session region=us-west-2' -timings
+$> ./bin/rasterzen-seed -mode extent -extent '-122.405228 37.604481 -122.355044 37.645194' -min-zoom 2 -max-zoom 16 -nextzen-apikey {NEXTZEN_APIKEY} -seed-worker lambda -lambda-function {LAMBDA_FUNCTION} -lambda-dsn 'credentials={AWS_CREDENTIALS} region={AWS_REGION}' -seed-png
+15:50:58.758870 [rasterzen-seed] STATUS Time to seed tile ({16 10489 25361}) 948.46835ms
+15:50:58.802463 [rasterzen-seed] STATUS Time to seed tile ({16 10488 25364}) 1.600181332s
+15:50:58.802491 [rasterzen-seed] STATUS Time to seed tile ({16 10490 25369}) 1.605183373s
+15:50:58.802499 [rasterzen-seed] STATUS Time to seed tile ({16 10485 25362}) 1.604714453s
+15:50:58.802506 [rasterzen-seed] STATUS Time to seed tile ({16 10490 25368}) 1.598768809s
+15:50:58.987440 [rasterzen-seed] STATUS Time to seed tile ({16 10484 25364}) 4.284314644s
+15:50:59.010505 [rasterzen-seed] STATUS Time to seed tile ({15 5246 12684}) 4.306041647s
+15:50:59.010518 [rasterzen-seed] STATUS Time to seed tile ({15 5242 12685}) 1.222798064s
+... and so on
 ```
 
-## Docker
+Note that in the example above we haven't specified any local caching sources, as we did in the first example, so tiles will be rendered in AWS and cached (or not) depending on how your Lambda function is configured.
 
-Not yet.
+Essentially what the second example is doing is pre-seeding an S3 cache which might be something you'd want to do if you want to serve `PNG` tiles but a) don't want to suffer what the (sometimes very long) wait times generating raster tiles or b) don't want to deal with the hoop-jumping around images and AWS Lambda / API Gateway integrations (see below).
 
 ## Lambda
 
@@ -347,6 +334,10 @@ This [redefines the default `createTile`
 method](https://leafletjs.com/examples/extending/extending-2-layers.html) to
 fetch the tile in question with the correct `Accept:` header discussed above and
 then hands the resulting image back to Leaflet. Computers, right... ?
+
+## Docker
+
+Not yet.
 
 ## Nextzen options
 

@@ -73,12 +73,19 @@ func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache, nz_o
 	return &w, nil
 }
 
-func (w *LambdaWorker) SeedTile(t slippy.Tile) error {
-
-	return w.seedTile(t, "png")
+func (w *LambdaWorker) RenderRasterzenTile(t slippy.Tile) error {
+	return w.renderTile(t, "rasterzen", "json")
 }
 
-func (w *LambdaWorker) seedTile(t slippy.Tile, format string) error {
+func (w *LambdaWorker) RenderSVGTile(t slippy.Tile) error {
+	return w.renderTile(t, "svg", "svg")
+}
+
+func (w *LambdaWorker) RenderPNGTile(t slippy.Tile) error {
+	return w.renderTile(t, "png", "png")
+}
+
+func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
 
 	cache_key := tile.CacheKeyForTile(t, format, format)
 	uri := fmt.Sprintf("/%s", cache_key)

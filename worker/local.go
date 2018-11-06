@@ -27,36 +27,20 @@ func NewLocalWorker(c cache.Cache, nz_opts *nextzen.Options) (Worker, error) {
 	return &w, nil
 }
 
-func (w *LocalWorker) SeedTile(t slippy.Tile) error {
+func (w *LocalWorker) RenderRasterzenTile(t slippy.Tile) error {
 
-	if !w.SeedSVG && !w.SeedPNG {
+	_, err := tile.RenderRasterzenTile(t, w.cache, w.nextzen_options)
+	return err
+}
 
-		_, err := tile.SeedRasterzen(t, w.cache, w.nextzen_options)
+func (w *LocalWorker) RenderSVGTile(t slippy.Tile) error {
 
-		if err != nil {
-			return err
-		}
-	}
+	_, err := tile.RenderSVGTile(t, w.cache, w.nextzen_options)
+	return err
+}
 
-	if w.SeedSVG {
+func (w *LocalWorker) RenderPNGTile(t slippy.Tile) error {
 
-		_, err := tile.SeedSVG(t, w.cache, w.nextzen_options)
-
-		if err != nil {
-			return err
-		}
-
-	}
-
-	if w.SeedPNG {
-
-		_, err := tile.SeedPNG(t, w.cache, w.nextzen_options)
-
-		if err != nil {
-			return err
-		}
-
-	}
-
-	return nil
+	_, err := tile.RenderPNGTile(t, w.cache, w.nextzen_options)
+	return err
 }

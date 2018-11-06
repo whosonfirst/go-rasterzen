@@ -5,5 +5,7 @@ import (
 )
 
 type Worker interface {
-	SeedTile(slippy.Tile) error
+	RenderRasterzenTile(slippy.Tile) error
+	RenderSVGTile(slippy.Tile) error
+	RenderPNGTile(slippy.Tile) error
 }

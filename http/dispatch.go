@@ -131,7 +131,7 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 		nz_opts.ApiKey = api_key
 	}
 
-	fh, err := tile.SeedRasterzen(*t, h.Cache, nz_opts)
+	fh, err := tile.RenderRasterzenTile(*t, h.Cache, nz_opts)
 
 	if err != nil {
 		return err

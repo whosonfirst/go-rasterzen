@@ -99,7 +99,7 @@ func main() {
 	nextzen_debug := flag.Bool("nextzen-debug", false, "Log requests (to STDOUT) to Nextzen tile servers.")
 	nextzen_uri := flag.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
 
-	var mode = flag.String("mode", "tiles", "Valid modes are: extent, tiles.")
+	var mode = flag.String("mode", "tiles", "The mode to use when calculating tiles. Valid modes are: extent, tiles.")
 
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
@@ -108,19 +108,30 @@ func main() {
 	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
 	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
-	// seed_svg := flag.Bool("seed-svg", true, "Seed SVG tiles.")
-	// seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
-	seed_worker := flag.String("seed-worker", "local", "...")
+	seed_rasterzen := flag.Bool("seed-rasterzen", false, "Seed Rasterzen tiles.")
+	// seed_geojson := flag.Bool("seed-geojson", true, "Seed GeoJSON tiles.")
+	seed_svg := flag.Bool("seed-svg", false, "Seed SVG tiles.")
+	seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
+	seed_all := flag.Bool("seed-all", false, "See all the tile formats")
+
+	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local.")
 	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
 
 	var lambda_dsn flags.DSNString
-	flag.Var(&lambda_dsn, "lambda-dsn", "")
+	flag.Var(&lambda_dsn, "lambda-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION'")
 
-	lambda_function := flag.String("lambda-function", "rasterzen", "...")
+	lambda_function := flag.String("lambda-function", "Rasterzen", "A valid AWS Lambda function name.")
 
-	timings := flag.Bool("timings", false, "...")
+	timings := flag.Bool("timings", false, "Display timings for tile seeding.")
 
 	flag.Parse()
+
+	if *seed_all {
+		*seed_rasterzen = true
+		// *seed_geojson = true
+		*seed_svg = true
+		*seed_png = true
+	}
 
 	logger := log.SimpleWOFLogger()
 
@@ -255,6 +266,11 @@ func main() {
 	seeder.MaxWorkers = *max_workers
 	seeder.Logger = logger
 	seeder.Timings = *timings
+
+	seeder.SeedRasterzen = *seed_rasterzen
+	// seeder.SeedGeoJSON = *seed_geojson
+	seeder.SeedSVG = *seed_svg
+	seeder.SeedPNG = *seed_png
 
 	tileset, err := seed.NewTileSet()
 
