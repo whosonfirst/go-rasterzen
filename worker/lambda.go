@@ -91,6 +91,17 @@ func (w *LambdaWorker) RenderPNGTile(t slippy.Tile) error {
 func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
 
 	cache_key := tile.CacheKeyForTile(t, prefix, format)
+
+	cached, err := CheckCache(w.cache, cache_key)
+
+	if err != nil {
+		return err
+	}
+
+	if cached {
+		return nil
+	}
+
 	uri := fmt.Sprintf("/%s", cache_key)
 
 	api_key := w.nextzen_options.ApiKey

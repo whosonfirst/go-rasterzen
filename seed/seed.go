@@ -164,6 +164,20 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 
 	if s.SeedRasterzen {
 
+		// please figure me out... (20181105/thisisaaronland)
+
+		/*
+			cache_key := tile.CacheKeyForRasterzenTile(t)
+
+			cached, err := worker.IsCached(s.worker.cache, cache_key)
+
+			if err != nil {
+				return err
+			}
+
+			if !cached {
+		*/
+
 		err := s.worker.RenderRasterzenTile(t)
 
 		if err != nil {
