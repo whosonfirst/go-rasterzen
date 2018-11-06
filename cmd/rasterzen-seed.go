@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"github.com/go-spatial/geom"
@@ -321,7 +322,10 @@ func main() {
 		logger.Fatal("Invalid or unsupported mode")
 	}
 
-	ok, errs := seeder.SeedTileSet(tileset)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	ok, errs := seeder.SeedTileSet(ctx, tileset)
 
 	if !ok {
 

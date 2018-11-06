@@ -1,6 +1,7 @@
 package seed
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/go-spatial/geom/slippy"
@@ -82,7 +83,7 @@ func NewTileSeeder(w worker.Worker) (*TileSeeder, error) {
 	return &s, nil
 }
 
-func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
+func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []error) {
 
 	if s.Timings {
 
@@ -102,7 +103,35 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
 
-	remaining := ts.Count()
+	count := ts.Count()
+
+	var remaining int32
+	atomic.StoreInt32(&remaining, count)
+
+	if s.Timings {
+
+		ticker := time.NewTicker(time.Second * 5)
+		ticker_ch := make(chan bool)
+
+		defer func() {
+			ticker_ch <- true
+		}()
+
+		go func() {
+
+			for range ticker.C {
+
+				select {
+				case <-ticker_ch:
+					return
+				default:
+					r := atomic.LoadInt32(&remaining)
+					s.Logger.Status("%d / %d tiles remaining to be processed", r, count)
+				}
+			}
+		}()
+
+	}
 
 	tile_func := func(key, value interface{}) bool {
 
@@ -110,7 +139,21 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 
 		go func(t slippy.Tile, throttle chan bool, done_ch chan bool, err_ch chan error) {
 
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				// pass
+			}
+
 			<-throttle
+
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				// pass
+			}
 
 			if s.Timings {
 
@@ -145,10 +188,10 @@ func (s *TileSeeder) SeedTileSet(ts *TileSet) (bool, []error) {
 
 	errors := make([]error, 0)
 
-	for remaining > 0 {
+	for atomic.LoadInt32(&remaining) > 0 {
 		select {
 		case <-done_ch:
-			remaining -= 1
+			atomic.AddInt32(&remaining, -1)
 		case e := <-err_ch:
 			errors = append(errors, e)
 		default:
