@@ -1,6 +1,8 @@
 package worker
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,8 +13,9 @@ import (
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-aws/session"
 	"github.com/whosonfirst/go-whosonfirst-cache"
+	"io"
 	"io/ioutil"
-	"log"
+	_ "log"
 	"strings"
 )
 
@@ -87,10 +90,8 @@ func (w *LambdaWorker) RenderPNGTile(t slippy.Tile) error {
 
 func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
 
-	cache_key := tile.CacheKeyForTile(t, format, format)
+	cache_key := tile.CacheKeyForTile(t, prefix, format)
 	uri := fmt.Sprintf("/%s", cache_key)
-
-	log.Println("SEED", format, uri)
 
 	api_key := w.nextzen_options.ApiKey
 
@@ -145,9 +146,23 @@ func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
 		return err
 	}
 
-	// log.Println("LAMBDA", cache_key, len(rsp.Body))
+	var r io.Reader
 
-	r := strings.NewReader(rsp.Body)
+	if format == "png" {
+
+		data, err := base64.StdEncoding.DecodeString(rsp.Body)
+
+		if err != nil {
+			return err
+		}
+
+		r = bytes.NewReader(data)
+
+	} else {
+
+		r = strings.NewReader(rsp.Body)
+	}
+
 	fh := ioutil.NopCloser(r)
 
 	_, err = w.cache.Set(cache_key, fh)
