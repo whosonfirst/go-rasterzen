@@ -85,9 +85,9 @@ func NewTileSeeder(w worker.Worker) (*TileSeeder, error) {
 
 func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []error) {
 
+	t1 := time.Now()
+	
 	if s.Timings {
-
-		t1 := time.Now()
 
 		defer func() {
 			s.Logger.Status("Time to seed all tiles %v", time.Since(t1))
@@ -126,7 +126,7 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 					return
 				default:
 					r := atomic.LoadInt32(&remaining)
-					s.Logger.Status("%d / %d tiles remaining to be processed", r, count)
+					s.Logger.Status("%d / %d tiles remaining to be processed (%v)", r, count, time.Since(t1))
 				}
 			}
 		}()
@@ -160,7 +160,7 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 				t1 := time.Now()
 
 				defer func() {
-					s.Logger.Status("Time to seed tile (%v) %v", t, time.Since(t1))
+					s.Logger.Status("Time to seed tile (%d/%d/%d) %v", t.Z, t.X, t.Y, time.Since(t1))
 				}()
 			}
 
