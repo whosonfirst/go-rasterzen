@@ -145,7 +145,12 @@ func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
 	// {"statusCode":200,"headers":{"Access-Control-Allow-Origin":"*","Content-Type":"image/svg+xml"},"body": ...
 
 	if *aws_rsp.StatusCode != int64(200) {
-		msg := fmt.Sprintf("Lambda err %d (%s)", aws_rsp.StatusCode, aws_rsp.FunctionError)
+		msg := fmt.Sprintf("Lambda invocation error: %d (%s)", aws_rsp.StatusCode, aws_rsp.FunctionError)
+		return errors.New(msg)
+	}
+
+	if aws_rsp.FunctionError != nil {
+		msg := fmt.Sprintf("Lambda function error: %s", *aws_rsp.FunctionError)
 		return errors.New(msg)
 	}
 

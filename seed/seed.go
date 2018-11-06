@@ -86,7 +86,7 @@ func NewTileSeeder(w worker.Worker) (*TileSeeder, error) {
 func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []error) {
 
 	t1 := time.Now()
-	
+
 	if s.Timings {
 
 		defer func() {
