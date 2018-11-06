@@ -233,7 +233,7 @@ Usage of ./bin/rasterzen-seed:
 For example:
 
 ```
-$> ./bin/rasterzen-seed -fs-cache -fs-root cache -nextzen-apikey {NEXTZEN_APIKEY} -mode extent -extent '-73.9475518701 45.4145906777 -73.4761975429 45.7037982616' -zoom 10 -zoom 11 -zoom 12 -seed-png
+$> ./bin/rasterzen-seed -fs-cache -fs-root cache -nextzen-apikey {NEXTZEN_APIKEY} -mode extent -extent '-73.9475518701 45.4145906777 -73.4761975429 45.7037982616' -min-zoom 10 -max-zoom 12 -seed-png
 2018/11/01 12:35:27 enable filesystem cache layer
 2018/11/01 12:35:27 BUNK GEOMETRY (collect)
 2018/11/01 12:35:27 BUNK GEOMETRY (process)
