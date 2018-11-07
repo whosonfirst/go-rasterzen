@@ -17,6 +17,7 @@ document to a PNG file. It uses (a patched version of) the
 To read about this package being used in production you should read the following blog posts:
 
 * [Maps (and map tiles) at SFO Museum](https://millsfield.sfomuseum.org/blog/2018/07/31/maps/)
+* [Sweet spots between the extremes](https://millsfield.sfomuseum.org/blog/2018/11/07/rasterzen/)
 
 Some important caveats:
 
