@@ -174,7 +174,7 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 			if !ok {
 
 				for _, e := range errs {
-					msg := fmt.Sprintf("Unabled to seed %v because %s", t, e)
+					msg := fmt.Sprintf("Unable to seed %v because %s", t, e)
 					err_ch <- errors.New(msg)
 				}
 			}
