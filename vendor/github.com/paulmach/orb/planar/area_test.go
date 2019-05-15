@@ -224,35 +224,60 @@ func TestCentroid_RingAdv(t *testing.T) {
 	// |     |
 	// +-----+
 
+	centroid, area := CentroidArea(ring)
+
 	expected := orb.Point{1.5, 0.45}
-	if c, _ := CentroidArea(ring); !c.Equal(expected) {
-		t.Errorf("incorrect centroid: %v != %v", c, expected)
+	if !centroid.Equal(expected) {
+		t.Errorf("incorrect centroid: %v != %v", centroid, expected)
+	}
+
+	if area != -2.5 {
+		t.Errorf("incorrect area: %v != 2.5", area)
 	}
 }
 
 func TestCentroidArea_Polygon(t *testing.T) {
-	r1 := orb.Ring{{0, 0}, {4, 0}, {4, 3}, {0, 3}, {0, 0}}
-	r1.Reverse()
+	t.Run("polygon with hole", func(t *testing.T) {
+		r1 := orb.Ring{{0, 0}, {4, 0}, {4, 3}, {0, 3}, {0, 0}}
+		r1.Reverse()
 
-	r2 := orb.Ring{{2, 1}, {3, 1}, {3, 2}, {2, 2}, {2, 1}}
-	poly := orb.Polygon{r1, r2}
+		r2 := orb.Ring{{2, 1}, {3, 1}, {3, 2}, {2, 2}, {2, 1}}
+		poly := orb.Polygon{r1, r2}
 
-	centroid, area := CentroidArea(poly)
-	if !centroid.Equal(orb.Point{21.5 / 11.0, 1.5}) {
-		t.Errorf("%v", 21.5/11.0)
-		t.Errorf("incorrect centroid: %v", centroid)
-	}
+		centroid, area := CentroidArea(poly)
+		if !centroid.Equal(orb.Point{21.5 / 11.0, 1.5}) {
+			t.Errorf("%v", 21.5/11.0)
+			t.Errorf("incorrect centroid: %v", centroid)
+		}
 
-	if area != 11 {
-		t.Errorf("incorrect area: %v != 11", area)
-	}
+		if area != 11 {
+			t.Errorf("incorrect area: %v != 11", area)
+		}
+	})
 
-	// empty polygon
-	e := orb.Point{0.5, 1}
-	c, _ := CentroidArea(orb.Polygon{{{0, 1}, {1, 1}, {0, 1}}})
-	if !c.Equal(e) {
-		t.Errorf("incorrect point: %v != %v", c, e)
-	}
+	t.Run("collapsed", func(t *testing.T) {
+		e := orb.Point{0.5, 1}
+		c, _ := CentroidArea(orb.Polygon{{{0, 1}, {1, 1}, {0, 1}}})
+		if !c.Equal(e) {
+			t.Errorf("incorrect point: %v != %v", c, e)
+		}
+	})
+
+	t.Run("empty right half", func(t *testing.T) {
+		poly := orb.Polygon{
+			{{0, 0}, {4, 0}, {4, 4}, {0, 4}, {0, 0}},
+			{{2, 0}, {2, 4}, {4, 4}, {4, 0}, {2, 0}},
+		}
+
+		centroid, area := CentroidArea(poly)
+		if v := (orb.Point{1, 2}); !centroid.Equal(v) {
+			t.Errorf("incorrect centroid: %v != %v", centroid, v)
+		}
+
+		if area != 8 {
+			t.Errorf("incorrect area: %v != 8", area)
+		}
+	})
 }
 
 func TestCentroidArea_Bound(t *testing.T) {

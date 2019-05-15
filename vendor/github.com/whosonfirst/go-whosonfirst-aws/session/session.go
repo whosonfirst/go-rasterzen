@@ -1,9 +1,21 @@
 package session
 
 import (
+	"github.com/aaronland/go-string/dsn"
 	aws_session "github.com/aws/aws-sdk-go/aws/session"
 	"github.com/whosonfirst/go-whosonfirst-aws/config"
 )
+
+func NewSessionWithDSN(dsn_str string) (*aws_session.Session, error) {
+
+	dsn_map, err := dsn.StringToDSNWithKeys(dsn_str, "credentials", "region")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return NewSessionWithCredentials(dsn_map["credentials"], dsn_map["region"])
+}
 
 func NewSessionWithCredentials(str_creds string, region string) (*aws_session.Session, error) {
 

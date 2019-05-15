@@ -23,6 +23,7 @@ func main() {
 	var region = flag.String("region", "us-east-1", "A valid AWS S3 region")
 	var credentials = flag.String("credentials", "env:", "A valid S3 credentials flag. "+valid_flags)
 
+	var recursive = flag.Bool("recursive", false, "...")
 	var timings = flag.Bool("timings", false, "...")
 
 	flag.Parse()
@@ -149,7 +150,12 @@ func main() {
 
 		case "DELETE":
 
-			err = conn.Delete(path)
+			if *recursive {
+				err = conn.DeleteRecursive(path)
+
+			} else {
+				err = conn.Delete(path)
+			}
 
 		case "URI":
 

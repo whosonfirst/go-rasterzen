@@ -14,7 +14,32 @@ import (
 
 	. "github.com/srwiley/rasterx"
 	"golang.org/x/image/colornames"
+	"golang.org/x/image/math/fixed"
 )
+
+func getOpenCubicPath() (p Path) {
+	p.Start(ToFixedP(50, 50))
+	p.Line(ToFixedP(100, 50)) // Yes I meant to do this
+	p.CubeBezier(ToFixedP(120, 70), ToFixedP(80, 90), ToFixedP(100, 100))
+	p.CubeBezier(ToFixedP(101, 95), ToFixedP(80, 90), ToFixedP(75, 100))
+	p.Line(ToFixedP(95, 120))
+	p.Line(ToFixedP(78, 100))
+	return
+}
+
+func getOpenCubicPath2() (p Path) {
+	//M87, 212 C 138, 90,  269, 75, 259, 147 C 254, 71, 104,176, 128, 282z
+	p.Start(ToFixedP(87, 212))
+	p.CubeBezier(ToFixedP(138, 90), ToFixedP(269, 75), ToFixedP(259, 147))
+	p.CubeBezier(ToFixedP(254, 71), ToFixedP(104, 176), ToFixedP(128, 282))
+	p.Stop(true)
+
+	p.Start(ToFixedP(600-87, 212))
+	p.CubeBezier(ToFixedP(600-138, 90), ToFixedP(600-269, 75), ToFixedP(600-259, 147))
+	p.CubeBezier(ToFixedP(600-254, 71), ToFixedP(600-104, 176), ToFixedP(600-128, 282))
+	p.Stop(true)
+	return
+}
 
 func getPartPath() (testPath Path) {
 	//M210.08,222.97
@@ -49,6 +74,8 @@ func getPartPath() (testPath Path) {
 func GetTestPath() (testPath Path) {
 	//Path for Q
 	testPath = getPartPath()
+
+	testPath.ToSVGPath()
 
 	//M162.22,109.69 M162.22,109.69
 	testPath.Start(ToFixedP(162.22, 109.69))
@@ -238,55 +265,247 @@ func TestRoundRect(t *testing.T) {
 
 }
 
+func isClose(a, b Matrix2D, epsilon float64) bool {
+	if math.Abs(a.A-b.A) > epsilon ||
+		math.Abs(a.B-b.B) > epsilon ||
+		math.Abs(a.C-b.C) > epsilon ||
+		math.Abs(a.D-b.D) > epsilon ||
+		math.Abs(a.E-b.E) > epsilon ||
+		math.Abs(a.F-b.F) > epsilon {
+		return false
+	}
+	return true
+}
+
+func TestCircleLineIntersect(t *testing.T) {
+	a := fixed.Point26_6{X: 30 * 64, Y: 55 * 64}
+	b := fixed.Point26_6{X: 40 * 64, Y: 40 * 64}
+	c := fixed.Point26_6{X: 40 * 64, Y: 40 * 64}
+	r := fixed.Int26_6(10 * 64)
+	_, touching := RayCircleIntersection(a, b, c, r)
+	if touching == false {
+		t.Error("Ray not intersecting circle ", touching)
+	}
+}
+
+func TestGeom(t *testing.T) {
+	epsilon := 1e-12 // allowed range for round off error
+	a := Identity
+	b := a.Rotate(-math.Pi / 2)
+
+	x, y := 3.0, 4.0
+	m, n := b.Transform(x, y)
+	if math.Abs(m-y) > epsilon || math.Abs(x+n) > epsilon {
+		t.Error("rotate failed", m-y, x-n, m, n)
+	}
+
+	m, n = b.TransformVector(x, y)
+	if math.Abs(m-y) > epsilon || math.Abs(x+n) > epsilon {
+		t.Error("rotate failed", m-y, x-n, m, n)
+	}
+
+	c := b.Invert()
+	d := b.Mult(c)
+	if isClose(d, Identity, epsilon) == false {
+		t.Error("Matrix inversion failed", b, c, d)
+	}
+
+	s1 := a.SkewY(2)
+	if s1 == Identity {
+		t.Error("skew failed")
+	}
+	s2 := s1.SkewY(-2)
+	if !isClose(s2, a, epsilon) {
+		t.Error("reverse skewy failed", s1, s2)
+	}
+
+	t1 := a.SkewX(2)
+	if t1 == Identity {
+		t.Error("skewx failed")
+	}
+	t2 := t1.SkewX(-2)
+	if !isClose(t2, a, epsilon) {
+		t.Error("reverse skewx failed", t1, t2)
+	}
+}
+
 func TestShapes(t *testing.T) {
 	var (
-		wx, wy    = 512, 512
-		img       = image.NewRGBA(image.Rect(0, 0, wx, wy))
-		scannerGV = NewScannerGV(wx, wy, img, img.Bounds())
+		wx, wy = 512, 512
+
+		imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+
+		scannerGV = NewScannerGV(wx, wy, imgs, imgs.Bounds())
 		f         = NewFiller(wx, wy, scannerGV)
+		s         = NewStroker(wx, wy, scannerGV)
+		d         = NewDasher(wx, wy, scannerGV)
 	)
 
-	scannerGV.SetColor(colornames.Blueviolet)
-	AddEllipse(240, 200, 140, 180, 0, f)
+	doShapes(t, f, f, "testdata/shapeGVF.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	s.SetStroke(10*64, 4*64, RoundCap, nil, RoundGap, ArcClip)
+	doShapes(t, s, s, "testdata/shapeGVS1.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	s.SetStroke(10*64, 4*64, nil, RoundCap, RoundGap, ArcClip)
+	doShapes(t, s, s, "testdata/shapeGVS2.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	s.SetStroke(10*64, 4*64, nil, nil, nil, Miter)
+	doShapes(t, s, s, "testdata/shapeGVS3.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	d.SetStroke(10*64, 4*64, SquareCap, nil, RoundGap, ArcClip, []float64{33, 12}, 30)
+	doShapes(t, d, d, "testdata/shapeGVD0.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	d.SetStroke(10*64, 4*64, RoundCap, nil, RoundGap, Miter, []float64{33, 12}, 250)
+	doShapes(t, d, d, "testdata/shapeGVD1.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	d.SetStroke(10*64, 4*64, ButtCap, CubicCap, QuadraticGap, Arc, []float64{33, 12}, -30)
+	doShapes(t, d, d, "testdata/shapeGVD2.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	d.SetStroke(10*64, 4*64, nil, QuadraticCap, RoundGap, MiterClip, []float64{12, 4}, 14)
+	doShapes(t, d, d, "testdata/shapeGVD3.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	d.SetStroke(10*64, 4*64, RoundCap, nil, RoundGap, Bevel, []float64{0, 0}, 0)
+	doShapes(t, d, d, "testdata/shapeGVD4.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	d.SetStroke(10*64, 4*64, SquareCap, nil, nil, Round, []float64{}, 0)
+	doShapes(t, d, d, "testdata/shapeGVD5.png", imgs)
+
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	d.SetStroke(10*64, 4*64, RoundCap, nil, RoundGap, MiterClip, nil, 0)
+	doShapes(t, d, d, "testdata/shapeGVD6.png", imgs)
+
+	getOpenCubicPath().AddTo(f)
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
 	f.Draw()
 	f.Clear()
 
-	scannerGV.SetColor(colornames.Darkseagreen)
-	AddEllipse(240, 200, 40, 180, 45, f)
-	f.Draw()
-	f.Clear()
+	s.SetStroke(4*64, 1, SquareCap, nil, RoundGap, ArcClip)
+	getOpenCubicPath().AddTo(s)
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	s.Draw()
+	s.Clear()
 
-	scannerGV.SetColor(colornames.Darkgoldenrod)
-	AddCircle(300, 300, 80, f)
-	f.Draw()
-	f.Clear()
-
-	scannerGV.SetColor(colornames.Forestgreen)
-	AddRoundRect(30, 30, 130, 130, 10, 20, 45, RoundGap, f)
-	f.Draw()
-	f.Clear()
-
-	scannerGV.SetColor(ApplyOpacity(colornames.Lightgoldenrodyellow, 0.6))
-	AddCircle(80, 80, 50, f)
-	f.Draw()
-	f.Clear()
-
-	scannerGV.SetColor(colornames.Lemonchiffon)
-	scannerGV.SetClip(image.Rect(65, 65, 95, 95))
-	AddCircle(80, 80, 50, f)
-	f.Draw()
-	f.Clear()
-
-	scannerGV.SetClip(image.ZR)
-
-	scannerGV.SetColor(colornames.Firebrick)
-	AddRect(370, 370, 400, 500, 15, f)
-	f.Draw()
-	f.Clear()
-
-	err := SaveToPngFile("testdata/shapeGV.png", img)
+	err := SaveToPngFile("testdata/shapeT1.png", imgs)
 	if err != nil {
 		t.Error(err)
+	}
+
+	s.SetStroke(4<<6, 2<<6, SquareCap, nil, RoundGap, ArcClip)
+	getOpenCubicPath2().AddTo(s)
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	s.Draw()
+	s.Clear()
+
+	err = SaveToPngFile("testdata/shapeT2.png", imgs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	s.SetStroke(25<<6, 200<<6, CubicCap, CubicCap, CubicGap, ArcClip)
+	p := getOpenCubicPath2()
+	p.AddTo(s)
+	_ = p.String() // Just flexes to ToSVGString
+	imgs = image.NewRGBA(image.Rect(0, 0, wx, wy))
+	scannerGV.Dest = imgs
+	s.Draw()
+	s.Clear()
+	p.Clear()
+
+	err = SaveToPngFile("testdata/shapeT3.png", imgs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	d.SetBounds(-20, -12) // Test min x and y value checking
+
+}
+
+func doShapes(t *testing.T, f Scanner, fa Adder, fname string, img image.Image) {
+	f.SetColor(colornames.Blueviolet)
+	AddEllipse(240, 200, 140, 180, 0, fa)
+	f.Draw()
+	f.Clear()
+
+	f.SetColor(colornames.Darkseagreen)
+	AddEllipse(240, 200, 40, 180, 45, fa)
+	f.Draw()
+	f.Clear()
+
+	f.SetColor(colornames.Darkgoldenrod)
+	AddCircle(300, 300, 80, fa)
+	f.Draw()
+	f.Clear()
+
+	f.SetColor(colornames.Forestgreen)
+	AddRoundRect(30, 30, 130, 130, 10, 20, 45, RoundGap, fa)
+	f.Draw()
+	f.Clear()
+
+	f.SetColor(colornames.Blueviolet)
+	AddRoundRect(30, 30, 130, 130, 150, 150, 0, nil, fa)
+	f.Draw()
+	f.Clear()
+
+	f.SetColor(ApplyOpacity(colornames.Lightgoldenrodyellow, 0.6))
+	AddCircle(80, 80, 50, fa)
+	f.Draw()
+	f.Clear()
+
+	f.SetColor(colornames.Lemonchiffon)
+	f.SetClip(image.Rect(65, 65, 95, 95))
+	AddCircle(80, 80, 50, fa)
+	f.Draw()
+	f.Clear()
+
+	f.SetClip(image.ZR)
+
+	f.SetColor(colornames.Firebrick)
+	AddRect(370, 370, 400, 500, 15, fa)
+	f.Draw()
+	f.Clear()
+
+	err := SaveToPngFile(fname, img)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestFindElipsecenter(t *testing.T) {
+	var ra, rb = 10.0, 5.0
+	cx, cy := FindEllipseCenter(&ra, &rb, 0.0, 0.0, 0.0, 20.0, 0.0, true, true)
+	if cx != 10 || cy != 0 || ra != 10 || rb != 5 {
+		t.Error("Find elipse center failed ", cx, cy, ra, rb)
+	}
+	cx, cy = FindEllipseCenter(&ra, &rb, 0.0, 0.0, 0.0, 35.0, 5.0, false, true)
+	if ra == 10 || rb == 5 {
+		t.Error("Find elipse center failed with resize of radiuses ", cx, cy, ra, rb)
+	}
+	ra, rb = 5.0, 5.0
+	cx, cy = FindEllipseCenter(&ra, &rb, 0.0, 0.0, 0.0, 35.0, 5.0, true, true)
+	if ra == 10 || rb == 5 {
+		t.Error("Find elipse center failed with resize of radiuses ", cx, cy, ra, rb)
 	}
 }
 
@@ -326,7 +545,7 @@ func TestGradient(t *testing.T) {
 	p := getPartPath()
 
 	f := &d.Filler // This is the anon Filler in the Dasher. It also satisfies
-	// the Rasterizer interface, and will only perform a fill on the path.
+	// the Rasterizer interface, and can only perform a fill on the path.
 
 	offsetPath := &MatrixAdder{Adder: f, M: Identity.Translate(180, 180)}
 
@@ -347,13 +566,62 @@ func TestGradient(t *testing.T) {
 	p.AddTo(offsetPath)
 	f.Draw()
 	f.Clear()
+	offsetPath.Reset()
+	if isClose(offsetPath.M, Identity, 1e-12) == false {
+		t.Error("path reset failed", offsetPath)
+	}
 
 	scannerGV.SetColor(linearGradient.GetColorFunction(1.0))
 	p.AddTo(f)
 	f.Draw()
 	f.Clear()
 
-	// Let try a sinusoidal grid pattern.
+	linearGradient.Spread = RepeatSpread
+	scannerGV.SetColor(linearGradient.GetColorFunction(1.0))
+	AddRect(20, 460, 150, 610, 45, f)
+	f.Draw()
+	f.Clear()
+
+	radialGradient.Units = UserSpaceOnUse
+	scannerGV.SetColor(radialGradient.GetColorFunction(1.0))
+	AddRect(300, 20, 450, 170, 0, f)
+	f.Draw()
+	f.Clear()
+
+	linearGradient.Units = UserSpaceOnUse
+	scannerGV.SetColor(linearGradient.GetColorFunction(1.0))
+	AddRect(300, 180, 450, 200, 0, f)
+	f.Draw()
+	f.Clear()
+
+	radialGradient.Units = ObjectBoundingBox
+	radialGradient.Points = [5]float64{0.5, 0.5, 0, 0, 0.2} // move focus away from
+	scannerGV.SetColor(radialGradient.GetColorFunction(1.0))
+	AddRect(300, 210, 450, 300, 0, f)
+	f.Draw()
+	f.Clear()
+
+	radialGradient.Units = UserSpaceOnUse
+	linearGradient.Spread = PadSpread
+	radialGradient.Points = [5]float64{0.5, 0.5, 0.1, 0.1, 0.5} // move focus away from center
+	scannerGV.SetColor(radialGradient.GetColorFunction(1.0))
+	AddRect(20, 160, 150, 310, 0, f)
+	f.Draw()
+	f.Clear()
+
+	linearGradient.Stops = linearGradient.Stops[0:1]
+	scannerGV.SetColor(linearGradient.GetColorFunction(1.0))
+	AddRect(300, 180, 450, 200, 0, f)
+	f.Draw()
+	f.Clear()
+
+	linearGradient.Stops = linearGradient.Stops[0:0]
+	scannerGV.SetColor(linearGradient.GetColorFunction(1.0))
+	AddRect(300, 180, 450, 200, 0, f)
+	f.Draw()
+	f.Clear()
+
+	// Lets try a sinusoidal grid pattern.
 	var colF ColorFunc = func(x, y int) color.Color {
 		sinx, siny, sinxy := math.Sin(float64(x)*math.Pi/20), math.Sin(float64(y)*math.Pi/10),
 			math.Sin(float64(y+x)*math.Pi/30)
@@ -395,6 +663,13 @@ func TestMultiFunctionGV(t *testing.T) {
 	// the Rasterizer interface, and will only perform a fill on the path.
 
 	p.AddTo(f)
+
+	extentR := scannerGV.GetPathExtent()
+	x := int(extentR.Max.X)
+	y := int(extentR.Max.Y)
+	if x != 13445 && y != 15676 {
+		t.Error("test extent Max value not as expected")
+	}
 	f.Draw()
 	f.Clear()
 

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestApiGatewayRequestMarshaling(t *testing.T) {
@@ -38,7 +39,7 @@ func TestApiGatewayRequestMarshaling(t *testing.T) {
 		t.Errorf("could not marshal event. details: %v", err)
 	}
 
-	test.AssertJsonsEqual(t, inputJSON, outputJSON)
+	assert.JSONEq(t, string(inputJSON), string(outputJSON))
 }
 
 func TestApiGatewayRequestMalformedJson(t *testing.T) {
@@ -65,7 +66,7 @@ func TestApiGatewayResponseMarshaling(t *testing.T) {
 		t.Errorf("could not marshal event. details: %v", err)
 	}
 
-	test.AssertJsonsEqual(t, inputJSON, outputJSON)
+	assert.JSONEq(t, string(inputJSON), string(outputJSON))
 }
 
 func TestApiGatewayResponseMalformedJson(t *testing.T) {
@@ -92,7 +93,7 @@ func TestApiGatewayCustomAuthorizerRequestMarshaling(t *testing.T) {
 		t.Errorf("could not marshal event. details: %v", err)
 	}
 
-	test.AssertJsonsEqual(t, inputJSON, outputJSON)
+	assert.JSONEq(t, string(inputJSON), string(outputJSON))
 }
 
 func TestApiGatewayCustomAuthorizerRequestTypeRequestMarshaling(t *testing.T) {
@@ -115,7 +116,7 @@ func TestApiGatewayCustomAuthorizerRequestTypeRequestMarshaling(t *testing.T) {
 		t.Errorf("could not marshal event. details: %v", err)
 	}
 
-	test.AssertJsonsEqual(t, inputJSON, outputJSON)
+	assert.JSONEq(t, string(inputJSON), string(outputJSON))
 }
 
 func TestApiGatewayCustomAuthorizerRequestMalformedJson(t *testing.T) {
@@ -124,6 +125,33 @@ func TestApiGatewayCustomAuthorizerRequestMalformedJson(t *testing.T) {
 
 func TestApiGatewayCustomAuthorizerRequestTypeRequestMalformedJson(t *testing.T) {
 	test.TestMalformedJson(t, APIGatewayCustomAuthorizerRequestTypeRequest{})
+}
+
+func TestApiGatewayWebsocketRequestMarshaling(t *testing.T) {
+
+	// read json from file
+	inputJSON, err := ioutil.ReadFile("./testdata/apigw-websocket-request.json")
+	if err != nil {
+		t.Errorf("could not open test file. details: %v", err)
+	}
+
+	// de-serialize into Go object
+	var inputEvent APIGatewayWebsocketProxyRequest
+	if err := json.Unmarshal(inputJSON, &inputEvent); err != nil {
+		t.Errorf("could not unmarshal event. details: %v", err)
+	}
+
+	// serialize to json
+	outputJSON, err := json.Marshal(inputEvent)
+	if err != nil {
+		t.Errorf("could not marshal event. details: %v", err)
+	}
+
+	assert.JSONEq(t, string(inputJSON), string(outputJSON))
+}
+
+func TestApiGatewayWebsocketRequestMalformedJson(t *testing.T) {
+	test.TestMalformedJson(t, APIGatewayWebsocketProxyRequest{})
 }
 
 func TestApiGatewayCustomAuthorizerResponseMarshaling(t *testing.T) {
@@ -146,7 +174,7 @@ func TestApiGatewayCustomAuthorizerResponseMarshaling(t *testing.T) {
 		t.Errorf("could not marshal event. details: %v", err)
 	}
 
-	test.AssertJsonsEqual(t, inputJSON, outputJSON)
+	assert.JSONEq(t, string(inputJSON), string(outputJSON))
 }
 
 func TestApiGatewayCustomAuthorizerResponseMalformedJson(t *testing.T) {

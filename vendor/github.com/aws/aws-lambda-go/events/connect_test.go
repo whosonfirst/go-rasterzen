@@ -7,12 +7,13 @@ import (
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConnectMarshaling(t *testing.T) {
 
 	// 1. read JSON from file
-	inputJson := readJsonFromFile(t, "./testdata/connect-event.json")
+	inputJson := test.ReadJSONFromFile(t, "./testdata/connect-event.json")
 
 	// 2. de-serialize into Go object
 	var inputEvent ConnectEvent
@@ -27,7 +28,7 @@ func TestConnectMarshaling(t *testing.T) {
 	}
 
 	// 4. check result
-	test.AssertJsonsEqual(t, inputJson, outputJson)
+	assert.JSONEq(t, string(inputJson), string(outputJson))
 }
 
 func TestConnectMarshalingMalformedJson(t *testing.T) {

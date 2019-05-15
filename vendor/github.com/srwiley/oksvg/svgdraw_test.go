@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"fmt"
 	"image"
-	"math"
 	"os"
 
 	"image/png"
@@ -15,27 +14,25 @@ import (
 
 	. "github.com/srwiley/oksvg"
 	. "github.com/srwiley/rasterx"
-
 	//"github.com/srwiley/go/scanFT"
-	"golang.org/x/image/math/fixed"
 )
 
-const testArco = `M150,350 l 50,-55 
-           a25,25 -30 0,1 50,-25 l 50,-25 
-           a25,50 -30 0,1 50,-25 l 50,-25 
-           a25,75 -30 0,1 50,-25 l 50,-25 
+const testArco = `M150,350 l 50,-55
+           a25,25 -30 0,1 50,-25 l 50,-25
+           a25,50 -30 0,1 50,-25 l 50,-25
+           a25,75 -30 0,1 50,-25 l 50,-25
            a25,100 -30 0,1 50,-25 l 50,15z`
 
-const testArco2 = `M150,350 l 50,-55 
-           a35,25 -30 0,0 50,-25 l 50,-25 
-           a25,50 -30 0,1 50,-25 l 50,-25 
-           a25,75 -30 0,1 50,-25 l 50,-25 
+const testArco2 = `M150,350 l 50,-55
+           a35,25 -30 0,0 50,-25 l 50,-25
+           a25,50 -30 0,1 50,-25 l 50,-25
+           a25,75 -30 0,1 50,-25 l 50,-25
            a25,100 -30 0,1 50,-25, l 50,15z`
 
-const testArcoS = `M150,350 l 50,-55 
+const testArcoS = `M150,350 l 50,-55
            a35,25 -30 0,0 50,-25,
            25,50 -30 0,1 50,-25
-           a25,75 -30 0,1 50,-25 l 50,-25 
+           a25,75 -30 0,1 50,-25 l 50,-25
            a25,100 -30 0,1 50,-25 l 50,15,0,25,-15,-15  z`
 
 // Explicitly call each command in abs and rel mode and concatenated forms
@@ -54,6 +51,30 @@ const testSVG11 = `M20,50 c200,200 800,200 400,300,200,200 800,200 400,300s500,3
 const testSVG12 = `M100,100 Q400,100 250,250 T400,400z`
 const testSVG13 = `M100,100 Q400,100 250,250 t150,150,150,150z`
 
+func TestTransform(t *testing.T) {
+	icon, errSvg := ReadIcon("testdata/landscapeIcons/sea.svg", WarnErrorMode)
+	if errSvg != nil {
+		t.Error(errSvg)
+	}
+	w, h := int(icon.ViewBox.W), int(icon.ViewBox.H)
+	img := image.NewRGBA(image.Rect(0, 0, w*3, h*3))
+
+	scannerGV := NewScannerGV(w*3, h*3, img, img.Bounds())
+
+	raster := NewDasher(w*3, h*3, scannerGV)
+	icon.Draw(raster, 1.0)
+	icon.Transform = Identity.Translate(float64(w), float64(h))
+	icon.Draw(raster, 1.0)
+
+	icon.SetTarget(float64(w), float64(0), float64(w), float64(h)*.5)
+	icon.Draw(raster, 1.0)
+
+	err := SaveToPngFile(fmt.Sprintf("testdata/transform.png"), img)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func DrawIcon(t *testing.T, iconPath string) image.Image {
 	icon, errSvg := ReadIcon(iconPath, WarnErrorMode)
 	if errSvg != nil {
@@ -71,7 +92,6 @@ func DrawIcon(t *testing.T, iconPath string) image.Image {
 	//tb.Max.X /= 2
 	scannerGV := NewScannerGV(w, h, img, img.Bounds())
 	raster := NewDasher(w, h, scannerGV)
-
 	icon.Draw(raster, 1.0)
 	return img
 }
@@ -108,7 +128,7 @@ func SaveToPngFile(filePath string, m image.Image) error {
 	return nil
 }
 
-func _TestSvgPathsStroke(t *testing.T) {
+func TestSvgPathsStroke(t *testing.T) {
 	for i, p := range []string{testArco, testArco2, testArcoS,
 		testSVG0, testSVG1, testSVG2, testSVG3, testSVG4, testSVG5,
 		testSVG6, testSVG7, testSVG8, testSVG9, testSVG10,
@@ -123,12 +143,17 @@ func _TestSvgPathsStroke(t *testing.T) {
 		c := &PathCursor{}
 		d := DefaultStyle
 		icon := SvgIcon{}
+		icon.ViewBox.X = 0
+		icon.ViewBox.Y = 0
+		icon.ViewBox.H = float64(w)
+		icon.ViewBox.W = float64(w)
 
 		err := c.CompilePath(p)
 		if err != nil {
 			t.Error(err)
 		}
-		icon.SVGPaths = append(icon.SVGPaths, SvgPath{d, c.Path})
+		icon.SVGPaths = append(icon.SVGPaths, SvgPath{PathStyle: d, Path: c.Path})
+		icon.SetTarget(0, 0, icon.ViewBox.H, icon.ViewBox.W)
 		icon.Draw(raster, 1)
 
 		err = SaveToPngFile(fmt.Sprintf("testdata/fill_%d.png", i), img)
@@ -148,7 +173,7 @@ func TestLandscapeIcons(t *testing.T) {
 
 func TestTestIcons(t *testing.T) {
 	for _, p := range []string{
-		"astronaut", "jupiter", "lander", "school-bus", "telescope"} {
+		"astronaut", "jupiter", "lander", "school-bus", "telescope", "content-cut-light", "defs"} {
 		SaveIcon(t, "testdata/testIcons/"+p+".svg")
 	}
 }
@@ -165,27 +190,6 @@ func TestStrokeIcons(t *testing.T) {
 		"TestShapes5.svg",
 		"TestShapes6.svg",
 	} {
-		t.Log("reading ", p)
 		SaveIcon(t, "testdata/"+p)
 	}
-}
-
-func _TestM(t *testing.T) {
-	cx, cy := 120.0, 40.0
-
-	rotc := Identity.Rotate(math.Pi/3).Translate(cx, cy)
-
-	irot := rotc.Invert()
-	t.Log("rotc", rotc)
-	t.Log("i rotc", irot)
-	t.Log("r*inv", rotc.Mult(irot))
-}
-
-func _TestCircleLineIntersect(t *testing.T) {
-	a := fixed.Point26_6{30 * 64, 55 * 64}
-	b := fixed.Point26_6{40 * 64, 40 * 64}
-	c := fixed.Point26_6{40 * 64, 40 * 64}
-	r := fixed.Int26_6(10 * 64)
-	x1, touching := RayCircleIntersection(a, b, c, r)
-	t.Log("x1, t ", x1, touching)
 }

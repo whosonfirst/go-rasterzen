@@ -31,15 +31,44 @@ var (
 )
 
 // GeometryScanner is a thing that can scan in sql query results.
+// It can be used as a scan destination:
+//
+//	var s wkb.GeometryScanner
+//	err := db.QueryRow("SELECT latlon FROM foo WHERE id=?", id).Scan(&s)
+//	...
+//	if s.Valid {
+//	  // use s.Geometry
+//	} else {
+//	  // NULL value
+//	}
 type GeometryScanner struct {
 	g        interface{}
 	Geometry orb.Geometry
+	Valid    bool // Valid is true if the geometry is not NULL
 }
 
 // Scanner will return a GeometryScanner that can scan sql query results.
 // The geometryScanner.Geometry attribute will be set to the value.
 // If g is non-nil, it MUST be a pointer to an orb.Geometry
-// type like a Point or LineString. In that case the value will be written to g.
+// type like a Point or LineString. In that case the value will be written to
+// g and the Geometry attribute.
+//
+//	var p orb.Point
+//	err := db.QueryRow("SELECT latlon FROM foo WHERE id=?", id).Scan(wkb.Scanner(&p))
+//	...
+//	// use p
+//
+// If the value may be null check Valid first:
+//
+//	var point orb.Point
+//	s := wkb.Scanner(&point)
+//	err := db.QueryRow("SELECT latlon FROM foo WHERE id=?", id).Scan(s)
+//	...
+//	if s.Valid {
+//	  // use p
+//	} else {
+//	  // NULL value
+//	}
 func Scanner(g interface{}) *GeometryScanner {
 	return &GeometryScanner{g: g}
 }
@@ -48,9 +77,20 @@ func Scanner(g interface{}) *GeometryScanner {
 // This could be into the orb geometry type pointer or, if nil,
 // the scanner.Geometry attribute.
 func (s *GeometryScanner) Scan(d interface{}) error {
+	s.Geometry = nil
+	s.Valid = false
+
+	if d == nil {
+		return nil
+	}
+
 	data, ok := d.([]byte)
 	if !ok {
 		return ErrUnsupportedDataType
+	}
+
+	if data == nil {
+		return nil
 	}
 
 	switch g := s.g.(type) {
@@ -61,6 +101,7 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 		}
 
 		s.Geometry = m
+		s.Valid = true
 		return nil
 	case *orb.Point:
 		p, err := scanPoint(data)
@@ -69,6 +110,8 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 		}
 
 		*g = p
+		s.Geometry = p
+		s.Valid = true
 		return nil
 	case *orb.MultiPoint:
 		p, err := scanMultiPoint(data)
@@ -77,6 +120,8 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 		}
 
 		*g = p
+		s.Geometry = p
+		s.Valid = true
 		return nil
 	case *orb.LineString:
 		p, err := scanLineString(data)
@@ -85,6 +130,8 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 		}
 
 		*g = p
+		s.Geometry = p
+		s.Valid = true
 		return nil
 	case *orb.MultiLineString:
 		p, err := scanMultiLineString(data)
@@ -93,6 +140,8 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 		}
 
 		*g = p
+		s.Geometry = p
+		s.Valid = true
 		return nil
 	case *orb.Ring:
 		m, err := Unmarshal(data)
@@ -102,6 +151,8 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 
 		if p, ok := m.(orb.Polygon); ok && len(p) == 1 {
 			*g = p[0]
+			s.Geometry = p[0]
+			s.Valid = true
 			return nil
 		}
 
@@ -113,6 +164,8 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 		}
 
 		*g = m
+		s.Geometry = m
+		s.Valid = true
 		return nil
 	case *orb.MultiPolygon:
 		m, err := scanMultiPolygon(data)
@@ -121,6 +174,8 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 		}
 
 		*g = m
+		s.Geometry = m
+		s.Valid = true
 		return nil
 	case *orb.Collection:
 		m, err := scanCollection(data)
@@ -129,6 +184,8 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 		}
 
 		*g = m
+		s.Geometry = m
+		s.Valid = true
 		return nil
 	case *orb.Bound:
 		m, err := Unmarshal(data)
@@ -136,7 +193,10 @@ func (s *GeometryScanner) Scan(d interface{}) error {
 			return err
 		}
 
-		*g = m.Bound()
+		b := m.Bound()
+		*g = b
+		s.Geometry = b
+		s.Valid = true
 		return nil
 	}
 
@@ -271,5 +331,9 @@ func Value(g orb.Geometry) driver.Valuer {
 }
 
 func (v value) Value() (driver.Value, error) {
-	return Marshal(v.v)
+	val, err := Marshal(v.v)
+	if val == nil {
+		return nil, err
+	}
+	return val, err
 }

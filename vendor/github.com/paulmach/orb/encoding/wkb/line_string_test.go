@@ -16,6 +16,11 @@ var (
 )
 
 func TestLineString(t *testing.T) {
+	large := orb.LineString{}
+	for i := 0; i < maxPointsAlloc+100; i++ {
+		large = append(large, orb.Point{float64(i), float64(-i)})
+	}
+
 	cases := []struct {
 		name     string
 		data     []byte
@@ -25,6 +30,11 @@ func TestLineString(t *testing.T) {
 			name:     "line string",
 			data:     testLineStringData,
 			expected: testLineString,
+		},
+		{
+			name:     "large line string",
+			data:     MustMarshal(large),
+			expected: large,
 		},
 	}
 
@@ -84,6 +94,11 @@ var (
 )
 
 func TestMultiLineString(t *testing.T) {
+	large := orb.MultiLineString{}
+	for i := 0; i < maxMultiAlloc+100; i++ {
+		large = append(large, orb.LineString{})
+	}
+
 	cases := []struct {
 		name     string
 		data     []byte
@@ -98,6 +113,11 @@ func TestMultiLineString(t *testing.T) {
 			name:     "single multi line string",
 			data:     testMultiLineStringSingleData,
 			expected: testMultiLineStringSingle,
+		},
+		{
+			name:     "large",
+			data:     MustMarshal(large),
+			expected: large,
 		},
 	}
 

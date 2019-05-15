@@ -17,7 +17,7 @@ const (
 	// You don't have permissions to perform the requested operation. The user or
 	// role that is making the request must have at least one IAM permissions policy
 	// attached that grants the required permissions. For more information, see
-	// Access Management (http://docs.aws.amazon.com/IAM/latest/UserGuide/access.html)
+	// Access Management (https://docs.aws.amazon.com/IAM/latest/UserGuide/access.html)
 	// in the IAM User Guide.
 	ErrCodeAccessDeniedException = "AccessDeniedException"
 
@@ -25,8 +25,8 @@ const (
 	// "AccessDeniedForDependencyException".
 	//
 	// The operation that you attempted requires you to have the iam:CreateServiceLinkedRole
-	// so that AWS Organizations can create the required service-linked role. You
-	// don't have that permission.
+	// for organizations.amazonaws.com permission so that AWS Organizations can
+	// create the required service-linked role. You don't have that permission.
 	ErrCodeAccessDeniedForDependencyException = "AccessDeniedForDependencyException"
 
 	// ErrCodeAccountNotFoundException for service response error code
@@ -135,14 +135,14 @@ const (
 	//    in the AWS Organizations User Guide.
 	//
 	//    * MASTER_ACCOUNT_PAYMENT_INSTRUMENT_REQUIRED: To create an organization
-	//    with this master account, you first must associate a payment instrument,
+	//    with this master account, you first must associate a valid payment instrument,
 	//    such as a credit card, with the account. Follow the steps at To leave
 	//    an organization when all required account information has not yet been
 	//    provided (http://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_remove.html#leave-without-all-info)
 	//    in the AWS Organizations User Guide.
 	//
 	//    * MEMBER_ACCOUNT_PAYMENT_INSTRUMENT_REQUIRED: To complete this operation
-	//    with this member account, you first must associate a payment instrument,
+	//    with this member account, you first must associate a valid payment instrument,
 	//    such as a credit card, with the account. Follow the steps at To leave
 	//    an organization when all required account information has not yet been
 	//    provided (http://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_remove.html#leave-without-all-info)
@@ -353,7 +353,7 @@ const (
 	//
 	// The provided policy document doesn't meet the requirements of the specified
 	// policy type. For example, the syntax might be incorrect. For details about
-	// service control policy syntax, see Service Control Policy Syntax (http://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_scp-syntax.html)
+	// service control policy syntax, see Service Control Policy Syntax (https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_scp-syntax.html)
 	// in the AWS Organizations User Guide.
 	ErrCodeMalformedPolicyDocumentException = "MalformedPolicyDocumentException"
 
@@ -422,7 +422,7 @@ const (
 	// You can't use the specified policy type with the feature set currently enabled
 	// for this organization. For example, you can enable SCPs only after you enable
 	// all features in the organization. For more information, see Enabling and
-	// Disabling a Policy Type on a Root (http://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies.html#enable_policies_on_root)
+	// Disabling a Policy Type on a Root (https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies.html#enable_policies_on_root)
 	// in the AWS Organizations User Guide.
 	ErrCodePolicyTypeNotAvailableForOrganizationException = "PolicyTypeNotAvailableForOrganizationException"
 
@@ -432,7 +432,7 @@ const (
 	// The specified policy type isn't currently enabled in this root. You can't
 	// attach policies of the specified type to entities in a root until you enable
 	// that type in the root. For more information, see Enabling All Features in
-	// Your Organization (http://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_org_support-all-features.html)
+	// Your Organization (https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_org_support-all-features.html)
 	// in the AWS Organizations User Guide.
 	ErrCodePolicyTypeNotEnabledException = "PolicyTypeNotEnabledException"
 
@@ -466,5 +466,9 @@ const (
 	//
 	// You've sent too many requests in too short a period of time. The limit helps
 	// protect against denial-of-service attacks. Try again later.
+	//
+	// For information on limits that affect Organizations, see Limits of AWS Organizations
+	// (https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html)
+	// in the AWS Organizations User Guide.
 	ErrCodeTooManyRequestsException = "TooManyRequestsException"
 )
