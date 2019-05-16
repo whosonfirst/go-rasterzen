@@ -7,6 +7,7 @@ import (
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-log"
+	golog "log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -221,6 +222,7 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 			if !cached {
 		*/
 
+		golog.Println("RENDER RASTERZEN")
 		err := s.worker.RenderRasterzenTile(t)
 
 		if err != nil {
