@@ -22,8 +22,8 @@ assets:
 
 tools:
 	rm -rf bin/*
-	go build -o bin/rasterd cmd/rasterd.go
-	go build -o bin/rasterzen-seed cmd/rasterzen-seed.go
+	go build -o bin/rasterd cmd/rasterd/main.go
+	go build -o bin/rasterzen-seed cmd/rasterzen-seed/main.go
 
 rebuild:
 	@make assets

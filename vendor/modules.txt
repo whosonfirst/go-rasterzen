@@ -66,6 +66,7 @@ github.com/paulmach/orb/geojson
 github.com/paulmach/orb/maptile
 github.com/paulmach/orb
 github.com/paulmach/orb/internal/mercator
+github.com/paulmach/orb/project
 # github.com/srwiley/oksvg v0.0.0-20190413000000-c520f0a6c5ccb7ec7e11abc378c3372b90983860
 github.com/srwiley/oksvg
 # github.com/srwiley/rasterx v0.0.0-20181219215540-696f7edb7a7e
@@ -80,7 +81,7 @@ github.com/tidwall/pretty
 github.com/tidwall/sjson
 # github.com/whosonfirst/algnhsa v0.0.0-20190203000000-70f315bb89bd75b93a0ca381cf70a15b68209c32
 github.com/whosonfirst/algnhsa
-# github.com/whosonfirst/geojson2svg v1.0.0
+# github.com/whosonfirst/geojson2svg v1.0.1
 github.com/whosonfirst/geojson2svg/pkg/geojson2svg
 # github.com/whosonfirst/go-bindata-assetfs v1.0.0
 github.com/whosonfirst/go-bindata-assetfs

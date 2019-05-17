@@ -8,12 +8,15 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"regexp"
 	"sort"
 	"strings"
 
 	geojson "github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/project"
 )
 
 // TODO release
@@ -35,6 +38,7 @@ type SVG struct {
 	geometries         []*geojson.Geometry
 	features           []*geojson.Feature
 	featureCollections []*geojson.FeatureCollection
+	Mercator           bool
 }
 
 // Padding represents the possible padding of the SVG.
@@ -49,6 +53,7 @@ func New() *SVG {
 	return &SVG{
 		useProp:    func(prop string) bool { return prop == "class" },
 		attributes: make(map[string]string),
+		Mercator:   false,
 	}
 }
 
@@ -59,7 +64,14 @@ func (svg *SVG) Draw(width, height float64, opts ...Option) string {
 		o(svg)
 	}
 
-	sf := makeScaleFunc(width, height, svg.padding, svg.points())
+	var sf scaleFunc
+
+	if svg.Mercator {
+
+		sf = makeScaleFuncMercator(width, height, svg.padding, svg.points())
+	} else {
+		sf = makeScaleFunc(width, height, svg.padding, svg.points())
+	}
 
 	content := bytes.NewBufferString("")
 	for _, g := range svg.geometries {
@@ -167,6 +179,15 @@ func (svg *SVG) points() [][]float64 {
 }
 
 func process(sf scaleFunc, w io.Writer, g *geojson.Geometry, attributes string) {
+
+     	// band-aid: https://github.com/whosonfirst/go-rasterzen/issues/3
+	// (20180615/thisisaaronland)
+
+     	if g == nil {
+		log.Println("BUNK GEOMETRY (process)")
+		return
+	}
+
 	switch {
 	case g.IsPoint():
 		drawPoint(sf, w, g.Point, attributes)
@@ -188,6 +209,15 @@ func process(sf scaleFunc, w io.Writer, g *geojson.Geometry, attributes string) 
 }
 
 func collect(g *geojson.Geometry) (ps [][]float64) {
+
+     	// band-aid: https://github.com/whosonfirst/go-rasterzen/issues/3
+	// (20180615/thisisaaronland)
+
+     	if g == nil {
+		log.Println("BUNK GEOMETRY (collect)")
+		return
+	}
+
 	switch {
 	case g.IsPoint():
 		ps = append(ps, g.Point)
@@ -306,17 +336,78 @@ func makeScaleFunc(width, height float64, padding Padding, ps [][]float64) scale
 	maxX := ps[0][0]
 	minY := ps[0][1]
 	maxY := ps[0][1]
+
 	for _, p := range ps[1:] {
+
 		minX = math.Min(minX, p[0])
 		maxX = math.Max(maxX, p[0])
 		minY = math.Min(minY, p[1])
 		maxY = math.Max(maxY, p[1])
 	}
+
 	xRes := (maxX - minX) / w
 	yRes := (maxY - minY) / h
 	res := math.Max(xRes, yRes)
 
 	return func(x, y float64) (float64, float64) {
-		return (x-minX)/res + padding.Left, (maxY-y)/res + padding.Top
+
+		x = (x-minX)/res + padding.Left
+		y = (maxY-y)/res + padding.Top
+
+		return x, y
+	}
+}
+
+func makeScaleFuncMercator(width, height float64, padding Padding, ps [][]float64) scaleFunc {
+
+	w := width - padding.Left - padding.Right
+	h := width - padding.Top - padding.Bottom
+
+	if len(ps) == 0 {
+		return func(x, y float64) (float64, float64) { return x, y }
+	}
+
+	if len(ps) == 1 {
+		return func(x, y float64) (float64, float64) { return w / 2, h / 2 }
+	}
+
+	sw_pt := orb.Point{ps[0][0], ps[0][1]}
+	ne_pt := orb.Point{ps[0][0], ps[0][1]}
+	sw_merc := project.Point(sw_pt, project.WGS84.ToMercator)
+	ne_merc := project.Point(ne_pt, project.WGS84.ToMercator)
+
+	minX := sw_merc[0]
+	maxX := ne_merc[0]
+	minY := sw_merc[1]
+	maxY := ne_merc[1]
+
+	for _, p := range ps[1:] {
+
+		pt := orb.Point{p[0], p[1]}
+		merc := project.Point(pt, project.WGS84.ToMercator)
+
+		minX = math.Min(minX, merc[0])
+		maxX = math.Max(maxX, merc[0])
+		minY = math.Min(minY, merc[1])
+		maxY = math.Max(maxY, merc[1])
+
+	}
+
+	xRes := (maxX - minX) / w
+	yRes := (maxY - minY) / h
+	res := math.Max(xRes, yRes)
+
+	return func(x, y float64) (float64, float64) {
+
+		pt := orb.Point{x, y}
+		merc := project.Point(pt, project.WGS84.ToMercator)
+
+		x = merc[0]
+		y = merc[1]
+
+		x = (x-minX)/res + padding.Left
+		y = (maxY-y)/res + padding.Top
+
+		return x, y
 	}
 }

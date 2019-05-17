@@ -29,6 +29,7 @@ github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvW
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/patrickmn/go-cache v2.1.0+incompatible h1:HRMgzkcYKYpi3C8ajMPV8OFXaaRUnok+kx1WdO15EQc=
 github.com/patrickmn/go-cache v2.1.0+incompatible/go.mod h1:3Qf8kWWT7OJRJbdiICTKqZju1ZixQ/KpMGzzAfe6+WQ=
+github.com/paulmach/go.geojson v0.0.0-20161109192638-16c6a8e9da10/go.mod h1:YaKx1hKpWF+T2oj2lFJPsW/t1Q5e1jQI61eoQSTwpIs=
 github.com/paulmach/go.geojson v1.4.0 h1:5x5moCkCtDo5x8af62P9IOAYGQcYHtxz2QJ3x1DoCgY=
 github.com/paulmach/go.geojson v1.4.0/go.mod h1:YaKx1hKpWF+T2oj2lFJPsW/t1Q5e1jQI61eoQSTwpIs=
 github.com/paulmach/orb v0.1.3 h1:Wa1nzU269Zv7V9paVEY1COWW8FCqv4PC/KJRbJSimpM=
@@ -59,6 +60,8 @@ github.com/whosonfirst/algnhsa v0.0.0-20190203000000-70f315bb89bd75b93a0ca381cf7
 github.com/whosonfirst/geojson2svg v0.0.0-20180615000000-e2bb034ec5258264cfbaeba1b17d939b5a2d4a1c/go.mod h1:mTGjej04D95uPknTCX+8IHdozG5Qsz2tlGeWxQkxai0=
 github.com/whosonfirst/geojson2svg v1.0.0 h1:sIV8nba/vaxKfVvST6f1n4J1VxwRvmOTXts2lhZtuZc=
 github.com/whosonfirst/geojson2svg v1.0.0/go.mod h1:mTGjej04D95uPknTCX+8IHdozG5Qsz2tlGeWxQkxai0=
+github.com/whosonfirst/geojson2svg v1.0.1 h1:fSQjS7VwyH8AOMK/XuSbQjbrV7axvYotbtUAr7HeJ8c=
+github.com/whosonfirst/geojson2svg v1.0.1/go.mod h1:L+2OxSnjAWMFcnPwjcKxH3AhnMukxerTZSHZTzXJviw=
 github.com/whosonfirst/go-bindata v0.0.0-20180807000000-86a4bac5e0f5afa37bb2577dc92223452735d178 h1:qsaV3qEbI+aG2Itr/tZpYtYBsSP6rk6ZK6hmvVegrJA=
 github.com/whosonfirst/go-bindata v0.0.0-20180807000000-86a4bac5e0f5afa37bb2577dc92223452735d178/go.mod h1:A5q98YeBQy8ymR+Cxo/SqjHOCBdo7TEqQDnJmX/T3aU=
 github.com/whosonfirst/go-bindata-assetfs v1.0.0 h1:ps2zMTEkpHw7H8QPBkyebPyJwmqHCnj6Zbf/8mcXEzw=
