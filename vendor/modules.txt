@@ -1,0 +1,178 @@
+# github.com/aaronland/go-string v0.1.0
+github.com/aaronland/go-string/dsn
+# github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7
+github.com/akrylysov/algnhsa
+# github.com/arschles/assert v1.0.0
+github.com/arschles/assert
+# github.com/aws/aws-lambda-go v1.10.0
+github.com/aws/aws-lambda-go/events
+github.com/aws/aws-lambda-go/lambda
+github.com/aws/aws-lambda-go/lambda/handlertrace
+github.com/aws/aws-lambda-go/lambda/messages
+github.com/aws/aws-lambda-go/lambdacontext
+# github.com/aws/aws-sdk-go v1.19.31
+github.com/aws/aws-sdk-go/aws/awserr
+github.com/aws/aws-sdk-go/aws/credentials
+github.com/aws/aws-sdk-go/aws/endpoints
+github.com/aws/aws-sdk-go/internal/sdkio
+github.com/aws/aws-sdk-go/aws
+github.com/aws/aws-sdk-go/aws/client/metadata
+github.com/aws/aws-sdk-go/aws/request
+github.com/aws/aws-sdk-go/internal/sdkrand
+github.com/aws/aws-sdk-go/internal/ini
+github.com/aws/aws-sdk-go/internal/shareddefaults
+github.com/aws/aws-sdk-go/aws/client
+github.com/aws/aws-sdk-go/aws/ec2metadata
+github.com/aws/aws-sdk-go/internal/sdkuri
+github.com/aws/aws-sdk-go/service/sts
+github.com/aws/aws-sdk-go/aws/corehandlers
+github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds
+github.com/aws/aws-sdk-go/aws/credentials/endpointcreds
+github.com/aws/aws-sdk-go/aws/awsutil
+github.com/aws/aws-sdk-go/aws/credentials/processcreds
+github.com/aws/aws-sdk-go/aws/credentials/stscreds
+github.com/aws/aws-sdk-go/aws/csm
+github.com/aws/aws-sdk-go/aws/defaults
+github.com/aws/aws-sdk-go/private/protocol/rest
+github.com/aws/aws-sdk-go/private/protocol
+github.com/aws/aws-sdk-go/private/protocol/eventstream
+github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
+github.com/aws/aws-sdk-go/private/protocol/query/queryutil
+github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
+github.com/aws/aws-sdk-go/private/protocol/jsonrpc
+github.com/aws/aws-sdk-go/private/protocol/query
+github.com/aws/aws-sdk-go/aws/signer/v4
+github.com/aws/aws-sdk-go/private/protocol/restjson
+github.com/aws/aws-sdk-go/internal/s3err
+github.com/aws/aws-sdk-go/private/protocol/eventstream/eventstreamapi
+github.com/aws/aws-sdk-go/private/protocol/restxml
+github.com/aws/aws-sdk-go/service/s3
+github.com/aws/aws-sdk-go/service/s3/s3iface
+github.com/aws/aws-sdk-go/service/lambda
+github.com/aws/aws-sdk-go/aws/session
+github.com/aws/aws-sdk-go/service/s3/s3manager
+# github.com/davecgh/go-spew v1.1.0
+github.com/davecgh/go-spew/spew
+# github.com/fapian/geojson2svg v1.0.0
+github.com/fapian/geojson2svg/pkg/geojson2svg
+# github.com/go-ini/ini v1.42.0
+github.com/go-ini/ini
+# github.com/go-spatial/geom v0.0.0-20190319000000-c03a62f3a74a21c7fa19649e10f945b7c278069f
+github.com/go-spatial/geom
+github.com/go-spatial/geom/slippy
+github.com/go-spatial/geom/encoding
+github.com/go-spatial/geom/encoding/wkb/internal/consts
+github.com/go-spatial/geom/encoding/wkb/internal/decode
+github.com/go-spatial/geom/encoding/wkb/internal/encode
+github.com/go-spatial/geom/encoding/wkb
+github.com/go-spatial/geom/encoding/wkb/internal/tcase/token
+github.com/go-spatial/geom/internal/parsing
+github.com/go-spatial/geom/encoding/wkb/internal/tcase/symbol
+github.com/go-spatial/geom/encoding/wkt
+github.com/go-spatial/geom/encoding/wkt/internal/cmd/fuzz/fuzz
+github.com/go-spatial/geom/encoding/wkt/internal/symbol
+github.com/go-spatial/geom/cmp
+github.com/go-spatial/geom/planar
+github.com/go-spatial/geom/internal/rtreego
+github.com/go-spatial/geom/planar/intersect
+github.com/go-spatial/geom/planar/makevalid/hitmap
+github.com/go-spatial/geom/planar/makevalid/walker
+github.com/go-spatial/geom/planar/triangulate/constraineddelaunay
+github.com/go-spatial/geom/planar/triangulate/quadedge
+github.com/go-spatial/geom/planar/triangulate
+github.com/go-spatial/geom/encoding/geojson
+github.com/go-spatial/geom/encoding/wkb/internal/tcase
+github.com/go-spatial/geom/spherical
+# github.com/gogo/protobuf v1.2.1
+github.com/gogo/protobuf/proto
+# github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
+github.com/jmespath/go-jmespath
+# github.com/jtacoma/uritemplates v1.0.0
+github.com/jtacoma/uritemplates
+# github.com/patrickmn/go-cache v2.1.0+incompatible
+github.com/patrickmn/go-cache
+# github.com/paulmach/go.geojson v1.4.0
+github.com/paulmach/go.geojson
+# github.com/paulmach/orb v0.1.3
+github.com/paulmach/orb/clip
+github.com/paulmach/orb/geojson
+github.com/paulmach/orb/maptile
+github.com/paulmach/orb
+github.com/paulmach/orb/encoding/mvt/vectortile
+github.com/paulmach/orb/internal/mercator
+github.com/paulmach/orb/planar
+github.com/paulmach/orb/project
+github.com/paulmach/orb/internal/length
+github.com/paulmach/orb/encoding/mvt
+github.com/paulmach/orb/simplify
+github.com/paulmach/orb/geo
+github.com/paulmach/orb/quadtree
+github.com/paulmach/orb/resample
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/srwiley/oksvg v0.0.0-20190413000000-c520f0a6c5ccb7ec7e11abc378c3372b90983860
+github.com/srwiley/oksvg
+# github.com/srwiley/rasterx v0.0.0-20181219215540-696f7edb7a7e
+github.com/srwiley/rasterx
+# github.com/stretchr/testify v1.3.0
+github.com/stretchr/testify/assert
+# github.com/tidwall/gjson v1.2.1
+github.com/tidwall/gjson
+# github.com/tidwall/match v1.0.1
+github.com/tidwall/match
+# github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65
+github.com/tidwall/pretty
+# github.com/tidwall/sjson v1.0.4
+github.com/tidwall/sjson
+# github.com/whosonfirst/algnhsa v0.0.0-20190203000000-70f315bb89bd75b93a0ca381cf70a15b68209c32
+github.com/whosonfirst/algnhsa
+# github.com/whosonfirst/geojson2svg v1.0.0
+github.com/whosonfirst/geojson2svg/pkg/geojson2svg
+# github.com/whosonfirst/go-bindata v0.0.0-20180807000000-86a4bac5e0f5afa37bb2577dc92223452735d178
+github.com/whosonfirst/go-bindata
+# github.com/whosonfirst/go-bindata-assetfs v1.0.0
+github.com/whosonfirst/go-bindata-assetfs
+# github.com/whosonfirst/go-bindata-html-template v0.0.0-20170123000000-839a6918b9ff535f95246ef0f43edfdb4ed186be
+github.com/whosonfirst/go-bindata-html-template
+# github.com/whosonfirst/go-whosonfirst-aws v0.1.0
+github.com/whosonfirst/go-whosonfirst-aws/session
+github.com/whosonfirst/go-whosonfirst-aws/s3
+github.com/whosonfirst/go-whosonfirst-aws/config
+github.com/whosonfirst/go-whosonfirst-aws/util
+# github.com/whosonfirst/go-whosonfirst-cache v0.0.0-20180725164102-d7d1d64441e9
+github.com/whosonfirst/go-whosonfirst-cache
+# github.com/whosonfirst/go-whosonfirst-cache-s3 v0.0.0-20180725000000-440d3bfdb2a964670c66a4f7a48d664805d43432
+github.com/whosonfirst/go-whosonfirst-cache-s3
+# github.com/whosonfirst/go-whosonfirst-cli v0.1.0
+github.com/whosonfirst/go-whosonfirst-cli/flags
+# github.com/whosonfirst/go-whosonfirst-log v0.1.0
+github.com/whosonfirst/go-whosonfirst-log
+# github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
+github.com/whosonfirst/go-whosonfirst-mimetypes
+github.com/whosonfirst/go-whosonfirst-mimetypes/lookup
+# golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c
+golang.org/x/image/colornames
+golang.org/x/image/math/fixed
+golang.org/x/image/vector
+# golang.org/x/net v0.0.0-20190311183353-d8887717615a
+golang.org/x/net/html/charset
+golang.org/x/net/html
+golang.org/x/net/html/atom
+# golang.org/x/text v0.3.0
+golang.org/x/text/encoding
+golang.org/x/text/encoding/charmap
+golang.org/x/text/encoding/htmlindex
+golang.org/x/text/transform
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/internal
+golang.org/x/text/encoding/japanese
+golang.org/x/text/encoding/korean
+golang.org/x/text/encoding/simplifiedchinese
+golang.org/x/text/encoding/traditionalchinese
+golang.org/x/text/encoding/unicode
+golang.org/x/text/language
+golang.org/x/text/internal/utf8internal
+golang.org/x/text/runes
+golang.org/x/text/internal/tag

@@ -53,7 +53,9 @@ func StartHandler(handler Handler) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = rpc.Register(NewFunction(handler))
+	function := new(Function)
+	function.handler = handler
+	err = rpc.Register(function)
 	if err != nil {
 		log.Fatal("failed to register handler function")
 	}

@@ -16,10 +16,6 @@ type Function struct {
 	handler Handler
 }
 
-func NewFunction(handler Handler) *Function {
-	return &Function{handler: handler}
-}
-
 func (fn *Function) Ping(req *messages.PingRequest, response *messages.PingResponse) error {
 	*response = messages.PingResponse{}
 	return nil
