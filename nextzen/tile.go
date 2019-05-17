@@ -147,12 +147,7 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 
 			geom := feature.Geometry
 
-			log.Println("TILE BOUNDS", geom.Bound())
-
 			orb_geom := clip.Geometry(bounds, geom)
-
-			log.Println("NEW BOUNDS", orb_geom.Bound())
-
 			new_geom := geojson.NewGeometry(orb_geom)
 
 			path := fmt.Sprintf("%s.features.%d.geometry", l, i)

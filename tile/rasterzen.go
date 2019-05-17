@@ -1,6 +1,7 @@
 package tile
 
 import (
+	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -127,6 +128,57 @@ func RasterzenToFeatureCollection(in io.Reader, out io.Writer) error {
 
 	_, err = out.Write(b)
 	return err
+}
+
+func RasterzenToGeoJSON(in io.Reader, out io.Writer) error {
+
+	body, err := ioutil.ReadAll(in)
+
+	if err != nil {
+		return err
+	}
+
+	type FeatureCollection struct {
+		Type     string        `json:"type"`
+		Features []interface{} `json:"features"`
+	}
+
+	features := make([]interface{}, 0)
+
+	for _, l := range nextzen.Layers {
+
+		fc := gjson.GetBytes(body, l)
+
+		if !fc.Exists() {
+			continue
+		}
+
+		fc_features := fc.Get("features")
+
+		for _, f := range fc_features.Array() {
+			features = append(features, f.Value())
+		}
+	}
+
+	fc := FeatureCollection{
+		Type:     "FeatureCollection",
+		Features: features,
+	}
+
+	enc, err := json.Marshal(fc)
+
+	if err != nil {
+		return err
+	}
+
+	r := bytes.NewReader(enc)
+	_, err = io.Copy(out, r)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func RasterzenToSVG(in io.Reader, out io.Writer) error {
