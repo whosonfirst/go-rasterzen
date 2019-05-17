@@ -84,6 +84,10 @@ func (w *LambdaWorker) RenderGeoJSONTile(t slippy.Tile) error {
 	return w.renderTile(t, "geojson", "geojson")
 }
 
+func (w *LambdaWorker) RenderExtentTile(t slippy.Tile) error {
+	return w.renderTile(t, "extent", "geojson")
+}
+
 func (w *LambdaWorker) RenderSVGTile(t slippy.Tile) error {
 	return w.renderTile(t, "svg", "svg")
 }

@@ -39,6 +39,12 @@ func (w *LocalWorker) RenderGeoJSONTile(t slippy.Tile) error {
 	return err
 }
 
+func (w *LocalWorker) RenderExtentTile(t slippy.Tile) error {
+
+	_, err := tile.RenderExtentTile(t, w.cache, w.nextzen_options)
+	return err
+}
+
 func (w *LocalWorker) RenderSVGTile(t slippy.Tile) error {
 
 	_, err := tile.RenderSVGTile(t, w.cache, w.nextzen_options)

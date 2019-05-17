@@ -110,9 +110,10 @@ func main() {
 	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
 	seed_rasterzen := flag.Bool("seed-rasterzen", false, "Seed Rasterzen tiles.")
-	seed_geojson := flag.Bool("seed-geojson", false, "Seed GeoJSON tiles.")
 	seed_svg := flag.Bool("seed-svg", false, "Seed SVG tiles.")
 	seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
+	seed_geojson := flag.Bool("seed-geojson", false, "Seed GeoJSON tiles.")
+	seed_extent := flag.Bool("seed-extent", false, "Seed \"extent\" tiles (as GeoJSON).")
 	seed_all := flag.Bool("seed-all", false, "See all the tile formats")
 
 	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local.")
@@ -130,6 +131,7 @@ func main() {
 	if *seed_all {
 		*seed_rasterzen = true
 		*seed_geojson = true
+		*seed_extent = true
 		*seed_svg = true
 		*seed_png = true
 	}
@@ -269,9 +271,10 @@ func main() {
 	seeder.Timings = *timings
 
 	seeder.SeedRasterzen = *seed_rasterzen
-	seeder.SeedGeoJSON = *seed_geojson
 	seeder.SeedSVG = *seed_svg
 	seeder.SeedPNG = *seed_png
+	seeder.SeedGeoJSON = *seed_geojson
+	seeder.SeedExtent = *seed_extent
 
 	tileset, err := seed.NewTileSet()
 

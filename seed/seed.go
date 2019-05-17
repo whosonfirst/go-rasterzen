@@ -7,7 +7,6 @@ import (
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-log"
-	golog "log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -62,6 +61,7 @@ type TileSeeder struct {
 	MaxWorkers    int
 	SeedRasterzen bool
 	SeedGeoJSON   bool
+	SeedExtent    bool
 	SeedSVG       bool
 	SeedPNG       bool
 	Timings       bool
@@ -223,7 +223,6 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 			if !cached {
 		*/
 
-		golog.Println("RENDER RASTERZEN")
 		err := s.worker.RenderRasterzenTile(t)
 
 		if err != nil {
@@ -242,6 +241,21 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 
 		go func() {
 			err := s.worker.RenderGeoJSONTile(t)
+
+			if err != nil {
+				err_ch <- err
+			}
+
+			done_ch <- true
+		}()
+	}
+
+	if s.SeedExtent {
+
+		remaining += 1
+
+		go func() {
+			err := s.worker.RenderExtentTile(t)
 
 			if err != nil {
 				err_ch <- err
