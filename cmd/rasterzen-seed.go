@@ -110,7 +110,7 @@ func main() {
 	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
 	seed_rasterzen := flag.Bool("seed-rasterzen", false, "Seed Rasterzen tiles.")
-	seed_geojson := flag.Bool("seed-geojson", true, "Seed GeoJSON tiles.")
+	seed_geojson := flag.Bool("seed-geojson", false, "Seed GeoJSON tiles.")
 	seed_svg := flag.Bool("seed-svg", false, "Seed SVG tiles.")
 	seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
 	seed_all := flag.Bool("seed-all", false, "See all the tile formats")
