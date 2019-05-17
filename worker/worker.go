@@ -6,6 +6,7 @@ import (
 
 type Worker interface {
 	RenderRasterzenTile(slippy.Tile) error
+	RenderGeoJSONTile(slippy.Tile) error
 	RenderSVGTile(slippy.Tile) error
 	RenderPNGTile(slippy.Tile) error
 }

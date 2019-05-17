@@ -61,6 +61,7 @@ type TileSeeder struct {
 	worker        worker.Worker
 	MaxWorkers    int
 	SeedRasterzen bool
+	SeedGeoJSON   bool
 	SeedSVG       bool
 	SeedPNG       bool
 	Timings       bool
@@ -234,6 +235,21 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 	err_ch := make(chan error)
 
 	remaining := 0
+
+	if s.SeedGeoJSON {
+
+		remaining += 1
+
+		go func() {
+			err := s.worker.RenderGeoJSONTile(t)
+
+			if err != nil {
+				err_ch <- err
+			}
+
+			done_ch <- true
+		}()
+	}
 
 	if s.SeedPNG {
 
