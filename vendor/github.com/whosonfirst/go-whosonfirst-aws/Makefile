@@ -1,39 +1,5 @@
-CWD=$(shell pwd)
-GOPATH := $(CWD)
-
-prep:
-	if test -d pkg; then rm -rf pkg; fi
-
-self:   prep rmdeps
-	if test -d src; then rm -rf src; fi
-	mkdir -p src/github.com/whosonfirst/go-whosonfirst-aws
-	cp -r cloudwatch src/github.com/whosonfirst/go-whosonfirst-aws/
-	cp -r config src/github.com/whosonfirst/go-whosonfirst-aws/
-	cp -r ecs src/github.com/whosonfirst/go-whosonfirst-aws/
-	cp -r lambda src/github.com/whosonfirst/go-whosonfirst-aws/
-	cp -r s3 src/github.com/whosonfirst/go-whosonfirst-aws/
-	cp -r sqs src/github.com/whosonfirst/go-whosonfirst-aws/
-	cp -r session src/github.com/whosonfirst/go-whosonfirst-aws/
-	cp -r util src/github.com/whosonfirst/go-whosonfirst-aws/
-	cp -r vendor/* src/
-
-rmdeps:
-	if test -d src; then rm -rf src; fi 
-
-build:	fmt bin
-
-deps:	rmdeps
-	@GOPATH=$(GOPATH) go get -u "github.com/aws/aws-sdk-go"
-	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-string"
-	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-mimetypes"
-	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cli"
-
-vendor-deps: rmdeps deps
-	if test ! -d vendor; then mkdir vendor; fi
-	if test -d vendor; then rm -rf vendor; fi
-	cp -r src vendor
-	find vendor -name '.git' -print -type d -exec rm -rf {} +
-	rm -rf src
+vendor-deps: 
+	go mod vendor
 
 fmt:
 	go fmt cloudwatch/*.go
@@ -46,8 +12,8 @@ fmt:
 	go fmt session/*.go
 	go fmt util/*.go
 
-bin: 	self
-	@GOPATH=$(GOPATH) go build -o bin/s3 cmd/s3.go
-	@GOPATH=$(GOPATH) go build -o bin/secret cmd/secret.go
-	@GOPATH=$(GOPATH) go build -o bin/ecs-run-task cmd/ecs-run-task.go
-	@GOPATH=$(GOPATH) go build -o bin/lambda-run-task cmd/lambda-run-task.go
+tools:
+	@GOPATH=$(GOPATH) go build -o bin/s3 cmd/s3/main.go
+	@GOPATH=$(GOPATH) go build -o bin/secret cmd/secret/main.go
+	@GOPATH=$(GOPATH) go build -o bin/ecs-run-task cmd/ecs-run-task/main.go
+	@GOPATH=$(GOPATH) go build -o bin/lambda-run-task cmd/lambda-run-task/main.go
