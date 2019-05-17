@@ -56,6 +56,7 @@ github.com/tidwall/sjson v1.0.4 h1:UcdIRXff12Lpnu3OLtZvnc03g4vH2suXDXhBwBqmzYg=
 github.com/tidwall/sjson v1.0.4/go.mod h1:bURseu1nuBkFpIES5cz6zBtjmYeOQmEESshn7VpF15Y=
 github.com/whosonfirst/algnhsa v0.0.0-20190203000000-70f315bb89bd75b93a0ca381cf70a15b68209c32 h1:kBklTGulhYJJZvV5gFjWREyhhHo8wbvdRtIbMujd+Bw=
 github.com/whosonfirst/algnhsa v0.0.0-20190203000000-70f315bb89bd75b93a0ca381cf70a15b68209c32/go.mod h1:rSpxyVD5tlAHQ8D4Oh2tiw65NDqSfftyKJN3IQs+AfU=
+github.com/whosonfirst/geojson2svg v0.0.0-20180615000000-e2bb034ec5258264cfbaeba1b17d939b5a2d4a1c/go.mod h1:mTGjej04D95uPknTCX+8IHdozG5Qsz2tlGeWxQkxai0=
 github.com/whosonfirst/geojson2svg v1.0.0 h1:sIV8nba/vaxKfVvST6f1n4J1VxwRvmOTXts2lhZtuZc=
 github.com/whosonfirst/geojson2svg v1.0.0/go.mod h1:mTGjej04D95uPknTCX+8IHdozG5Qsz2tlGeWxQkxai0=
 github.com/whosonfirst/go-bindata v0.0.0-20180807000000-86a4bac5e0f5afa37bb2577dc92223452735d178 h1:qsaV3qEbI+aG2Itr/tZpYtYBsSP6rk6ZK6hmvVegrJA=
