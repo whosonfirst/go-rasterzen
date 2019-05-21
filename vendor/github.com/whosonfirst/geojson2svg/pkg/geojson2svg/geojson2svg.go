@@ -402,12 +402,17 @@ func makeScaleFuncMercator(width, height float64, padding Padding, ps [][]float6
 		pt := orb.Point{x, y}
 		merc := project.Point(pt, project.WGS84.ToMercator)
 
+		log.Println("STEP 1", x, y)
+		
 		x = merc[0]
 		y = merc[1]
 
+		log.Println("STEP 2", x, y)
+		
 		x = (x-minX)/res + padding.Left
 		y = (maxY-y)/res + padding.Top
 
+		log.Println("STEP 3", x, y)		
 		return x, y
 	}
 }

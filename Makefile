@@ -2,14 +2,7 @@ vendor-deps:
 	go mod vendor
 
 fmt:
-	go fmt *.go
-	go fmt cmd/*.go
-	go fmt http/*.go
-	go fmt seed/*.go
-	go fmt tile/*.go
-	go fmt server/*.go
-	go fmt nextzen/*.go
-	go fmt worker/*.go
+	go fmt ./...
 
 assets:
 	go build -o bin/go-bindata ./vendor/github.com/whosonfirst/go-bindata/go-bindata/
@@ -24,6 +17,7 @@ tools:
 	rm -rf bin/*
 	go build -o bin/rasterd cmd/rasterd/main.go
 	go build -o bin/rasterzen-seed cmd/rasterzen-seed/main.go
+	go build -o bin/rasterpng cmd/rasterpng/main.go
 
 rebuild:
 	@make assets
