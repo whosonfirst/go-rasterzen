@@ -348,7 +348,12 @@ func RasterzenToImage(in io.Reader) (image.Image, error) {
 
 	tmpfile.Close()
 
-	icon, err := oksvg.ReadIcon(tmpfile.Name(), oksvg.StrictErrorMode)
+	return RasterzenPathToImage(tmpfile.Name())
+}
+
+func RasterzenPathToImage(path string) (image.Image, error) {
+
+	icon, err := oksvg.ReadIcon(path, oksvg.StrictErrorMode)
 
 	if err != nil {
 		return nil, err

@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/whosonfirst/go-whosonfirst-crawl"
 	"github.com/whosonfirst/go-rasterzen/tile"
+	"github.com/whosonfirst/go-whosonfirst-crawl"
+	"image/png"
 	_ "io/ioutil"
 	"log"
 	"os"
@@ -14,8 +15,8 @@ import (
 func main() {
 
 	source := flag.String("source", "", "...")
-	destination := flag.String("destination", "", "...")	
-	
+	destination := flag.String("destination", "", "...")
+
 	flag.Parse()
 
 	abs_source, err := filepath.Abs(*source)
@@ -29,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	cb := func(svg_path string, info os.FileInfo) error {
 
 		if info.IsDir() {
@@ -42,31 +43,29 @@ func main() {
 			return nil
 		}
 
-		svg_fh, err := os.Open(svg_path)
+		im, err := tile.RasterzenPathToImage(svg_path)
 
 		if err != nil {
-			return err
+			return nil
 		}
-
-		defer svg_fh.Close()
 
 		png_path := strings.Replace(svg_path, ext, ".png", 1)
 		png_path = strings.Replace(png_path, abs_source, abs_destination, 1)
 
 		log.Println(png_path)
-		
+
 		png_root := filepath.Dir(png_path)
 
 		_, err = os.Stat(png_root)
 
-		if os.IsNotExist(err){
+		if os.IsNotExist(err) {
 			err = os.MkdirAll(png_root, 0755)
 		}
 
 		if err != nil {
 			return err
 		}
-		
+
 		// png_fh := ioutil.Discard
 
 		png_fh, err := os.OpenFile(png_path, os.O_RDWR|os.O_CREATE, 0644)
@@ -74,14 +73,10 @@ func main() {
 		if err != nil {
 			return err
 		}
-		
-		err = tile.RasterzenToPNG(svg_fh, png_fh)
 
-		if err != nil {
-			return nil
-		}
-			
-		return nil
+		defer png_fh.Close()
+
+		return png.Encode(png_fh, im)
 	}
 
 	cr := crawl.NewCrawler(abs_source)
