@@ -23,7 +23,31 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 )
+
+type RasterzenSVGOptions struct {
+	TileSize      float64
+	Stroke        string
+	StrokeOpacity float64
+	Fill          string
+	FillOpacity   float64
+	DopplrColours bool
+}
+
+func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
+
+	opts := RasterzenSVGOptions{
+		TileSize:      512.0,
+		Stroke:        "#000000",
+		StrokeOpacity: 1.0,
+		Fill:          "#ffffff",
+		FillOpacity:   0.0,
+		DopplrColours: false,
+	}
+
+	return &opts, nil
+}
 
 type FeatureCollection struct {
 	Type     string        `json:"type"`
@@ -183,13 +207,24 @@ func RasterzenToGeoJSON(in io.Reader, out io.Writer) error {
 
 func RasterzenToSVG(in io.Reader, out io.Writer) error {
 
+	opts, err := DefaultRasterzenSVGOptions()
+
+	if err != nil {
+		return err
+	}
+
+	return RasterzenToSVGWithOptions(in, out, opts)
+}
+
+func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenSVGOptions) error {
+
 	body, err := ioutil.ReadAll(in)
 
 	if err != nil {
 		return err
 	}
 
-	tile_size := 512.0
+	tile_size := svg_opts.TileSize
 
 	s := geojson2svg.New()
 	s.Mercator = true
@@ -226,10 +261,10 @@ func RasterzenToSVG(in io.Reader, out io.Writer) error {
 			// more explicit and easier to compose on a per-layer basis in the future
 			// (20180608/thisisaaronland)
 
-			stroke := "#000000"
-			stroke_opacity := "1"
+			stroke := svg_opts.Stroke
+			stroke_opacity := strconv.FormatFloat(svg_opts.StrokeOpacity, 'f', -1, 64)
 
-			fill := "#ffffff"
+			fill := svg_opts.Fill
 			fill_opacity := "0"
 
 			kind := ""
@@ -263,7 +298,7 @@ func RasterzenToSVG(in io.Reader, out io.Writer) error {
 			}
 
 			if geom_type == "Polygon" || geom_type == "MultiPolygon" {
-				fill_opacity = "0.5"
+				fill_opacity = strconv.FormatFloat(svg_opts.FillOpacity, 'f', -1, 64)
 			}
 
 			if kind == "ocean" {
@@ -277,11 +312,7 @@ func RasterzenToSVG(in io.Reader, out io.Writer) error {
 				log.Println(kind, detail, geom_type, sort_rank)
 			}
 
-			// where and how (if?) should we enable this...
-
-			dopplr_colours := false
-
-			if dopplr_colours {
+			if svg_opts.DopplrColours {
 				stroke = str2hex(kind)
 				fill = str2hex(detail)
 			}
