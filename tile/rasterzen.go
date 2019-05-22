@@ -32,6 +32,7 @@ type RasterzenSVGOptions struct {
 	StrokeOpacity float64
 	Fill          string
 	FillOpacity   float64
+	FillIfMatches	[]string
 	DopplrColours bool
 }
 
@@ -42,7 +43,8 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 		Stroke:        "#000000",
 		StrokeOpacity: 1.0,
 		Fill:          "#ffffff",
-		FillOpacity:   0.0,
+		FillOpacity:   0.5,
+		FillIfMatches: make([]string, 0),
 		DopplrColours: false,
 	}
 
@@ -298,7 +300,25 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 			}
 
 			if geom_type == "Polygon" || geom_type == "MultiPolygon" {
-				fill_opacity = strconv.FormatFloat(svg_opts.FillOpacity, 'f', -1, 64)
+
+				fill_ok := true
+
+				if len(svg_opts.FillIfMatches) > 0 {
+
+					fill_ok = false
+
+					for _, m := range svg_opts.FillIfMatches {
+
+						if m == kind {
+							fill_ok = true
+							break
+						}
+					}
+				}
+				
+				if fill_ok {
+					fill_opacity = strconv.FormatFloat(svg_opts.FillOpacity, 'f', -1, 64)
+				}
 			}
 
 			if kind == "ocean" {
