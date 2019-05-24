@@ -6,8 +6,6 @@ Tools for rendering raster tiles derived from Nextzen (Mapzen) Vector tiles.
 
 ## Important
 
-This works... until it doesn't. I wouldn't be surprised if there are bugs.
-
 This package uses a two-pass process to convert a Nextzen vector tile to an SVG
 document with embedded CSS style information and then to convert that SVG
 document to a PNG file. It uses (a patched version of) the
@@ -151,6 +149,10 @@ $> ll ./cache/nextzen/13/*/*.json
 -rw-r--r--  1 wof  staff    2793 Jun 12 12:29 ./cache/nextzen/13/1313/3171.json
 -rw-r--r--  1 wof  staff  202508 Jun 12 12:29 ./cache/nextzen/13/1313/3172.json
 ```
+
+#### Notes
+
+* As of this writing it is not possible to define custom `RasterzenSVGOptions` with the `rasterd` tiles so everything will be stroked in black and polygons will have a semi-translucent white fill. Custom styling is supported in other tools and is in the works for `rasterd`.
 
 ### rasterzen-seed
 

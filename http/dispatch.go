@@ -29,11 +29,18 @@ type DispatchHandler struct {
 	Func           DispatchFunc
 	Headers        map[string]string
 	NextzenOptions *nextzen.Options
+	SVGOptions     *tile.RasterzenSVGOptions
 }
 
 func NewDispatchHandler(c cache.Cache) (*DispatchHandler, error) {
 
-	default_opts := new(nextzen.Options)
+	default_svg_opts, err := tile.DefaultRasterzenSVGOptions()
+
+	if err != nil {
+		return nil, err
+	}
+
+	default_nz_opts := new(nextzen.Options)
 
 	default_headers := make(map[string]string)
 
@@ -44,7 +51,8 @@ func NewDispatchHandler(c cache.Cache) (*DispatchHandler, error) {
 
 	h := DispatchHandler{
 		Cache:          c,
-		NextzenOptions: default_opts,
+		NextzenOptions: default_nz_opts,
+		SVGOptions:     default_svg_opts,
 		Func:           default_func,
 		Headers:        default_headers,
 	}
