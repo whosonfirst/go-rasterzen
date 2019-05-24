@@ -272,7 +272,7 @@ func main() {
 				logger.Fatal(err)
 			}
 
-			err = json.Unmarshal(body, svg_opts)
+			err = json.Unmarshal(body, &svg_opts)
 
 			if err != nil {
 				logger.Fatal(err)
