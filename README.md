@@ -243,33 +243,6 @@ Note that in the example above we haven't specified any local caching sources, a
 
 Essentially what the second example is doing is pre-seeding an S3 cache which might be something you'd want to do if you want to serve `PNG` tiles but a) don't want to suffer what the (sometimes very long) wait times generating raster tiles or b) don't want to deal with the hoop-jumping around images and AWS Lambda / API Gateway integrations (see below).
 
-## Lambda
-
-Yes, it is possible to run `rasterd` as an AWS Lambda function.
-
-To create the Lambda function you're going to upload to AWS simply use the handy `lambda` target in the Makefile. This will create a file called `deployment.zip` which you will need to upload to AWS (those details are out of scope for this document).
-
-Your `wof-staticd` function should be configured with (Lambda) environment variables. Environment variables map to the standard command line flags as follows:
-
-* The command line flag is upper-cased
-* All instances of `-` are replaced with `_`
-* Each flag is prefixed with `RASTERD`
-
-For example the command line flag `-protocol` would be mapped to the `RASTERD_PROTOCOL` environment variable. Which is a good example because it is the one environment variable you _must_ to specify for `rasterd` to work as a Lambda function. Specifically you need to define the protocol as... "lambda". For example
-
-```
-RASTERD_PROTOCOL = lambda
-```
-
-In reality you'll need to specify other flags, like `RASTERD_S3_DSN` and `RASTERD_CACHE_OPTIONS`. For example here's how you might configure your function to render all the data and graphics formats (but not static HTML webpages) for your data:
-
-```
-RASTERD_PROTOCOL = lambda
-RASTERD_S3_CACHE = true
-RASTERD_S3_OPTS = ACL=public-read
-RASTERD_S3_DSN = bucket={BUCKET} prefix={PREFIX} region={REGION} credentials=iam:
-```
-
 ### rastersvg
 
 Utility tool to (re) render a directory of SVG tiles from a directory of `rasterzen` (GeoJSON) tiles.
@@ -346,6 +319,33 @@ Here's an example JSON file encoding SVG options:
     "fill_if_matches": [ "ocean" ],
     "dopplr_colours": false
 }
+```
+
+## Lambda
+
+Yes, it is possible to run `rasterd` as an AWS Lambda function.
+
+To create the Lambda function you're going to upload to AWS simply use the handy `lambda` target in the Makefile. This will create a file called `deployment.zip` which you will need to upload to AWS (those details are out of scope for this document).
+
+Your `wof-staticd` function should be configured with (Lambda) environment variables. Environment variables map to the standard command line flags as follows:
+
+* The command line flag is upper-cased
+* All instances of `-` are replaced with `_`
+* Each flag is prefixed with `RASTERD`
+
+For example the command line flag `-protocol` would be mapped to the `RASTERD_PROTOCOL` environment variable. Which is a good example because it is the one environment variable you _must_ to specify for `rasterd` to work as a Lambda function. Specifically you need to define the protocol as... "lambda". For example
+
+```
+RASTERD_PROTOCOL = lambda
+```
+
+In reality you'll need to specify other flags, like `RASTERD_S3_DSN` and `RASTERD_CACHE_OPTIONS`. For example here's how you might configure your function to render all the data and graphics formats (but not static HTML webpages) for your data:
+
+```
+RASTERD_PROTOCOL = lambda
+RASTERD_S3_CACHE = true
+RASTERD_S3_OPTS = ACL=public-read
+RASTERD_S3_DSN = bucket={BUCKET} prefix={PREFIX} region={REGION} credentials=iam:
 ```
 
 ### Lambda, API Gateway and images
