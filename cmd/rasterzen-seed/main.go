@@ -51,7 +51,7 @@ func parse_zxy(str_zxy string) (int, int, int, error) {
 
 func parse_extent(str_extent string) (*geom.Extent, error) {
 
-	coords := strings.Split(str_extent, " ")
+	coords := strings.Split(str_extent, ",")
 
 	if len(coords) != 4 {
 		return nil, errors.New("Invalid string extent")
