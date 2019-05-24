@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-spatial/geom/slippy"
+	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"sync"
@@ -64,6 +65,7 @@ type TileSeeder struct {
 	SeedExtent    bool
 	SeedSVG       bool
 	SeedPNG       bool
+	SVGOptions    *tile.RasterzenSVGOptions
 	Timings       bool
 	Logger        *log.WOFLogger
 }

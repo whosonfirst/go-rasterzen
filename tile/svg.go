@@ -11,7 +11,7 @@ import (
 	_ "path/filepath"
 )
 
-func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
+func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, svg_opts *RasterzenSVGOptions) (io.ReadCloser, error) {
 
 	svg_key := CacheKeyForTile(t, "svg", "svg")
 
@@ -35,7 +35,7 @@ func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.R
 	var buf bytes.Buffer
 	svg_wr := bufio.NewWriter(&buf)
 
-	err = RasterzenToSVG(geojson_fh, svg_wr)
+	err = RasterzenToSVGWithOptions(geojson_fh, svg_wr, svg_opts)
 
 	if err != nil {
 		return nil, err

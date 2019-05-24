@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"github.com/go-spatial/geom"
@@ -9,13 +10,16 @@ import (
 	"github.com/jtacoma/uritemplates"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/seed"
+	"github.com/whosonfirst/go-rasterzen/tile"	
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -115,6 +119,8 @@ func main() {
 	seed_geojson := flag.Bool("seed-geojson", false, "Seed GeoJSON tiles.")
 	seed_extent := flag.Bool("seed-extent", false, "Seed \"extent\" tiles (as GeoJSON).")
 	seed_all := flag.Bool("seed-all", false, "See all the tile formats")
+
+	custom_svg_options := flag.String("svg-options", "", "...")
 
 	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local.")
 	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
@@ -242,15 +248,61 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	var svg_opts *tile.RasterzenSVGOptions
+	
+	if *seed_svg {
+
+		if *custom_svg_options != "" {
+
+			custom_path, err := filepath.Abs(*custom_svg_options)
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			custom_fh, err := os.Open(custom_path)
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			body, err := ioutil.ReadAll(custom_fh)
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			err = json.Unmarshal(body, svg_opts)
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+		} else {
+
+			opts, err := tile.DefaultRasterzenSVGOptions()
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			svg_opts = opts
+		}
+
+	}
+
+
+
+	
 	var w worker.Worker
 	var w_err error
 
 	switch strings.ToUpper(*seed_worker) {
 
 	case "LAMBDA":
-		w, w_err = worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, c, nz_opts)
+		w, w_err = worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, c, nz_opts, svg_opts)
 	case "LOCAL":
-		w, w_err = worker.NewLocalWorker(c, nz_opts)
+		w, w_err = worker.NewLocalWorker(c, nz_opts, svg_opts)
 	default:
 		w_err = errors.New("Invalid worker")
 

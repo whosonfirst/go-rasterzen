@@ -27,13 +27,14 @@ import (
 )
 
 type RasterzenSVGOptions struct {
-	TileSize      float64
-	Stroke        string
-	StrokeOpacity float64
-	Fill          string
-	FillOpacity   float64
-	FillIfMatches	[]string
-	DopplrColours bool
+	TileSize      float64  `json:"tile_size"`
+	Stroke        string   `json:"stroke"`
+	StrokeWidth   float64  `json:"stroke_width"`
+	StrokeOpacity float64  `json:"stroke_opacity"`
+	Fill          string   `json:"fill"`
+	FillOpacity   float64  `json:"fill_opacity"`
+	FillIfMatches []string `json:"fill_if_matches"`
+	DopplrColours bool     `json:"dopplr_colours"`
 }
 
 func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
@@ -41,6 +42,7 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 	opts := RasterzenSVGOptions{
 		TileSize:      512.0,
 		Stroke:        "#000000",
+		StrokeWidth:   1.0,
 		StrokeOpacity: 1.0,
 		Fill:          "#ffffff",
 		FillOpacity:   0.5,
@@ -264,10 +266,11 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 			// (20180608/thisisaaronland)
 
 			stroke := svg_opts.Stroke
-			stroke_opacity := strconv.FormatFloat(svg_opts.StrokeOpacity, 'f', -1, 64)
+			stroke_width := svg_opts.StrokeWidth
+			stroke_opacity := svg_opts.StrokeOpacity
 
 			fill := svg_opts.Fill
-			fill_opacity := "0"
+			fill_opacity := 0.0
 
 			kind := ""
 			detail := ""
@@ -315,9 +318,9 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 						}
 					}
 				}
-				
+
 				if fill_ok {
-					fill_opacity = strconv.FormatFloat(svg_opts.FillOpacity, 'f', -1, 64)
+					fill_opacity = svg_opts.FillOpacity
 				}
 			}
 
@@ -339,9 +342,10 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 
 			props := map[string]string{
 				"stroke":         stroke,
-				"stroke_opacity": stroke_opacity,
 				"fill":           fill,
-				"fill-opacity":   fill_opacity,
+				"stroke-width":   strconv.FormatFloat(stroke_width, 'f', -1, 64),
+				"stroke-opacity": strconv.FormatFloat(stroke_opacity, 'f', -1, 64),
+				"fill-opacity":   strconv.FormatFloat(fill_opacity, 'f', -1, 64),
 			}
 
 			for k, v := range props {
