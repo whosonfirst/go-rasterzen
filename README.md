@@ -296,6 +296,56 @@ Usage of ./bin/rasterpng:
     	The path to a directory containing (rasterzen) SVG tiles.
 ```
 
+### RasterzenSVGOptions
+
+```
+type RasterzenSVGOptions struct {
+	TileSize      float64  `json:"tile_size"`
+	Stroke        string   `json:"stroke"`
+	StrokeWidth   float64  `json:"stroke_width"`
+	StrokeOpacity float64  `json:"stroke_opacity"`
+	Fill          string   `json:"fill"`
+	FillOpacity   float64  `json:"fill_opacity"`
+	FillIfMatches []string `json:"fill_if_matches"`
+	DopplrColours bool     `json:"dopplr_colours"`
+}
+```
+
+The `FillIfMatches` directory compares itself against the Nextzen `kind`
+attribute. If it is empty then all polygons are filled. This is the extent of
+anything resembling complex styling rules for SVG tiles. It's not great, it just
+is.
+
+The default RasterzenSVGOptions are:
+
+```
+	opts := RasterzenSVGOptions{
+		TileSize:      512.0,
+		Stroke:        "#000000",
+		StrokeWidth:   1.0,
+		StrokeOpacity: 1.0,
+		Fill:          "#ffffff",
+		FillOpacity:   0.5,
+		FillIfMatches: make([]string, 0),
+		DopplrColours: false,
+	}
+```
+
+Here's an example JSON file encoding SVG options:
+
+```
+{
+    "tile_size": 512.0,
+    "stroke": "#ffffff",
+    "stroke_width": 1.0,
+    "stroke_opacity": 1.0,
+    "fill": "#ffffff",
+    "fill_opacity": 0.5,
+    "fill_if_matches": [ "ocean" ],
+    "dopplr_colours": false
+}
+```
+
 ### Lambda, API Gateway and images
 
 In order for requests to produce PNG output (rather than a base64 encoded string) you will need to do a few things.
