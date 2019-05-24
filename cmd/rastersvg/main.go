@@ -12,9 +12,9 @@ import (
 
 func main() {
 
-	source := flag.String("source", "", "...")
-	destination := flag.String("destination", "", "...")
-	opts := flag.String("svg-options", "", "...")
+	source := flag.String("source", "", "The path to a directory containing rasterzen (GeoJSON) tiles.")
+	destination := flag.String("destination", "", "The path to a directory to SVG tiles in.")
+	opts := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
 
 	flag.Parse()
 

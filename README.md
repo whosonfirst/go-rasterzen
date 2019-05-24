@@ -203,6 +203,8 @@ Usage of ./bin/rasterzen-seed:
     	Seed SVG tiles.
   -seed-worker string
     	The type of worker for seeding tiles. Valid workers are: lambda, local. (default "local")
+  -svg-options string
+    	The path to a valid RasterzenSVGOptions JSON file.
   -timings
     	Display timings for tile seeding.
 ```
@@ -264,6 +266,34 @@ RASTERD_PROTOCOL = lambda
 RASTERD_S3_CACHE = true
 RASTERD_S3_OPTS = ACL=public-read
 RASTERD_S3_DSN = bucket={BUCKET} prefix={PREFIX} region={REGION} credentials=iam:
+```
+
+### rastersvg
+
+Utility tool to (re) render a directory of SVG tiles from a directory of `rasterzen` (GeoJSON) tiles.
+
+```
+./bin/rastersvg -h
+Usage of ./bin/rastersvg:
+  -destination string
+    	The path to a directory to SVG tiles in.
+  -source string
+    	The path to a directory containing rasterzen (GeoJSON) tiles.
+  -svg-options string
+    	The path to a valid RasterzenSVGOptions JSON file.
+```
+
+### rasterpng
+
+Utility tool to (re) render a directory of PNG tiles from a directory of (rasterzen) SVG tiles.
+
+```
+./bin/rasterpng -h
+Usage of ./bin/rasterpng:
+  -destination string
+    	The path to a directory to write PNG tiles in.
+  -source string
+    	The path to a directory containing (rasterzen) SVG tiles.
 ```
 
 ### Lambda, API Gateway and images

@@ -117,7 +117,7 @@ func main() {
 	seed_extent := flag.Bool("seed-extent", false, "Seed \"extent\" tiles (as GeoJSON).")
 	seed_all := flag.Bool("seed-all", false, "See all the tile formats")
 
-	custom_svg_options := flag.String("svg-options", "", "...")
+	custom_svg_options := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
 
 	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local.")
 	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
