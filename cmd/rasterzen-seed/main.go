@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"github.com/go-spatial/geom"
@@ -17,9 +16,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -254,30 +251,14 @@ func main() {
 
 		if *custom_svg_options != "" {
 
-			custom_path, err := filepath.Abs(*custom_svg_options)
-
+			opts, err := tile.RasterzenSVGOptionsFromFile(*custom_svg_options)
+			
 			if err != nil {
 				logger.Fatal(err)
 			}
 
-			custom_fh, err := os.Open(custom_path)
-
-			if err != nil {
-				logger.Fatal(err)
-			}
-
-			body, err := ioutil.ReadAll(custom_fh)
-
-			if err != nil {
-				logger.Fatal(err)
-			}
-
-			err = json.Unmarshal(body, &svg_opts)
-
-			if err != nil {
-				logger.Fatal(err)
-			}
-
+			svg_opts = opts
+			
 		} else {
 
 			opts, err := tile.DefaultRasterzenSVGOptions()

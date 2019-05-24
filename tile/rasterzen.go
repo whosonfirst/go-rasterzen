@@ -23,6 +23,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 )
 
@@ -51,6 +52,49 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 	}
 
 	return &opts, nil
+}
+
+func RasterzenSVGOptionsFromFile(path string) (*RasterzenSVGOptions, error) {
+
+	abs_path, err := filepath.Abs(path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fh, err := os.Open(abs_path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer fh.Close()
+
+	return RasterzenSVGOptionsFromReader(fh)
+}
+
+func RasterzenSVGOptionsFromReader(fh io.Reader) (*RasterzenSVGOptions, error) {
+
+	body, err := ioutil.ReadAll(fh)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return RasterzenSVGOptionsFromBytes(body)
+}
+
+func RasterzenSVGOptionsFromBytes(body []byte) (*RasterzenSVGOptions, error) {
+
+	var svg_opts *RasterzenSVGOptions
+
+	err := json.Unmarshal(body, &svg_opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return svg_opts, nil
 }
 
 type FeatureCollection struct {
