@@ -14,8 +14,8 @@ import (
 
 func main() {
 
-	source := flag.String("source", "", "...")
-	destination := flag.String("destination", "", "...")
+	source := flag.String("source", "", "The path to a directory containing (rasterzen) SVG tiles.")
+	destination := flag.String("destination", "", "The path to a directory to write PNG tiles in.")
 
 	flag.Parse()
 

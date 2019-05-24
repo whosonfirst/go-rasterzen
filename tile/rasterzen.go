@@ -23,7 +23,79 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
+	"strconv"
 )
+
+type RasterzenSVGOptions struct {
+	TileSize      float64  `json:"tile_size"`
+	Stroke        string   `json:"stroke"`
+	StrokeWidth   float64  `json:"stroke_width"`
+	StrokeOpacity float64  `json:"stroke_opacity"`
+	Fill          string   `json:"fill"`
+	FillOpacity   float64  `json:"fill_opacity"`
+	FillIfMatches []string `json:"fill_if_matches"`
+	DopplrColours bool     `json:"dopplr_colours"`
+}
+
+func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
+
+	opts := RasterzenSVGOptions{
+		TileSize:      512.0,
+		Stroke:        "#000000",
+		StrokeWidth:   1.0,
+		StrokeOpacity: 1.0,
+		Fill:          "#ffffff",
+		FillOpacity:   0.5,
+		FillIfMatches: make([]string, 0),
+		DopplrColours: false,
+	}
+
+	return &opts, nil
+}
+
+func RasterzenSVGOptionsFromFile(path string) (*RasterzenSVGOptions, error) {
+
+	abs_path, err := filepath.Abs(path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fh, err := os.Open(abs_path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer fh.Close()
+
+	return RasterzenSVGOptionsFromReader(fh)
+}
+
+func RasterzenSVGOptionsFromReader(fh io.Reader) (*RasterzenSVGOptions, error) {
+
+	body, err := ioutil.ReadAll(fh)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return RasterzenSVGOptionsFromBytes(body)
+}
+
+func RasterzenSVGOptionsFromBytes(body []byte) (*RasterzenSVGOptions, error) {
+
+	var svg_opts *RasterzenSVGOptions
+
+	err := json.Unmarshal(body, &svg_opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return svg_opts, nil
+}
 
 type FeatureCollection struct {
 	Type     string        `json:"type"`
@@ -183,13 +255,24 @@ func RasterzenToGeoJSON(in io.Reader, out io.Writer) error {
 
 func RasterzenToSVG(in io.Reader, out io.Writer) error {
 
+	opts, err := DefaultRasterzenSVGOptions()
+
+	if err != nil {
+		return err
+	}
+
+	return RasterzenToSVGWithOptions(in, out, opts)
+}
+
+func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenSVGOptions) error {
+
 	body, err := ioutil.ReadAll(in)
 
 	if err != nil {
 		return err
 	}
 
-	tile_size := 512.0
+	tile_size := svg_opts.TileSize
 
 	s := geojson2svg.New()
 	s.Mercator = true
@@ -226,11 +309,12 @@ func RasterzenToSVG(in io.Reader, out io.Writer) error {
 			// more explicit and easier to compose on a per-layer basis in the future
 			// (20180608/thisisaaronland)
 
-			stroke := "#000000"
-			stroke_opacity := "1"
+			stroke := svg_opts.Stroke
+			stroke_width := svg_opts.StrokeWidth
+			stroke_opacity := svg_opts.StrokeOpacity
 
-			fill := "#ffffff"
-			fill_opacity := "0"
+			fill := svg_opts.Fill
+			fill_opacity := 0.0
 
 			kind := ""
 			detail := ""
@@ -263,7 +347,25 @@ func RasterzenToSVG(in io.Reader, out io.Writer) error {
 			}
 
 			if geom_type == "Polygon" || geom_type == "MultiPolygon" {
-				fill_opacity = "0.5"
+
+				fill_ok := true
+
+				if len(svg_opts.FillIfMatches) > 0 {
+
+					fill_ok = false
+
+					for _, m := range svg_opts.FillIfMatches {
+
+						if m == kind {
+							fill_ok = true
+							break
+						}
+					}
+				}
+
+				if fill_ok {
+					fill_opacity = svg_opts.FillOpacity
+				}
 			}
 
 			if kind == "ocean" {
@@ -277,20 +379,17 @@ func RasterzenToSVG(in io.Reader, out io.Writer) error {
 				log.Println(kind, detail, geom_type, sort_rank)
 			}
 
-			// where and how (if?) should we enable this...
-
-			dopplr_colours := false
-
-			if dopplr_colours {
+			if svg_opts.DopplrColours {
 				stroke = str2hex(kind)
 				fill = str2hex(detail)
 			}
 
 			props := map[string]string{
 				"stroke":         stroke,
-				"stroke_opacity": stroke_opacity,
 				"fill":           fill,
-				"fill-opacity":   fill_opacity,
+				"stroke-width":   strconv.FormatFloat(stroke_width, 'f', -1, 64),
+				"stroke-opacity": strconv.FormatFloat(stroke_opacity, 'f', -1, 64),
+				"fill-opacity":   strconv.FormatFloat(fill_opacity, 'f', -1, 64),
 			}
 
 			for k, v := range props {
