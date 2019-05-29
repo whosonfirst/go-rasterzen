@@ -5,7 +5,8 @@ import (
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-crawl"
 	"image/png"
-	_ "io/ioutil"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -16,6 +17,8 @@ func main() {
 
 	source := flag.String("source", "", "The path to a directory containing (rasterzen) SVG tiles.")
 	destination := flag.String("destination", "", "The path to a directory to write PNG tiles in.")
+	dryrun := flag.Bool("dryrun", false, "...")
+	force := flag.Bool("force", false, "...")
 
 	flag.Parse()
 
@@ -43,38 +46,58 @@ func main() {
 			return nil
 		}
 
-		im, err := tile.RasterzenPathToImage(svg_path)
-
-		if err != nil {
-			return nil
-		}
-
 		png_path := strings.Replace(svg_path, ext, ".png", 1)
 		png_path = strings.Replace(png_path, abs_source, abs_destination, 1)
 
-		log.Println(png_path)
+		if !*force {
+			_, err = os.Stat(png_path)
 
-		png_root := filepath.Dir(png_path)
-
-		_, err = os.Stat(png_root)
-
-		if os.IsNotExist(err) {
-			err = os.MkdirAll(png_root, 0755)
+			if err == nil {
+				return nil
+			}
 		}
 
+		im, err := tile.RasterzenPathToImage(svg_path)
+
 		if err != nil {
+			log.Printf("Failed to process %s: %s", svg_path, err)
+
+			if *dryrun {
+				return nil
+			}
+
 			return err
 		}
 
-		// png_fh := ioutil.Discard
+		var png_fh io.Writer
 
-		png_fh, err := os.OpenFile(png_path, os.O_RDWR|os.O_CREATE, 0644)
+		if *dryrun {
 
-		if err != nil {
-			return err
+			png_fh = ioutil.Discard
+
+		} else {
+
+			png_root := filepath.Dir(png_path)
+
+			_, err = os.Stat(png_root)
+
+			if os.IsNotExist(err) {
+				err = os.MkdirAll(png_root, 0755)
+			}
+
+			if err != nil {
+				return err
+			}
+
+			fh, err := os.OpenFile(png_path, os.O_RDWR|os.O_CREATE, 0644)
+
+			if err != nil {
+				return err
+			}
+
+			defer fh.Close()
+			png_fh = fh
 		}
-
-		defer png_fh.Close()
 
 		return png.Encode(png_fh, im)
 	}
