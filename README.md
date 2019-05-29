@@ -252,6 +252,10 @@ Utility tool to (re) render a directory of SVG tiles from a directory of `raster
 Usage of ./bin/rastersvg:
   -destination string
     	The path to a directory to SVG tiles in.
+  -dryrun
+    	Go through the motions but don't write any files to disk.
+  -force
+    	Re-build already existing SVG files.
   -source string
     	The path to a directory containing rasterzen (GeoJSON) tiles.
   -svg-options string
@@ -267,6 +271,10 @@ Utility tool to (re) render a directory of PNG tiles from a directory of (raster
 Usage of ./bin/rasterpng:
   -destination string
     	The path to a directory to write PNG tiles in.
+  -dryrun
+    	Go through the motions but don't write anything to disk.
+  -force
+    	Re-render already existing PNG files.
   -source string
     	The path to a directory containing (rasterzen) SVG tiles.
 ```

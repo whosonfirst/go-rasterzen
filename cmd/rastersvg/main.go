@@ -4,6 +4,8 @@ import (
 	"flag"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-crawl"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -15,6 +17,8 @@ func main() {
 	source := flag.String("source", "", "The path to a directory containing rasterzen (GeoJSON) tiles.")
 	destination := flag.String("destination", "", "The path to a directory to SVG tiles in.")
 	opts := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
+	dryrun := flag.Bool("dryrun", false, "Go through the motions but don't write any files to disk.")
+	force := flag.Bool("force", false, "Re-build already existing SVG files.")
 
 	flag.Parse()
 
@@ -40,21 +44,19 @@ func main() {
 
 		opts, err := tile.RasterzenSVGOptionsFromFile(*opts)
 
-		if err != nil{
+		if err != nil {
 			log.Fatal(err)
 		}
 
 		svg_opts = opts
 	}
-	
+
 	cb := func(rasterzen_path string, info os.FileInfo) error {
 
 		if info.IsDir() {
 			return nil
 		}
 
-		log.Println(rasterzen_path)
-		
 		ext := filepath.Ext(rasterzen_path)
 
 		if ext != ".json" {
@@ -67,36 +69,57 @@ func main() {
 			return err
 		}
 
+		defer rasterzen_fh.Close()
+
 		svg_path := strings.Replace(rasterzen_path, ext, ".svg", 1)
 		svg_path = strings.Replace(svg_path, abs_source, abs_destination, 1)
 
-		log.Println(svg_path)
+		if !*force {
 
-		svg_root := filepath.Dir(svg_path)
+			_, err = os.Stat(svg_path)
 
-		_, err = os.Stat(svg_root)
-
-		if os.IsNotExist(err) {
-			err = os.MkdirAll(svg_root, 0755)
+			if err == nil {
+				return nil
+			}
 		}
 
-		if err != nil {
-			return err
+		var svg_fh io.Writer
+
+		if *dryrun {
+			svg_fh = ioutil.Discard
+		} else {
+
+			svg_root := filepath.Dir(svg_path)
+
+			_, err = os.Stat(svg_root)
+
+			if os.IsNotExist(err) {
+				err = os.MkdirAll(svg_root, 0755)
+			}
+
+			if err != nil {
+				return err
+			}
+
+			fh, err := os.OpenFile(svg_path, os.O_RDWR|os.O_CREATE, 0644)
+
+			if err != nil {
+				return err
+			}
+
+			defer fh.Close()
+			svg_fh = fh
 		}
 
-		// svg_fh := ioutil.Discard
-
-		svg_fh, err := os.OpenFile(svg_path, os.O_RDWR|os.O_CREATE, 0644)
-
-		if err != nil {
-			return err
-		}
-
-		defer svg_fh.Close()
-		
 		err = tile.RasterzenToSVGWithOptions(rasterzen_fh, svg_fh, svg_opts)
 
 		if err != nil {
+
+			if *dryrun {
+				log.Printf("Failed to convert %s, because %s\n", rasterzen_path, err)
+				return nil
+			}
+			
 			return err
 		}
 

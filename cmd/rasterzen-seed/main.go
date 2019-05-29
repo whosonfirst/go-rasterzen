@@ -9,7 +9,7 @@ import (
 	"github.com/jtacoma/uritemplates"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/seed"
-	"github.com/whosonfirst/go-rasterzen/tile"	
+	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
@@ -246,19 +246,19 @@ func main() {
 	}
 
 	var svg_opts *tile.RasterzenSVGOptions
-	
+
 	if *seed_svg {
 
 		if *custom_svg_options != "" {
 
 			opts, err := tile.RasterzenSVGOptionsFromFile(*custom_svg_options)
-			
+
 			if err != nil {
 				logger.Fatal(err)
 			}
 
 			svg_opts = opts
-			
+
 		} else {
 
 			opts, err := tile.DefaultRasterzenSVGOptions()
@@ -272,9 +272,6 @@ func main() {
 
 	}
 
-
-
-	
 	var w worker.Worker
 	var w_err error
 

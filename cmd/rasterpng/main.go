@@ -17,8 +17,8 @@ func main() {
 
 	source := flag.String("source", "", "The path to a directory containing (rasterzen) SVG tiles.")
 	destination := flag.String("destination", "", "The path to a directory to write PNG tiles in.")
-	dryrun := flag.Bool("dryrun", false, "...")
-	force := flag.Bool("force", false, "...")
+	dryrun := flag.Bool("dryrun", false, "Go through the motions but don't write anything to disk.")
+	force := flag.Bool("force", false, "Re-render already existing PNG files.")
 
 	flag.Parse()
 
