@@ -25,6 +25,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 type RasterzenSVGOptions struct {
@@ -398,6 +399,19 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 				use_props[k] = true
 			}
 
+			// really we should be patching / doing this in geojson2svg
+			// but today we're doing it here... (20190529/thisisaaronland)
+
+			if kind != "" {
+				kind = escapeXMLString(kind)
+				str_f, _ = sjson.Set(str_f, "properties.kind", kind)
+			}
+
+			if detail != "" {
+				detail = escapeXMLString(detail)
+				str_f, _ = sjson.Set(str_f, "properties.kind_detail", detail)
+			}
+
 			err := s.AddFeature(str_f)
 
 			if err != nil {
@@ -489,4 +503,16 @@ func str2hex(text string) string {
 	code := enc[0:6]
 
 	return fmt.Sprintf("#%s", code)
+}
+
+func escapeXMLString(text string) string {
+
+	// there must be a built-in function to do this...
+	// (20190529/thisisaaronland)
+	
+	text = strings.Replace(text, "&", "&amp;", -1)
+	text = strings.Replace(text, ">", "&gt;", -1)
+	text = strings.Replace(text, "<", "&lt;", -1)
+	
+	return text
 }
