@@ -45,7 +45,6 @@ type RasterzenSVGOptions struct {
 	StrokeOpacity float64            `json:"stroke_opacity"`
 	Fill          string             `json:"fill"`
 	FillOpacity   float64            `json:"fill_opacity"`
-	FillIfMatches []string           `json:"fill_if_matches"`
 	DopplrColours bool               `json:"dopplr_colours"`
 	Styles        RasterzenSVGStyles `json:"styles"`
 }
@@ -59,7 +58,6 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 		StrokeOpacity: 1.0,
 		Fill:          "#ffffff",
 		FillOpacity:   0.5,
-		FillIfMatches: make([]string, 0),
 		DopplrColours: false,
 	}
 
@@ -360,24 +358,7 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 
 			if geom_type == "Polygon" || geom_type == "MultiPolygon" {
 
-				fill_ok := true
-
-				if len(svg_opts.FillIfMatches) > 0 {
-
-					fill_ok = false
-
-					for _, m := range svg_opts.FillIfMatches {
-
-						if m == kind {
-							fill_ok = true
-							break
-						}
-					}
-				}
-
-				if fill_ok {
-					fill_opacity = svg_opts.FillOpacity
-				}
+				fill_opacity = svg_opts.FillOpacity
 			}
 
 			for query, style := range svg_opts.Styles {
@@ -423,7 +404,7 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 				}
 
 				log.Println("STYLES", query, use_style)
-				
+
 				if !use_style {
 					break
 				}
