@@ -28,15 +28,26 @@ import (
 	"strings"
 )
 
+type SVGStyle struct {
+	Stroke        string  `json:"stroke"`
+	StrokeWidth   float64 `json:"stroke_width"`
+	StrokeOpacity float64 `json:"stroke_opacity"`
+	Fill          string  `json:"fill"`
+	FillOpacity   float64 `json:"fill_opacity"`
+}
+
+type RasterzenSVGStyles map[string]SVGStyle
+
 type RasterzenSVGOptions struct {
-	TileSize      float64  `json:"tile_size"`
-	Stroke        string   `json:"stroke"`
-	StrokeWidth   float64  `json:"stroke_width"`
-	StrokeOpacity float64  `json:"stroke_opacity"`
-	Fill          string   `json:"fill"`
-	FillOpacity   float64  `json:"fill_opacity"`
-	FillIfMatches []string `json:"fill_if_matches"`
-	DopplrColours bool     `json:"dopplr_colours"`
+	TileSize      float64            `json:"tile_size"`
+	Stroke        string             `json:"stroke"`
+	StrokeWidth   float64            `json:"stroke_width"`
+	StrokeOpacity float64            `json:"stroke_opacity"`
+	Fill          string             `json:"fill"`
+	FillOpacity   float64            `json:"fill_opacity"`
+	FillIfMatches []string           `json:"fill_if_matches"`
+	DopplrColours bool               `json:"dopplr_colours"`
+	Styles        RasterzenSVGStyles `json:"styles"`
 }
 
 func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
@@ -369,8 +380,78 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 				}
 			}
 
-			if kind == "ocean" {
-				// what?
+			for query, style := range svg_opts.Styles {
+
+				use_style := true
+
+				for _, str_pair := range strings.Split(query, " ") {
+
+					conditions := strings.Split(str_pair, ".")
+
+					pair := strings.Split(conditions[1], "=")
+
+					if len(pair) != 2 {
+						use_style = false
+						break
+					}
+
+					switch conditions[0] {
+
+					case "geometry":
+
+						geom := pair[1]
+
+						if geom != geom_type {
+							use_style = false
+						}
+
+					case "properties":
+
+						k := pair[0]
+						v := pair[1]
+
+						path := fmt.Sprintf("properties.%s", k)
+						rsp := f.Get(path)
+
+						if !rsp.Exists() || rsp.String() != string(v) {
+							use_style = false
+						}
+
+					default:
+						use_style = false
+					}
+				}
+
+				log.Println("STYLES", query, use_style)
+				
+				if !use_style {
+					break
+				}
+
+				if use_style {
+
+					if style.Stroke != "" {
+						stroke = style.Stroke
+					}
+
+					if style.StrokeWidth != 0.0 {
+						stroke_width = style.StrokeWidth
+					}
+
+					if style.StrokeOpacity != 0.0 {
+						stroke_opacity = style.StrokeOpacity
+					}
+
+					if style.Fill != "" {
+						fill = style.Fill
+					}
+
+					if style.FillOpacity != 0.0 {
+						fill_opacity = style.FillOpacity
+					}
+
+					break
+				}
 			}
 
 			// because we are still working out the details for both
@@ -509,10 +590,10 @@ func escapeXMLString(text string) string {
 
 	// there must be a built-in function to do this...
 	// (20190529/thisisaaronland)
-	
+
 	text = strings.Replace(text, "&", "&amp;", -1)
 	text = strings.Replace(text, ">", "&gt;", -1)
 	text = strings.Replace(text, "<", "&lt;", -1)
-	
+
 	return text
 }
