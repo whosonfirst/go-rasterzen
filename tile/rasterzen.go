@@ -369,6 +369,7 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 
 					conditions := strings.Split(str_pair, ".")
 
+					// TO DO: !=
 					pair := strings.Split(conditions[1], "=")
 
 					if len(pair) != 2 {
@@ -376,26 +377,60 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 						break
 					}
 
+					k := pair[0]
+					v := pair[1]
+
+					possible := make([]string, 0)
+
+					// TO DO: AND queries
+					// OR queries
+
+					if strings.HasPrefix(v, "[") && strings.HasSuffix(v, "]") {
+
+						strlen := len(v)
+
+						v = v[1:]
+						v = v[:(strlen - 2)]
+
+						possible = strings.Split(v, ",")
+
+					} else {
+						possible = []string{v}
+					}
+
 					switch conditions[0] {
 
 					case "geometry":
 
-						geom := pair[1]
+						has_geom := false
 
-						if geom != geom_type {
-							use_style = false
+						for _, test := range possible {
+
+							if test == geom_type {
+								has_geom = true
+								break
+							}
 						}
+
+						use_style = has_geom
 
 					case "properties":
 
-						k := pair[0]
-						v := pair[1]
+						has_prop := false
 
-						path := fmt.Sprintf("properties.%s", k)
-						rsp := f.Get(path)
+						for _, test := range possible {
 
-						if !rsp.Exists() || rsp.String() != string(v) {
-							use_style = false
+							path := fmt.Sprintf("properties.%s", k)
+							rsp := f.Get(path)
+
+							// log.Println("TEST", path, test)
+
+							if rsp.Exists() && rsp.String() == test {
+								has_prop = true
+								break
+							}
+
+							use_style = has_prop
 						}
 
 					default:
