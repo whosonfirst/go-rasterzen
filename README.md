@@ -365,9 +365,7 @@ For example:
     "fill_opacity": 0.2,
     "styles": {
 	"properties.landuse_kind=[apron,parking]": {
-	    "stroke": "#f11499",
-	    "x-fill":"#0e79c1",
-	    "x-stroke":"#0e79c1"
+	    "stroke": "#f11499"
 	},
 	"properties.landuse_kind=aerodrome": {
 	    "fill": "#f11499",
