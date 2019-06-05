@@ -387,7 +387,7 @@ It is not possible (yet) to perform boolean queries on full query statements, li
 Note that as of release `0.1.3` support for the following properties in `RasterzenSVGOptions` has been removed:
 
 ```
-	DopplrColours string   `json:"dopplr_colours"`
+	DopplrColours bool   `json:"dopplr_colours"`
 	FillIfMatches []string `json:"fill_if_matches"`
 ```	
 
