@@ -336,6 +336,10 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 					default:
 						use_style = false
 					}
+
+					if !use_style {
+						break
+					}
 				}
 
 				// log.Println("STYLES", query, use_style)

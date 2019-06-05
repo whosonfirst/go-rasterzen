@@ -362,12 +362,20 @@ For example:
     "stroke_width": 1.0,
     "stroke_opacity": 1.0,
     "fill": "#000000",
-    "fill_opacity": 0.2,
+    "fill_opacity": 0.0,
     "styles": {
+	"geometry.type=[Polygon,MultiPolygon] properties.kind=[ocean,water,lake]":{
+	    "fill_opacity": 0.2
+	},
 	"properties.landuse_kind=[apron,aerodrome]": {
+	    "stroke":"#ffffff",	    
+	    "fill": "#f11499"
+	},
+	"geometry.type=[Polygon,MultiPolygon] properties.landuse_kind=[apron,aerodrome]": {
+	    "stroke":"#ffffff",	    
 	    "fill": "#f11499",
-	    "stroke":"#ffffff"
-	}	
+	    "fill_opacity": 0.2
+	}		
     }
 }
 ```
@@ -376,10 +384,10 @@ Which would end up looking like this:
 
 ![](docs/images/rasterzen-styles.png)
 
-It is not possible (yet) to perform boolean queries on full query statements, like this:
+By default all queries in a query statement must evaluate to true in order for a style to be applied. It is not possible (yet) to perform boolean `OR` queries on full query statements, like this:
 
 ```
-"(properties.landuse_kind=aerodrome properties.kind=building)" : {
+"[properties.landuse_kind=aerodrome,properties.kind=building]" : {
 	// styles go here
 }	
 ```
