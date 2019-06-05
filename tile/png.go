@@ -6,6 +6,7 @@ import (
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-whosonfirst-cache"
+	"image/png"
 	"io"
 	"io/ioutil"
 )
@@ -46,4 +47,15 @@ func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.R
 	png_fh := ioutil.NopCloser(r)
 
 	return c.Set(png_key, png_fh)
+}
+
+func RasterzenToPNG(in io.Reader, out io.Writer) error {
+
+	img, err := RasterzenToImage(in)
+
+	if err != nil {
+		return err
+	}
+
+	return png.Encode(out, img)
 }

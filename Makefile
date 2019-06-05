@@ -21,10 +21,10 @@ assets:
 
 tools:
 	rm -rf bin/*
-	go build -o bin/rasterd cmd/rasterd/main.go
-	go build -o bin/rasterzen-seed cmd/rasterzen-seed/main.go
-	go build -o bin/rasterpng cmd/rasterpng/main.go
-	go build -o bin/rastersvg cmd/rastersvg/main.go
+	go build -mod vendor -o bin/rasterd cmd/rasterd/main.go
+	go build -mod vendor -o bin/rasterzen-seed cmd/rasterzen-seed/main.go
+	go build -mod vendor -o bin/rasterpng cmd/rasterpng/main.go
+	go build -mod vendor -o bin/rastersvg cmd/rastersvg/main.go
 
 rebuild:
 	@make assets
@@ -33,6 +33,6 @@ rebuild:
 lambda:	
 	if test -f main; then rm -f main; fi
 	if test -f deployment.zip; then rm -f deployment.zip; fi
-	GOOS=linux go build -o main cmd/rasterd.go
+	GOOS=linux go build -mod vendor -o main cmd/rasterd.go
 	zip deployment.zip main
 	rm -f main
