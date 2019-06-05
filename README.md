@@ -19,7 +19,7 @@ To read about this package being used in production you should read the followin
 
 Some important caveats:
 
-* It's also not possible to style any of the data beyond black outlines with transparent backgrounds.
+* There is only mimimal support for styling. [See below](#styles) for details.
 
 * Labels... it's easiest just to not even think about them yet.
 
@@ -27,7 +27,7 @@ Some important caveats:
 
 ## Install
 
-You will need to have both `Go` (specifically [version 1.12](https://golang.org/dl/) or higher because we're using [Go modules](https://github.com/golang/go/wiki/Modules)) and the `make` programs installed on your computer. Assuming you do just type:
+You will need to have both `Go` (specifically version [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
 
 ```
 make tools
@@ -349,8 +349,8 @@ Currently supported query statements are:
 
 There is limited support for boolean queries in the _values_ of individual queries. For example:
 
-* `properties.landuse_kind=[apron,parking]` would match any feature whose `landuse_kind` was "apron" or "parking"
-* `properties.landuse_kind=(apron,parking)` would match any feature whose `landuse_kind` was both "apron" and "parking"... which in a Nextzen context is actually impossible (because `landuse_kind` is a singleton) but you get the idea
+* `properties.landuse_kind=[apron,parking]` would match any feature whose `landuse_kind` was "apron" or "parking".
+* `properties.landuse_kind=(apron,parking)` would match any feature whose `landuse_kind` was both "apron" and "parking"... which in a Nextzen context is actually impossible (because `landuse_kind` is a singleton) but you get the idea.
 
 For example:
 
