@@ -37,7 +37,6 @@ type RasterzenSVGOptions struct {
 	StrokeOpacity float64            `json:"stroke_opacity"`
 	Fill          string             `json:"fill"`
 	FillOpacity   float64            `json:"fill_opacity"`
-	DopplrColours bool               `json:"dopplr_colours"`
 	Styles        RasterzenSVGStyles `json:"styles"`
 }
 
@@ -50,7 +49,6 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 		StrokeOpacity: 1.0,
 		Fill:          "#ffffff",
 		FillOpacity:   0.5,
-		DopplrColours: false,
 	}
 
 	return &opts, nil
@@ -240,15 +238,19 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 				fill_opacity = svg_opts.FillOpacity
 			}
 
+			// down this road leads madness (and curved labels) so do not
+			// confuse this with robust styles or queries
+			
 			for query, style := range svg_opts.Styles {
 
 				use_style := true
 
 				for _, str_pair := range strings.Split(query, " ") {
 
+					// TO DO: support AND () OR [] query statements
 					conditions := strings.Split(str_pair, ".")
 
-					// TO DO: !=
+					// TO DO: support !=
 					pair := strings.Split(conditions[1], "=")
 
 					if len(pair) != 2 {
@@ -375,11 +377,13 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 				log.Println(kind, detail, geom_type, sort_rank)
 			}
 
+			/*
 			if svg_opts.DopplrColours {
 				stroke = str2hex(kind)
 				fill = str2hex(detail)
 			}
-
+			*/
+			
 			props := map[string]string{
 				"stroke":         stroke,
 				"fill":           fill,

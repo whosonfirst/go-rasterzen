@@ -282,22 +282,26 @@ Usage of ./bin/rasterpng:
 ### RasterzenSVGOptions
 
 ```
+type SVGStyle struct {
+	Stroke        string  `json:"stroke"`
+	StrokeWidth   float64 `json:"stroke_width"`
+	StrokeOpacity float64 `json:"stroke_opacity"`
+	Fill          string  `json:"fill"`
+	FillOpacity   float64 `json:"fill_opacity"`
+}
+
+type RasterzenSVGStyles map[string]SVGStyle
+
 type RasterzenSVGOptions struct {
-	TileSize      float64  `json:"tile_size"`
-	Stroke        string   `json:"stroke"`
-	StrokeWidth   float64  `json:"stroke_width"`
-	StrokeOpacity float64  `json:"stroke_opacity"`
-	Fill          string   `json:"fill"`
-	FillOpacity   float64  `json:"fill_opacity"`
-	FillIfMatches []string `json:"fill_if_matches"`
-	DopplrColours bool     `json:"dopplr_colours"`
+	TileSize      float64            `json:"tile_size"`
+	Stroke        string             `json:"stroke"`
+	StrokeWidth   float64            `json:"stroke_width"`
+	StrokeOpacity float64            `json:"stroke_opacity"`
+	Fill          string             `json:"fill"`
+	FillOpacity   float64            `json:"fill_opacity"`
+	Styles        RasterzenSVGStyles `json:"styles"`
 }
 ```
-
-The `FillIfMatches` directory compares itself against the Nextzen `kind`
-attribute. If it is empty then all polygons are filled. This is the extent of
-anything resembling complex styling rules for SVG tiles. It's not great, it just
-is.
 
 The default RasterzenSVGOptions are:
 
@@ -309,8 +313,6 @@ The default RasterzenSVGOptions are:
 		StrokeOpacity: 1.0,
 		Fill:          "#ffffff",
 		FillOpacity:   0.5,
-		FillIfMatches: make([]string, 0),
-		DopplrColours: false,
 	}
 ```
 
@@ -319,15 +321,76 @@ Here's an example JSON file encoding SVG options:
 ```
 {
     "tile_size": 512.0,
-    "stroke": "#ffffff",
+    "stroke": "#515151",
     "stroke_width": 1.0,
     "stroke_opacity": 1.0,
-    "fill": "#ffffff",
-    "fill_opacity": 0.5,
-    "fill_if_matches": [ "ocean" ],
-    "dopplr_colours": false
+    "fill": "#000000",
+    "fill_opacity": 0.2
 }
 ```
+
+#### Styles
+
+Rasterzen does not support complex or sophisticated styling, nor does it have a robust query mechanism for doing so. Anything is possible but chances are it never will. It has "just enough" to do "just enough" which may not be enough for you, depending on your circumstances.
+
+The following SVG styling attributes are supported:
+
+* [stroke](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke)
+* [stroke_width](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-width)
+* [fill](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill)
+* [fill_opacity](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-opacity)
+
+Default, or global, values are set at the root of the `RasterzenSVGOptions` and can be reset via the `styles` property which is a dictionary whose keys are query statements and whose values are dictionaries containing style details.
+
+Currently supported query statements are:
+
+* `"geometry.type={GEOMETRY_TYPE}": { ... }`
+* `"properties.{PATH}={VALUE}": { ... }`
+
+There is limited support for boolean queries in the _values_ of individual queries. For example:
+
+* `properties.landuse_kind=[apron,parking]` would match any feature whose `landuse_kind` was "apron" or "parking"
+* `properties.landuse_kind=(apron,parking)` would match any feature whose `landuse_kind` was both "apron" and "parking"... which in a Nextzen context is actually impossible (because `landuse_kind` is a singleton) but you get the idea
+
+For example:
+
+```
+{
+    "tile_size": 512.0,
+    "stroke": "#515151",
+    "stroke_width": 1.0,
+    "stroke_opacity": 1.0,
+    "fill": "#000000",
+    "fill_opacity": 0.2,
+    "styles": {
+	"properties.landuse_kind=[apron,parking]": {
+	    "stroke": "#f11499",
+	    "x-fill":"#0e79c1",
+	    "x-stroke":"#0e79c1"
+	},
+	"properties.landuse_kind=aerodrome": {
+	    "fill": "#f11499",
+	    "stroke":"#ffffff"
+	}
+	
+    }
+}
+```
+
+It is not possible (yet) to perform boolean queries on full query statements, like this:
+
+```
+"(properties.landuse_kind=aerodrome properties.kind=building)" : {
+	// styles go here
+}	
+```
+
+Note that as of release `0.1.3` support for the following properties in `RasterzenSVGOptions` has been removed:
+
+```
+	FillOpacity   float64  `json:"fill_opacity"`
+	FillIfMatches []string `json:"fill_if_matches"`
+```	
 
 ## Lambda
 
