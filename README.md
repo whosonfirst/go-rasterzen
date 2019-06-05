@@ -364,14 +364,10 @@ For example:
     "fill": "#000000",
     "fill_opacity": 0.2,
     "styles": {
-	"properties.landuse_kind=[apron,parking]": {
-	    "stroke": "#f11499"
-	},
-	"properties.landuse_kind=aerodrome": {
+	"properties.landuse_kind=[apron,aerodrome]": {
 	    "fill": "#f11499",
 	    "stroke":"#ffffff"
-	}
-	
+	}	
     }
 }
 ```
