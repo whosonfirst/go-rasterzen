@@ -333,6 +333,8 @@ Here's an example JSON file encoding SVG options:
 
 Rasterzen does not support complex or sophisticated styling, nor does it have a robust query mechanism for doing so. Anything is possible but chances are it never will. It has "just enough" to do "just enough" which may not be enough for you, depending on your circumstances.
 
+_Important: Styles are not yet support when running `go-rasterzen` in a (AWS) Lambda context. They will be, but they aren't today._
+
 The following SVG styling attributes are supported:
 
 * [stroke](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke)
@@ -398,6 +400,7 @@ Note that as of release `0.1.3` support for the following properties in `Rasterz
 	DopplrColours bool   `json:"dopplr_colours"`
 	FillIfMatches []string `json:"fill_if_matches"`
 ```	
+
 
 ## Lambda
 
