@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+// for making "Dopplr colours"
+
 func str2hex(text string) string {
 
 	hasher := md5.New()

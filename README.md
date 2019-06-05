@@ -337,6 +337,7 @@ The following SVG styling attributes are supported:
 
 * [stroke](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke)
 * [stroke_width](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-width)
+* [stroke_opacity](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-opacity)
 * [fill](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill)
 * [fill_opacity](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-opacity)
 
@@ -376,6 +377,10 @@ For example:
     }
 }
 ```
+
+Which would end up looking like this:
+
+![](docs/images/rasterzen-styles.png)
 
 It is not possible (yet) to perform boolean queries on full query statements, like this:
 

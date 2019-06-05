@@ -240,7 +240,7 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 
 			// down this road leads madness (and curved labels) so do not
 			// confuse this with robust styles or queries
-			
+
 			for query, style := range svg_opts.Styles {
 
 				use_style := true
@@ -341,32 +341,27 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 				log.Println("STYLES", query, use_style)
 
 				if !use_style {
-					break
+					continue
 				}
 
-				if use_style {
+				if style.Stroke != "" {
+					stroke = style.Stroke
+				}
 
-					if style.Stroke != "" {
-						stroke = style.Stroke
-					}
+				if style.StrokeWidth != 0.0 {
+					stroke_width = style.StrokeWidth
+				}
 
-					if style.StrokeWidth != 0.0 {
-						stroke_width = style.StrokeWidth
-					}
+				if style.StrokeOpacity != 0.0 {
+					stroke_opacity = style.StrokeOpacity
+				}
 
-					if style.StrokeOpacity != 0.0 {
-						stroke_opacity = style.StrokeOpacity
-					}
+				if style.Fill != "" {
+					fill = style.Fill
+				}
 
-					if style.Fill != "" {
-						fill = style.Fill
-					}
-
-					if style.FillOpacity != 0.0 {
-						fill_opacity = style.FillOpacity
-					}
-
-					break
+				if style.FillOpacity != 0.0 {
+					fill_opacity = style.FillOpacity
 				}
 			}
 
@@ -377,13 +372,6 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 				log.Println(kind, detail, geom_type, sort_rank)
 			}
 
-			/*
-			if svg_opts.DopplrColours {
-				stroke = str2hex(kind)
-				fill = str2hex(detail)
-			}
-			*/
-			
 			props := map[string]string{
 				"stroke":         stroke,
 				"fill":           fill,
