@@ -3,6 +3,7 @@ package clip
 
 import (
 	"fmt"
+	"log"
 	"math"
 
 	"github.com/paulmach/orb"
@@ -18,6 +19,7 @@ func Geometry(b orb.Bound, g orb.Geometry) orb.Geometry {
 	}
 
 	if !b.Intersects(g.Bound()) {
+		log.Println("SKIP 2")		
 		return nil
 	}
 

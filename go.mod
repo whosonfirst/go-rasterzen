@@ -26,7 +26,7 @@ require (
 	github.com/whosonfirst/algnhsa v0.0.0-20190203000000-70f315bb89bd75b93a0ca381cf70a15b68209c32
 	// github.com/fapian/geojson2svg v1.0.0
 	// https://github.com/fapian/geojson2svg/compare/master...whosonfirst:master
-	github.com/whosonfirst/geojson2svg v1.0.1
+	github.com/whosonfirst/geojson2svg v1.0.2
 	github.com/whosonfirst/go-bindata v0.1.0
 	github.com/whosonfirst/go-bindata-assetfs v1.0.1
 	github.com/whosonfirst/go-bindata-html-template v0.0.0-20170123000000-839a6918b9ff535f95246ef0f43edfdb4ed186be

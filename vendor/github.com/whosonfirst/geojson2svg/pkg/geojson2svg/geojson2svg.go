@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
+	_ "log"
 	"math"
 	"regexp"
 	"sort"
@@ -180,11 +180,11 @@ func (svg *SVG) points() [][]float64 {
 
 func process(sf scaleFunc, w io.Writer, g *geojson.Geometry, attributes string) {
 
-     	// band-aid: https://github.com/whosonfirst/go-rasterzen/issues/3
+	// band-aid: https://github.com/whosonfirst/go-rasterzen/issues/3
 	// (20180615/thisisaaronland)
 
-     	if g == nil {
-		log.Println("BUNK GEOMETRY (process)")
+	if g == nil {
+		// log.Println("BUNK GEOMETRY (process)")
 		return
 	}
 
@@ -210,11 +210,11 @@ func process(sf scaleFunc, w io.Writer, g *geojson.Geometry, attributes string) 
 
 func collect(g *geojson.Geometry) (ps [][]float64) {
 
-     	// band-aid: https://github.com/whosonfirst/go-rasterzen/issues/3
+	// band-aid: https://github.com/whosonfirst/go-rasterzen/issues/3
 	// (20180615/thisisaaronland)
 
-     	if g == nil {
-		log.Println("BUNK GEOMETRY (collect)")
+	if g == nil {
+		// log.Println("BUNK GEOMETRY (collect)")
 		return
 	}
 

@@ -8,6 +8,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
+	"log"
 )
 
 func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
@@ -23,6 +24,8 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 	nextzen_key := CacheKeyForTile(t, "nextzen", "json")
 	rasterzen_key := CacheKeyForTile(t, "rasterzen", "json")
 
+	log.Println("NEXTZEN", nextzen_key)
+	
 	var nextzen_data io.ReadCloser   // stuff sent back from nextzen.org
 	var rasterzen_data io.ReadCloser // stuff sent back from nextzen.org
 
@@ -53,20 +56,26 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 		}
 	}
 
-	cr, err := nextzen.CropTile(z, x, y, nextzen_data)
+	if nextzen.IsOverZoom(z) {
+		log.Println("OVERZOOM DO NOT CROP AGAIN", z, x, y)
+		rasterzen_data, err = c.Set(rasterzen_key, nextzen_data)
+	} else {
+	
+		cr, err := nextzen.CropTile(z, x, y, nextzen_data)
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+
+		defer cr.Close()
+
+		rasterzen_data, err = c.Set(rasterzen_key, cr)
+
+		if err != nil {
+			return nil, err
+		}
 	}
-
-	defer cr.Close()
-
-	rasterzen_data, err = c.Set(rasterzen_key, cr)
-
-	if err != nil {
-		return nil, err
-	}
-
+	
 	return rasterzen_data, nil
 }
 

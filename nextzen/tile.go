@@ -5,8 +5,6 @@ package nextzen
 
 import (
 	"bytes"
-	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-spatial/geom/slippy"
@@ -38,17 +36,22 @@ func init() {
 	default_endpoint, _ = uritemplates.Parse(template)
 }
 
+func IsOverZoom(z int) bool {
+
+	if z > 16 {
+		return true
+	}
+
+	return false
+}
+
 func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	fetch_z := z
 	fetch_x := x
 	fetch_y := y
 
-	overzoom := false
-
-	if z > 16 {
-		overzoom = true
-	}
+	overzoom := IsOverZoom(z)
 
 	if overzoom {
 
@@ -63,6 +66,11 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 		fetch_z = int(t.Z)
 		fetch_x = int(t.X)
 		fetch_y = int(t.Y)
+
+		log.Println("OVERZOOM", z, x, y, fetch_z, fetch_x, fetch_y)
+		log.Println("OVERZOOM", mag)
+		
+		log.Println("OVERZOOM", z, x, y, t.Extent4326())
 	}
 
 	layer := "all"
@@ -136,120 +144,32 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	rsp_body := rsp.Body
 
+	// http://localhost:8080/#19/37.61780/-122.38800
+	// http://localhost:8080/svg/19/83903/202936.svg?api_key={KEY}
+	
 	if overzoom {
 
-		body, err := ioutil.ReadAll(rsp_body)
+		/*
+		cropped_rsp, err := CropTile(fetch_z, fetch_x, fetch_y, rsp_body)
 
 		if err != nil {
 			return nil, err
 		}
-
-		// CROP ZOOM 16 TILE HERE YEAH...
-
-		cropped_doc := make(map[string]interface{})
-
-		type CroppedResponse struct {
-			Layer string
-			Body  interface{}
-		}
-
-		done_ch := make(chan bool)
-		err_ch := make(chan error)
-		rsp_ch := make(chan CroppedResponse)
-
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-
-		for _, l := range Layers {
-
-			go func(l string) {
-
-				defer func() {
-					done_ch <- true
-				}()
-
-				select {
-				case <-ctx.Done():
-					return
-				default:
-					// pass
-				}
-
-				fc := gjson.GetBytes(body, l)
-
-				if !fc.Exists() {
-					return
-				}
-
-				enc, err := json.Marshal(fc.Value())
-
-				if err != nil {
-					err_ch <- err
-					return
-				}
-
-				r := bytes.NewReader(enc)
-				fh := ioutil.NopCloser(r)
-
-				cropped, err := CropTile(z, x, y, fh)
-
-				if err != nil {
-					err_ch <- err
-					return
-				}
-
-				cropped_body, err := ioutil.ReadAll(cropped)
-
-				if err != nil {
-					err_ch <- err
-					return
-				}
-
-				var stub interface{}
-
-				err = json.Unmarshal(cropped_body, &stub)
-
-				if err != nil {
-					err_ch <- err
-					return
-				}
-
-				rsp := CroppedResponse{
-					Layer: l,
-					Body:  stub,
-				}
-
-				rsp_ch <- rsp
-			}(l)
-		}
-
-		remaining := len(Layers)
-
-		for remaining > 0 {
-
-			select {
-			case <-done_ch:
-				// log.Println("DONE")
-				remaining -= 1
-			case err := <-err_ch:
-				// log.Println("OH NO", err)
-				return nil, err
-			case rsp := <-rsp_ch:
-				// log.Println("CROPPED", rsp.Layer)
-				cropped_doc[rsp.Layer] = rsp.Body
-			}
-		}
-
-		enc, err := json.Marshal(cropped_doc)
+		
+		cropped_rsp, err = CropTile(z, x, y, cropped_rsp)
 
 		if err != nil {
 			return nil, err
 		}
+		*/
 
-		log.Println("CROPPED", string(enc))
+		cropped_rsp, err := CropTile(z, x, y, rsp_body)
 
-		r := bytes.NewReader(enc)
-		rsp_body = ioutil.NopCloser(r)
+		if err != nil {
+			return nil, err
+		}
+		
+		rsp_body = cropped_rsp
 	}
 
 	return rsp_body, nil
@@ -262,7 +182,7 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 
 	bounds := tl.Bound()
 
-	// log.Println("CROP", z, x, y, bounds.Min.Lon(), bounds.Min.Lat(), bounds.Max.Lon(), bounds.Max.Lat())
+	log.Println("CROP", z, x, y, bounds.Min.Lon(), bounds.Min.Lat(), bounds.Max.Lon(), bounds.Max.Lat())
 
 	body, err := ioutil.ReadAll(fh)
 
@@ -295,10 +215,14 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 			}
 
 			geom := feature.Geometry
-
+			
 			orb_geom := clip.Geometry(bounds, geom)
 			new_geom := geojson.NewGeometry(orb_geom)
 
+			if orb_geom == nil {
+				log.Println("NIL ORB GEOM", bounds, geom)
+			}
+			
 			path := fmt.Sprintf("%s.features.%d.geometry", l, i)
 			body, err = sjson.SetBytes(body, path, new_geom)
 
@@ -308,6 +232,8 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 		}
 	}
 
+	log.Println("RESULT", string(body))
+	
 	r := bytes.NewReader(body)
 	return ioutil.NopCloser(r), nil
 }
