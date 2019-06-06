@@ -119,7 +119,7 @@ func main() {
 				log.Printf("Failed to convert %s, because %s\n", rasterzen_path, err)
 				return nil
 			}
-			
+
 			return err
 		}
 

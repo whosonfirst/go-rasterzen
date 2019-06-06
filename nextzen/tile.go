@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/go-spatial/geom/slippy"	
 	"github.com/jtacoma/uritemplates"
 	"github.com/paulmach/orb/clip"
 	"github.com/paulmach/orb/geojson"
@@ -34,14 +35,39 @@ func init() {
 
 func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
+	fetch_z := z
+	fetch_x := x
+	fetch_y := y
+	
+	overzoom := false
+	
+	if z > 16 {
+		overzoom = true
+	}
+
+	if overzoom {
+
+		u16 := uint(16)
+		uz := uint(z)
+		ux := uint(x)
+		uy := uint(y)
+		
+		mag := uz - u16
+		t := slippy.NewTile(u16, ux>>mag, uy>>mag)
+
+		fetch_z = int(t.Z)
+		fetch_x = int(t.X)
+		fetch_y = int(t.Y)
+	}
+
 	layer := "all"
 
 	values := make(map[string]interface{})
 	values["layer"] = "all"
 	values["apikey"] = opts.ApiKey
-	values["z"] = z
-	values["x"] = x
-	values["y"] = y
+	values["z"] = fetch_z
+	values["x"] = fetch_x
+	values["y"] = fetch_y
 
 	endpoint := default_endpoint
 
@@ -103,7 +129,15 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 		return nil, errors.New(fmt.Sprintf("Nextzen returned a non-200 response fetching %s/%d/%d/%d : '%s'", layer, z, x, y, rsp.Status))
 	}
 
-	return rsp.Body, nil
+	body := rsp.Body
+	
+	if overzoom {
+
+		crop_t := slippy.NewTile(uint(z), uint(x), uint(y))
+		log.Println("CROP TO", crop_t)
+	}
+	
+	return body, nil
 }
 
 func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {

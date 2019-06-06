@@ -27,22 +27,24 @@ go run cmd/overzoom/main.go -zoom 18 16/10488/25336
 
 import (
 	"flag"
-	"log"
-	"strings"
-	"strconv"
 	"github.com/go-spatial/geom/slippy"
+	"log"
+	"strconv"
+	"strings"
 )
 
 func main() {
 
-	zoom := flag.Int("zoom", 0, "...")
-	
+	// zoom := flag.Int("zoom", 0, "...")
+
 	flag.Parse()
 
+	/*
 	t_func := func(t *slippy.Tile) error {
 		log.Println("TILE", t, t.Extent4326())
 		return nil
 	}
+	*/
 	
 	for _, str_zxy := range flag.Args() {
 
@@ -57,21 +59,36 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		
+
 		x, err := strconv.Atoi(zxy[1])
 
 		if err != nil {
 			log.Fatal(err)
 		}
-		
+
 		y, err := strconv.Atoi(zxy[2])
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		t := slippy.NewTile(uint(z), uint(x), uint(y))
+		uz := uint(z)
+		ux := uint(x)
+		uy := uint(y)
+		
+		// t := slippy.NewTile(uint(z), uint(x), uint(y))
+		// t.RangeFamilyAt(uint(*zoom), t_func)
 
-		t.RangeFamilyAt(uint(*zoom), t_func)
+		var t *slippy.Tile
+
+		if uz > uint(16) {
+			mag := uz - uint(16)
+			t = slippy.NewTile(uint(16), ux>>mag, uy>>mag)
+			
+		} else {
+			t = slippy.NewTile(uz, ux, uy)
+		}
+
+		log.Println(t)
 	}
 }
