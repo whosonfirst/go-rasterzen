@@ -5,15 +5,15 @@ package nextzen
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-spatial/geom/slippy"
 	"github.com/jtacoma/uritemplates"
 	"github.com/paulmach/orb/clip"
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/maptile"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 	"io"
 	"io/ioutil"
 	"log"
@@ -36,9 +36,13 @@ func init() {
 	default_endpoint, _ = uritemplates.Parse(template)
 }
 
+func MaxZoom() int {
+	return 16
+}
+
 func IsOverZoom(z int) bool {
 
-	if z > 16 {
+	if z > MaxZoom() {
 		return true
 	}
 
@@ -51,26 +55,22 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 	fetch_x := x
 	fetch_y := y
 
+	// see notes below about whether or not we keep the overzooming code
+	// in this package or in tile/rasterzen.go (20190606/thisisaaronland)
+	
 	overzoom := IsOverZoom(z)
 
 	if overzoom {
 
-		u16 := uint(16)
-		uz := uint(z)
-		ux := uint(x)
-		uy := uint(y)
+		max := MaxZoom()
+		mag := z - max
 
-		mag := uz - u16
-		t := slippy.NewTile(u16, ux>>mag, uy>>mag)
-
-		fetch_z = int(t.Z)
-		fetch_x = int(t.X)
-		fetch_y = int(t.Y)
-
-		log.Println("OVERZOOM", z, x, y, fetch_z, fetch_x, fetch_y)
-		log.Println("OVERZOOM", mag)
+		ux := uint(x) >> uint(mag)
+		uy := uint(y) >> uint(mag)
 		
-		log.Println("OVERZOOM", z, x, y, t.Extent4326())
+		fetch_z = max
+		fetch_x = int(ux)		
+		fetch_y = int(uy)
 	}
 
 	layer := "all"
@@ -144,36 +144,33 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	rsp_body := rsp.Body
 
+	// overzooming works until it doesn't - specifically there are
+	// weird offsets that I don't understand - examples include:
+	// ./bin/rasterd -www -no-cache -nextzen-debug -nextzen-apikey {KEY}
+	// http://localhost:8080/#18/37.61800/-122.38301
 	// http://localhost:8080/#19/37.61780/-122.38800
 	// http://localhost:8080/svg/19/83903/202936.svg?api_key={KEY}
+	// (20190606/thisisaaronland)
 	
 	if overzoom {
 
-		/*
-		cropped_rsp, err := CropTile(fetch_z, fetch_x, fetch_y, rsp_body)
-
-		if err != nil {
-			return nil, err
-		}
+		// it would be good to cache rsp_body (aka the Z16 tile) here or maybe
+		// we just move all of this logic in to tile/rasterzen.go...
+		// (20190606/thisisaaronland)
 		
-		cropped_rsp, err = CropTile(z, x, y, cropped_rsp)
-
-		if err != nil {
-			return nil, err
-		}
-		*/
-
 		cropped_rsp, err := CropTile(z, x, y, rsp_body)
 
 		if err != nil {
 			return nil, err
 		}
-		
+
 		rsp_body = cropped_rsp
 	}
 
 	return rsp_body, nil
 }
+
+// crop all the elements in fh to the bounds of (z, x, y)
 
 func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 
@@ -182,7 +179,7 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 
 	bounds := tl.Bound()
 
-	log.Println("CROP", z, x, y, bounds.Min.Lon(), bounds.Min.Lat(), bounds.Max.Lon(), bounds.Max.Lat())
+	// log.Println("CROP", z, x, y, bounds.Min.Lon(), bounds.Min.Lat(), bounds.Max.Lon(), bounds.Max.Lat())
 
 	body, err := ioutil.ReadAll(fh)
 
@@ -190,50 +187,100 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 		return nil, err
 	}
 
+	cropped_tile := make(map[string]interface{})
+
+	type CroppedResponse struct {
+		Layer             string
+		FeatureCollection *geojson.FeatureCollection
+	}
+
+	done_ch := make(chan bool)
+	err_ch := make(chan error)
+	rsp_ch := make(chan CroppedResponse)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	// Layers is defined in nextzen/layers.go
 
-	for _, l := range Layers {
+	for _, layer_name := range Layers {
 
-		fc := gjson.GetBytes(body, l)
+		go func(layer_name string) {
 
-		if !fc.Exists() {
-			continue
-		}
+			defer func() {
+				done_ch <- true
+			}()
 
-		features := fc.Get("features")
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				// pass
+			}
 
-		// SOMETHING SOMETHING SOMETHING DO THESE ALL IN PARALLEL...
+			fc_rsp := gjson.GetBytes(body, layer_name)
 
-		for i, f := range features.Array() {
+			if !fc_rsp.Exists() {
+				return
+			}
 
-			str_f := f.String()
+			fc_str := fc_rsp.String()
 
-			feature, err := geojson.UnmarshalFeature([]byte(str_f))
+			fc, err := geojson.UnmarshalFeatureCollection([]byte(fc_str))
 
 			if err != nil {
-				return nil, err
+				err_ch <- err
+				return
 			}
 
-			geom := feature.Geometry
+			cropped_fc := geojson.NewFeatureCollection()
+
+			for _, f := range fc.Features {
+
+				geom := f.Geometry
+				clipped_geom := clip.Geometry(bounds, geom)
+
+				// I wish clip.Geometry returned errors rather than
+				// silently not clipping anything...
+				// https://github.com/paulmach/orb/blob/master/clip/helpers.go#L11-L23
+				
+				if clipped_geom == nil {
+					continue
+				}
+
+				f.Geometry = clipped_geom
+				cropped_fc.Append(f)
+			}
+
+			rsp := CroppedResponse{
+				Layer:             layer_name,
+				FeatureCollection: cropped_fc,
+			}
+
+			rsp_ch <- rsp
 			
-			orb_geom := clip.Geometry(bounds, geom)
-			new_geom := geojson.NewGeometry(orb_geom)
+		}(layer_name)
+	}
 
-			if orb_geom == nil {
-				log.Println("NIL ORB GEOM", bounds, geom)
-			}
-			
-			path := fmt.Sprintf("%s.features.%d.geometry", l, i)
-			body, err = sjson.SetBytes(body, path, new_geom)
+	remaining := len(Layers)
 
-			if err != nil {
-				return nil, err
-			}
+	for remaining > 0 {
+		select {
+		case <-done_ch:
+			remaining -= 1
+		case err := <-err_ch:
+			return nil, err
+		case rsp := <-rsp_ch:
+			cropped_tile[rsp.Layer] = rsp.FeatureCollection
 		}
 	}
 
-	log.Println("RESULT", string(body))
-	
-	r := bytes.NewReader(body)
+	cropped_body, err := json.Marshal(cropped_tile)
+
+	if err != nil {
+		return nil, err
+	}
+
+	r := bytes.NewReader(cropped_body)
 	return ioutil.NopCloser(r), nil
 }

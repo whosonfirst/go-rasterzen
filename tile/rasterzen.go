@@ -25,7 +25,7 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 	rasterzen_key := CacheKeyForTile(t, "rasterzen", "json")
 
 	log.Println("NEXTZEN", nextzen_key)
-	
+
 	var nextzen_data io.ReadCloser   // stuff sent back from nextzen.org
 	var rasterzen_data io.ReadCloser // stuff sent back from nextzen.org
 
@@ -60,7 +60,7 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 		log.Println("OVERZOOM DO NOT CROP AGAIN", z, x, y)
 		rasterzen_data, err = c.Set(rasterzen_key, nextzen_data)
 	} else {
-	
+
 		cr, err := nextzen.CropTile(z, x, y, nextzen_data)
 
 		if err != nil {
@@ -75,7 +75,7 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 			return nil, err
 		}
 	}
-	
+
 	return rasterzen_data, nil
 }
 
