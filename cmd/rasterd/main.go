@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/jtacoma/uritemplates"
@@ -11,10 +12,13 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"io/ioutil"
 	"log"
 	gohttp "net/http"
 	gourl "net/url"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -46,6 +50,8 @@ func main() {
 	rasterzen_handler := flag.Bool("rasterzen-handler", false, "Enable the Rasterzen tile handler.")
 	geojson_handler := flag.Bool("geojson-handler", false, "Enable the GeoJSON tile handler.")
 
+	svg_options := flag.String("svg-options", "", "...")
+	
 	var path_png = flag.String("path-png", "/png/", "The path that PNG tiles should be served from")
 	var path_svg = flag.String("path-svg", "/svg/", "The path that SVG tiles should be served from")
 	var path_geojson = flag.String("path-geojson", "/geojson/", "The path that GeoJSON tiles should be served from")
@@ -198,10 +204,56 @@ func main() {
 		
 		log.Println("enable SVG handler")
 
-		svg_opts, err := tile.DefaultRasterzenSVGOptions()
+		var svg_opts *tile.RasterzenSVGOptions
 
-		if err != nil {
-			log.Fatal(err)
+		if *svg_options != "" {
+
+			var opts_body []byte
+
+			// because Lambda and environment variables
+			
+			if strings.HasPrefix(*svg_options, "{") {
+				opts_body = []byte(*svg_options)
+			} else {
+
+				abs_path, err := filepath.Abs(*svg_options)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				fh, err := os.Open(abs_path)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				defer fh.Close()
+				
+				body, err := ioutil.ReadAll(fh)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				opts_body = body
+			}
+
+			err := json.Unmarshal(opts_body, &svg_opts)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+		} else {
+
+			opts, err := tile.DefaultRasterzenSVGOptions()
+			
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			svg_opts = opts
 		}
 		
 		h, err := http.NewSVGHandler(c, nz_opts, svg_opts)
