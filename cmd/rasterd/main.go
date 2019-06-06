@@ -50,7 +50,7 @@ func main() {
 	rasterzen_handler := flag.Bool("rasterzen-handler", false, "Enable the Rasterzen tile handler.")
 	geojson_handler := flag.Bool("geojson-handler", false, "Enable the GeoJSON tile handler.")
 
-	svg_options := flag.String("svg-options", "", "...")
+	svg_options := flag.String("svg-options", "", "Custom RasterzenSVGOptions data. This may be a path to a JSON config file or a valid JSON string.")
 	
 	var path_png = flag.String("path-png", "/png/", "The path that PNG tiles should be served from")
 	var path_svg = flag.String("path-svg", "/svg/", "The path that SVG tiles should be served from")

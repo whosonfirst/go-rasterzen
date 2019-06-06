@@ -4,6 +4,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
+	"io"
 	"log"
 	gohttp "net/http"
 )
@@ -29,7 +30,10 @@ func SVGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 		"Access-Control-Allow-Origin": "*",
 	}
 
-	h.Func = tile.RasterzenToSVG
+	h.Func = func(in io.Reader, out io.Writer) error {
+		return tile.RasterzenToSVGWithOptions(in, out, h.SVGOptions)
+	}
+
 	h.Headers = headers
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
