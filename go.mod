@@ -27,8 +27,8 @@ require (
 	// github.com/fapian/geojson2svg v1.0.0
 	// https://github.com/fapian/geojson2svg/compare/master...whosonfirst:master
 	github.com/whosonfirst/geojson2svg v1.0.1
-	github.com/whosonfirst/go-bindata v0.0.0-20180807000000-86a4bac5e0f5afa37bb2577dc92223452735d178
-	github.com/whosonfirst/go-bindata-assetfs v1.0.0
+	github.com/whosonfirst/go-bindata v0.1.0
+	github.com/whosonfirst/go-bindata-assetfs v1.0.1
 	github.com/whosonfirst/go-bindata-html-template v0.0.0-20170123000000-839a6918b9ff535f95246ef0f43edfdb4ed186be
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.0
 	github.com/whosonfirst/go-whosonfirst-cache v0.0.0-20180725164102-d7d1d64441e9

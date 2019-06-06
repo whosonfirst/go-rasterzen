@@ -1,10 +1,13 @@
 package nextzen
 
+// should this be in tile/nextgen.go ? perhaps...
+// (20190606/thisisaaronland)
+
 import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/go-spatial/geom/slippy"	
+	"github.com/go-spatial/geom/slippy"
 	"github.com/jtacoma/uritemplates"
 	"github.com/paulmach/orb/clip"
 	"github.com/paulmach/orb/geojson"
@@ -38,9 +41,9 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 	fetch_z := z
 	fetch_x := x
 	fetch_y := y
-	
+
 	overzoom := false
-	
+
 	if z > 16 {
 		overzoom = true
 	}
@@ -51,7 +54,7 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 		uz := uint(z)
 		ux := uint(x)
 		uy := uint(y)
-		
+
 		mag := uz - u16
 		t := slippy.NewTile(u16, ux>>mag, uy>>mag)
 
@@ -130,13 +133,20 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 	}
 
 	body := rsp.Body
-	
+
 	if overzoom {
 
-		crop_t := slippy.NewTile(uint(z), uint(x), uint(y))
-		log.Println("CROP TO", crop_t)
+		cropped, err := CropTile(z, x, y, body)
+
+		if err != nil {
+			return nil, err
+		}
+
+		body.Close()
+
+		body = cropped
 	}
-	
+
 	return body, nil
 }
 
