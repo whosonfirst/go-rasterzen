@@ -57,7 +57,7 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	// see notes below about whether or not we keep the overzooming code
 	// in this package or in tile/rasterzen.go (20190606/thisisaaronland)
-	
+
 	overzoom := IsOverZoom(z)
 
 	if overzoom {
@@ -67,9 +67,9 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 		ux := uint(x) >> uint(mag)
 		uy := uint(y) >> uint(mag)
-		
+
 		fetch_z = max
-		fetch_x = int(ux)		
+		fetch_x = int(ux)
 		fetch_y = int(uy)
 	}
 
@@ -151,13 +151,13 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 	// http://localhost:8080/#19/37.61780/-122.38800
 	// http://localhost:8080/svg/19/83903/202936.svg?api_key={KEY}
 	// (20190606/thisisaaronland)
-	
+
 	if overzoom {
 
 		// it would be good to cache rsp_body (aka the Z16 tile) here or maybe
 		// we just move all of this logic in to tile/rasterzen.go...
 		// (20190606/thisisaaronland)
-		
+
 		cropped_rsp, err := CropTile(z, x, y, rsp_body)
 
 		if err != nil {
@@ -243,7 +243,7 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 				// I wish clip.Geometry returned errors rather than
 				// silently not clipping anything...
 				// https://github.com/paulmach/orb/blob/master/clip/helpers.go#L11-L23
-				
+
 				if clipped_geom == nil {
 					continue
 				}
@@ -258,7 +258,7 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 			}
 
 			rsp_ch <- rsp
-			
+
 		}(layer_name)
 	}
 

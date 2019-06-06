@@ -6,7 +6,17 @@ import (
 	gohttp "net/http"
 )
 
-func WWWHandler(apikey string) (gohttp.HandlerFunc, error) {
+type WWWHandlerOptions struct {
+	NextzenAPIKey string
+	Debug         bool
+}
+
+type WWWTemplateVars struct {
+	NextzenAPIKey string
+	Debug         bool
+}
+
+func WWWHandler(opts *WWWHandlerOptions) (gohttp.HandlerFunc, error) {
 
 	t := template.New("index", templates.Asset)
 	// t = t.Funcs(funcs)
@@ -17,12 +27,9 @@ func WWWHandler(apikey string) (gohttp.HandlerFunc, error) {
 		return nil, err
 	}
 
-	type TemplateVars struct {
-		NextzenAPIKey string
-	}
-
-	vars := TemplateVars{
-		NextzenAPIKey: apikey,
+	vars := WWWTemplateVars{
+		NextzenAPIKey: opts.NextzenAPIKey,
+		Debug:         opts.Debug,
 	}
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {

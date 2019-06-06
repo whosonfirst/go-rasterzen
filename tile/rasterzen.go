@@ -56,8 +56,11 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 		}
 	}
 
+	// see notes in nextzen/tile.go about moving all the overzoom-ing
+	// code in here which would allow us to pre-cache the Z16 tile...
+	// (20190606/thisisaaronland)
+
 	if nextzen.IsOverZoom(z) {
-		log.Println("OVERZOOM DO NOT CROP AGAIN", z, x, y)
 		rasterzen_data, err = c.Set(rasterzen_key, nextzen_data)
 	} else {
 
