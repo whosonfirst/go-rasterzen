@@ -5,6 +5,8 @@ package nextzen
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-spatial/geom/slippy"
@@ -132,22 +134,125 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 		return nil, errors.New(fmt.Sprintf("Nextzen returned a non-200 response fetching %s/%d/%d/%d : '%s'", layer, z, x, y, rsp.Status))
 	}
 
-	body := rsp.Body
+	rsp_body := rsp.Body
 
 	if overzoom {
 
-		cropped, err := CropTile(z, x, y, body)
+		body, err := ioutil.ReadAll(rsp_body)
 
 		if err != nil {
 			return nil, err
 		}
 
-		body.Close()
+		// CROP ZOOM 16 TILE HERE YEAH...
 
-		body = cropped
+		cropped_doc := make(map[string]interface{})
+
+		type CroppedResponse struct {
+			Layer string
+			Body  interface{}
+		}
+
+		done_ch := make(chan bool)
+		err_ch := make(chan error)
+		rsp_ch := make(chan CroppedResponse)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		for _, l := range Layers {
+
+			go func(l string) {
+
+				defer func() {
+					done_ch <- true
+				}()
+
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					// pass
+				}
+
+				fc := gjson.GetBytes(body, l)
+
+				if !fc.Exists() {
+					return
+				}
+
+				enc, err := json.Marshal(fc.Value())
+
+				if err != nil {
+					err_ch <- err
+					return
+				}
+
+				r := bytes.NewReader(enc)
+				fh := ioutil.NopCloser(r)
+
+				cropped, err := CropTile(z, x, y, fh)
+
+				if err != nil {
+					err_ch <- err
+					return
+				}
+
+				cropped_body, err := ioutil.ReadAll(cropped)
+
+				if err != nil {
+					err_ch <- err
+					return
+				}
+
+				var stub interface{}
+
+				err = json.Unmarshal(cropped_body, &stub)
+
+				if err != nil {
+					err_ch <- err
+					return
+				}
+
+				rsp := CroppedResponse{
+					Layer: l,
+					Body:  stub,
+				}
+
+				rsp_ch <- rsp
+			}(l)
+		}
+
+		remaining := len(Layers)
+
+		for remaining > 0 {
+
+			select {
+			case <-done_ch:
+				// log.Println("DONE")
+				remaining -= 1
+			case err := <-err_ch:
+				// log.Println("OH NO", err)
+				return nil, err
+			case rsp := <-rsp_ch:
+				// log.Println("CROPPED", rsp.Layer)
+				cropped_doc[rsp.Layer] = rsp.Body
+			}
+		}
+
+		enc, err := json.Marshal(cropped_doc)
+
+		if err != nil {
+			return nil, err
+		}
+
+		log.Println("CROPPED", string(enc))
+
+		r := bytes.NewReader(enc)
+		rsp_body = ioutil.NopCloser(r)
 	}
 
-	return body, nil
+	return rsp_body, nil
 }
 
 func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {

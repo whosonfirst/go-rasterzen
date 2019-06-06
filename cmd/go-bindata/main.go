@@ -7,12 +7,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/whosonfirst/go-bindata"
 	"os"
 	"path/filepath"
 	"regexp"
 	"runtime"
 	"strings"
-	"github.com/whosonfirst/go-bindata"
 )
 
 const (
@@ -136,7 +136,6 @@ func parseInput(path string) bindata.InputConfig {
 	}
 
 }
-
 
 func Version() string {
 	if len(AppVersionRev) == 0 {

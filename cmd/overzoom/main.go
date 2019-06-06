@@ -40,12 +40,12 @@ func main() {
 	flag.Parse()
 
 	/*
-	t_func := func(t *slippy.Tile) error {
-		log.Println("TILE", t, t.Extent4326())
-		return nil
-	}
+		t_func := func(t *slippy.Tile) error {
+			log.Println("TILE", t, t.Extent4326())
+			return nil
+		}
 	*/
-	
+
 	for _, str_zxy := range flag.Args() {
 
 		zxy := strings.Split(str_zxy, "/")
@@ -75,7 +75,7 @@ func main() {
 		uz := uint(z)
 		ux := uint(x)
 		uy := uint(y)
-		
+
 		// t := slippy.NewTile(uint(z), uint(x), uint(y))
 		// t.RangeFamilyAt(uint(*zoom), t_func)
 
@@ -84,7 +84,7 @@ func main() {
 		if uz > uint(16) {
 			mag := uz - uint(16)
 			t = slippy.NewTile(uint(16), ux>>mag, uy>>mag)
-			
+
 		} else {
 			t = slippy.NewTile(uz, ux, uy)
 		}
