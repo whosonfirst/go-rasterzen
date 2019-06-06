@@ -1,6 +1,6 @@
 package nextzen
 
-// should this be in tile/nextgen.go ? perhaps...
+// should this be in tile/nextzen.go ? perhaps...
 // (20190606/thisisaaronland)
 
 import (
@@ -126,17 +126,6 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 	if opts.Debug {
 		log.Println(url, rsp.Status)
 	}
-
-	// for reasons I don't understand the following does not appear
-	// to trigger an error (20180628/thisisaaronland)
-	// < HTTP/2 400
-	// < content-length: 16
-	// < server: CloudFront
-	// < date: Thu, 28 Jun 2018 20:50:44 GMT
-	// < age: 73
-	// < x-cache: Error from cloudfront
-	// < via: 1.1 02192a27c967e955f8c815efa939bfc8.cloudfront.net (CloudFront)
-	// < x-amz-cf-id: m42n6AwT9N-kBNzKnrKxe1eXfQITapw0BAfE8kG89vPNn0rQ2TQKTg==
 
 	if rsp.StatusCode != 200 {
 		return nil, errors.New(fmt.Sprintf("Nextzen returned a non-200 response fetching %s/%d/%d/%d : '%s'", layer, z, x, y, rsp.Status))
