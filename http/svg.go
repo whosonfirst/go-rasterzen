@@ -8,7 +8,7 @@ import (
 	gohttp "net/http"
 )
 
-func NewSVGHandler(c cache.Cache, nz_opts *nextzen.Options) (gohttp.HandlerFunc, error) {
+func NewSVGHandler(c cache.Cache, nz_opts *nextzen.Options, svg_opts *tile.RasterzenSVGOptions) (gohttp.HandlerFunc, error) {
 
 	d, err := NewDispatchHandler(c)
 
@@ -17,6 +17,8 @@ func NewSVGHandler(c cache.Cache, nz_opts *nextzen.Options) (gohttp.HandlerFunc,
 	}
 
 	d.NextzenOptions = nz_opts
+	d.SVGOptions = svg_opts
+
 	return SVGHandler(d)
 }
 

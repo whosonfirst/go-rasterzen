@@ -7,6 +7,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/http"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/server"
+	"github.com/whosonfirst/go-rasterzen/tile"	
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
@@ -194,10 +195,16 @@ func main() {
 	}
 
 	if *svg_handler {
-
+		
 		log.Println("enable SVG handler")
 
-		h, err := http.NewSVGHandler(c, nz_opts)
+		svg_opts, err := tile.DefaultRasterzenSVGOptions()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		
+		h, err := http.NewSVGHandler(c, nz_opts, svg_opts)
 
 		if err != nil {
 			log.Fatal(err)
