@@ -146,7 +146,7 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 
 	// overzooming works until it doesn't - specifically there are
 	// weird offsets that I don't understand - examples include:
-	// ./bin/rasterd -www -no-cache -nextzen-debug -nextzen-apikey {KEY}
+	// ./bin/rasterd -www -www-debug -no-cache -nextzen-debug -nextzen-apikey {KEY}
 	// http://localhost:8080/#18/37.61800/-122.38301
 	// http://localhost:8080/#19/37.61780/-122.38800
 	// http://localhost:8080/svg/19/83903/202936.svg?api_key={KEY}
