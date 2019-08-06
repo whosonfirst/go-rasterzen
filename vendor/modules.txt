@@ -1,34 +1,18 @@
-# cloud.google.com/go v0.39.0
-cloud.google.com/go/storage
-cloud.google.com/go/iam
-cloud.google.com/go/internal
-cloud.google.com/go/internal/optional
-cloud.google.com/go/internal/trace
-cloud.google.com/go/internal/version
-cloud.google.com/go/compute/metadata
 # github.com/aaronland/go-string v0.1.0
 github.com/aaronland/go-string/dsn
-# github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7
-github.com/akrylysov/algnhsa
-# github.com/arschles/assert v1.0.0
-github.com/arschles/assert
 # github.com/aws/aws-lambda-go v1.10.0
-github.com/aws/aws-lambda-go/lambdacontext
-github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/events
 github.com/aws/aws-lambda-go/lambda
-github.com/aws/aws-lambda-go/events/test
 github.com/aws/aws-lambda-go/lambda/handlertrace
+github.com/aws/aws-lambda-go/lambda/messages
+github.com/aws/aws-lambda-go/lambdacontext
 # github.com/aws/aws-sdk-go v1.19.31
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/service/lambda
-github.com/aws/aws-sdk-go/service/secretsmanager
-github.com/aws/aws-sdk-go/aws/credentials
-github.com/aws/aws-sdk-go/aws/awserr
-github.com/aws/aws-sdk-go/aws/session
-github.com/aws/aws-sdk-go/service/s3
-github.com/aws/aws-sdk-go/service/s3/s3manager
 github.com/aws/aws-sdk-go/service/sqs
+github.com/aws/aws-sdk-go/aws/awserr
+github.com/aws/aws-sdk-go/service/s3
+github.com/aws/aws-sdk-go/aws/credentials
 github.com/aws/aws-sdk-go/aws/endpoints
 github.com/aws/aws-sdk-go/internal/sdkio
 github.com/aws/aws-sdk-go/aws/awsutil
@@ -38,75 +22,37 @@ github.com/aws/aws-sdk-go/aws/request
 github.com/aws/aws-sdk-go/aws/signer/v4
 github.com/aws/aws-sdk-go/private/protocol
 github.com/aws/aws-sdk-go/private/protocol/restjson
-github.com/aws/aws-sdk-go/private/protocol/jsonrpc
-github.com/aws/aws-sdk-go/internal/ini
-github.com/aws/aws-sdk-go/internal/shareddefaults
-github.com/aws/aws-sdk-go/aws/corehandlers
-github.com/aws/aws-sdk-go/aws/credentials/processcreds
-github.com/aws/aws-sdk-go/aws/credentials/stscreds
-github.com/aws/aws-sdk-go/aws/csm
-github.com/aws/aws-sdk-go/aws/defaults
+github.com/aws/aws-sdk-go/private/protocol/query
+github.com/aws/aws-sdk-go/aws/session
 github.com/aws/aws-sdk-go/internal/s3err
 github.com/aws/aws-sdk-go/private/protocol/eventstream
 github.com/aws/aws-sdk-go/private/protocol/eventstream/eventstreamapi
 github.com/aws/aws-sdk-go/private/protocol/rest
 github.com/aws/aws-sdk-go/private/protocol/restxml
-github.com/aws/aws-sdk-go/service/s3/s3iface
-github.com/aws/aws-sdk-go/private/protocol/query
+github.com/aws/aws-sdk-go/service/s3/s3manager
+github.com/aws/aws-sdk-go/internal/ini
+github.com/aws/aws-sdk-go/internal/shareddefaults
 github.com/aws/aws-sdk-go/internal/sdkrand
+github.com/aws/aws-sdk-go/private/protocol/jsonrpc
+github.com/aws/aws-sdk-go/private/protocol/query/queryutil
+github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
+github.com/aws/aws-sdk-go/aws/corehandlers
+github.com/aws/aws-sdk-go/aws/credentials/processcreds
+github.com/aws/aws-sdk-go/aws/credentials/stscreds
+github.com/aws/aws-sdk-go/aws/csm
+github.com/aws/aws-sdk-go/aws/defaults
+github.com/aws/aws-sdk-go/service/s3/s3iface
 github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds
 github.com/aws/aws-sdk-go/aws/credentials/endpointcreds
 github.com/aws/aws-sdk-go/aws/ec2metadata
-github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
-github.com/aws/aws-sdk-go/private/protocol/query/queryutil
 github.com/aws/aws-sdk-go/internal/sdkuri
-# github.com/davecgh/go-spew v1.1.1
-github.com/davecgh/go-spew/spew
-# github.com/fapian/geojson2svg v1.0.0
-github.com/fapian/geojson2svg/pkg/geojson2svg
 # github.com/go-ini/ini v1.42.0
 github.com/go-ini/ini
 # github.com/go-spatial/geom v0.0.0-20190319000000-c03a62f3a74a21c7fa19649e10f945b7c278069f
 github.com/go-spatial/geom
 github.com/go-spatial/geom/slippy
-github.com/go-spatial/geom/encoding
-github.com/go-spatial/geom/encoding/wkb/internal/consts
-github.com/go-spatial/geom/encoding/wkb/internal/decode
-github.com/go-spatial/geom/encoding/wkb/internal/encode
-github.com/go-spatial/geom/encoding/wkb
-github.com/go-spatial/geom/encoding/wkb/internal/tcase/token
-github.com/go-spatial/geom/internal/parsing
-github.com/go-spatial/geom/encoding/wkb/internal/tcase/symbol
-github.com/go-spatial/geom/encoding/wkt
-github.com/go-spatial/geom/encoding/wkt/internal/cmd/fuzz/fuzz
-github.com/go-spatial/geom/encoding/wkt/internal/symbol
-github.com/go-spatial/geom/cmp
-github.com/go-spatial/geom/planar
-github.com/go-spatial/geom/internal/rtreego
-github.com/go-spatial/geom/planar/intersect
-github.com/go-spatial/geom/planar/makevalid/hitmap
-github.com/go-spatial/geom/planar/makevalid/walker
-github.com/go-spatial/geom/planar/triangulate/constraineddelaunay
-github.com/go-spatial/geom/planar/triangulate/quadedge
-github.com/go-spatial/geom/planar/triangulate
-github.com/go-spatial/geom/encoding/geojson
-github.com/go-spatial/geom/encoding/wkb/internal/tcase
-github.com/go-spatial/geom/spherical
-# github.com/gogo/protobuf v1.2.1
-github.com/gogo/protobuf/proto
-# github.com/golang/protobuf v1.3.1
-github.com/golang/protobuf/proto
-github.com/golang/protobuf/ptypes
-github.com/golang/protobuf/protoc-gen-go/descriptor
-github.com/golang/protobuf/ptypes/any
-github.com/golang/protobuf/ptypes/duration
-github.com/golang/protobuf/ptypes/timestamp
-# github.com/googleapis/gax-go/v2 v2.0.4
-github.com/googleapis/gax-go/v2
-# github.com/hashicorp/golang-lru v0.5.1
-github.com/hashicorp/golang-lru/simplelru
 # github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 github.com/jmespath/go-jmespath
 # github.com/jtacoma/uritemplates v1.0.0
@@ -120,26 +66,12 @@ github.com/paulmach/orb/clip
 github.com/paulmach/orb/geojson
 github.com/paulmach/orb/maptile
 github.com/paulmach/orb
-github.com/paulmach/orb/encoding/mvt/vectortile
 github.com/paulmach/orb/internal/mercator
-github.com/paulmach/orb/planar
 github.com/paulmach/orb/project
-github.com/paulmach/orb/internal/length
-github.com/paulmach/orb/encoding/mvt
-github.com/paulmach/orb/simplify
-github.com/paulmach/orb/geo
-github.com/paulmach/orb/quadtree
-github.com/paulmach/orb/resample
-# github.com/pkg/errors v0.8.1
-github.com/pkg/errors
-# github.com/pmezard/go-difflib v1.0.0
-github.com/pmezard/go-difflib/difflib
 # github.com/srwiley/oksvg v0.0.0-20190413000000-c520f0a6c5ccb7ec7e11abc378c3372b90983860
 github.com/srwiley/oksvg
 # github.com/srwiley/rasterx v0.0.0-20181219215540-696f7edb7a7e
 github.com/srwiley/rasterx
-# github.com/stretchr/testify v1.3.0
-github.com/stretchr/testify/assert
 # github.com/tidwall/gjson v1.2.1
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.0.1
@@ -152,16 +84,14 @@ github.com/tidwall/sjson
 github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/geojson2svg v1.0.2
 github.com/whosonfirst/geojson2svg/pkg/geojson2svg
-# github.com/whosonfirst/go-bindata v0.0.0-20180807000000-86a4bac5e0f5afa37bb2577dc92223452735d178
-github.com/whosonfirst/go-bindata
 # github.com/whosonfirst/go-bindata-assetfs v1.0.0
 github.com/whosonfirst/go-bindata-assetfs
 # github.com/whosonfirst/go-bindata-html-template v0.0.0-20170123000000-839a6918b9ff535f95246ef0f43edfdb4ed186be
 github.com/whosonfirst/go-bindata-html-template
 # github.com/whosonfirst/go-whosonfirst-aws v0.1.0
 github.com/whosonfirst/go-whosonfirst-aws/session
-github.com/whosonfirst/go-whosonfirst-aws/config
 github.com/whosonfirst/go-whosonfirst-aws/s3
+github.com/whosonfirst/go-whosonfirst-aws/config
 github.com/whosonfirst/go-whosonfirst-aws/util
 # github.com/whosonfirst/go-whosonfirst-cache v0.0.0-20180725164102-d7d1d64441e9
 github.com/whosonfirst/go-whosonfirst-cache
@@ -178,92 +108,21 @@ github.com/whosonfirst/go-whosonfirst-mimetypes
 github.com/whosonfirst/go-whosonfirst-mimetypes/lookup
 # github.com/whosonfirst/walk v0.0.0-20160802000000-c0a349674b73681a7272f5ce6ade8ea28055059f
 github.com/whosonfirst/walk
-# go.opencensus.io v0.21.0
-go.opencensus.io/trace
-go.opencensus.io/plugin/ochttp
-go.opencensus.io/internal
-go.opencensus.io/trace/internal
-go.opencensus.io/trace/tracestate
-go.opencensus.io/plugin/ochttp/propagation/b3
-go.opencensus.io/stats
-go.opencensus.io/stats/view
-go.opencensus.io/tag
-go.opencensus.io/trace/propagation
-go.opencensus.io
-go.opencensus.io/metric/metricdata
-go.opencensus.io/stats/internal
-go.opencensus.io/internal/tagencoding
-go.opencensus.io/metric/metricproducer
-go.opencensus.io/resource
-# go4.org v0.0.0-20190313082347-94abd6928b1d
-go4.org/syncutil/singleflight
-# golang.org/x/build v0.0.0-20190521164208-6994fc2d58f1
-golang.org/x/build/autocertcache
-# golang.org/x/crypto v0.0.0-20190424203555-c05e17bb3b2d
-golang.org/x/crypto/acme/autocert
-golang.org/x/crypto/ssh/terminal
-golang.org/x/crypto/acme
 # golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c
 golang.org/x/image/colornames
 golang.org/x/image/math/fixed
 golang.org/x/image/vector
-golang.org/x/image/math/f64
-golang.org/x/image/font
-golang.org/x/image/font/plan9font
-golang.org/x/image/font/basicfont
-golang.org/x/image/font/sfnt
-golang.org/x/image/tiff/lzw
-golang.org/x/image/riff
-golang.org/x/image/vp8
-golang.org/x/image/vp8l
-golang.org/x/image/draw
-golang.org/x/image/font/gofont/goregular
-golang.org/x/image/font/gofont/gobold
-golang.org/x/image/font/gofont/gomono
 # golang.org/x/net v0.0.0-20190502183928-7f726cade0ab
 golang.org/x/net/html/charset
-golang.org/x/net/html/atom
 golang.org/x/net/html
-golang.org/x/net/idna
-golang.org/x/net/http/httpguts
-golang.org/x/net/http2/hpack
-golang.org/x/net/http2
-golang.org/x/net/internal/iana
-golang.org/x/net/internal/socket
-golang.org/x/net/ipv4
-golang.org/x/net/ipv6
-golang.org/x/net/internal/socks
-golang.org/x/net/bpf
-golang.org/x/net/internal/timeseries
-golang.org/x/net/webdav/internal/xml
-golang.org/x/net/context
-golang.org/x/net/dns/dnsmessage
-golang.org/x/net/http/httpproxy
-golang.org/x/net/icmp
-golang.org/x/net/internal/sockstest
-golang.org/x/net/websocket
-golang.org/x/net/nettest
-golang.org/x/net/trace
-golang.org/x/net/context/ctxhttp
-# golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a
-golang.org/x/oauth2
-golang.org/x/oauth2/google
-golang.org/x/oauth2/internal
-golang.org/x/oauth2/jws
-golang.org/x/oauth2/jwt
-# golang.org/x/sys v0.0.0-20190502175342-a43fa875dd82
-golang.org/x/sys/unix
-golang.org/x/sys/windows
+golang.org/x/net/html/atom
 # golang.org/x/text v0.3.2
-golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding
+golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex
 golang.org/x/text/transform
-golang.org/x/text/secure/bidirule
-golang.org/x/text/unicode/bidi
-golang.org/x/text/unicode/norm
-golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/japanese
 golang.org/x/text/encoding/korean
 golang.org/x/text/encoding/simplifiedchinese
@@ -275,66 +134,3 @@ golang.org/x/text/runes
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
-# google.golang.org/api v0.5.0
-google.golang.org/api/googleapi
-google.golang.org/api/iterator
-google.golang.org/api/option
-google.golang.org/api/storage/v1
-google.golang.org/api/transport/http
-google.golang.org/api/googleapi/internal/uritemplates
-google.golang.org/api/internal
-google.golang.org/api/gensupport
-google.golang.org/api/googleapi/transport
-google.golang.org/api/transport/http/internal/propagation
-# google.golang.org/appengine v1.5.0
-google.golang.org/appengine/urlfetch
-google.golang.org/appengine
-google.golang.org/appengine/internal
-google.golang.org/appengine/internal/urlfetch
-google.golang.org/appengine/internal/app_identity
-google.golang.org/appengine/internal/modules
-google.golang.org/appengine/internal/base
-google.golang.org/appengine/internal/datastore
-google.golang.org/appengine/internal/log
-google.golang.org/appengine/internal/remote_api
-# google.golang.org/genproto v0.0.0-20190508193815-b515fa19cec8
-google.golang.org/genproto/googleapis/iam/v1
-google.golang.org/genproto/googleapis/rpc/code
-google.golang.org/genproto/googleapis/api/annotations
-google.golang.org/genproto/googleapis/type/expr
-google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.20.1
-google.golang.org/grpc
-google.golang.org/grpc/codes
-google.golang.org/grpc/metadata
-google.golang.org/grpc/status
-google.golang.org/grpc/balancer
-google.golang.org/grpc/balancer/roundrobin
-google.golang.org/grpc/connectivity
-google.golang.org/grpc/credentials
-google.golang.org/grpc/encoding
-google.golang.org/grpc/encoding/proto
-google.golang.org/grpc/grpclog
-google.golang.org/grpc/internal
-google.golang.org/grpc/internal/backoff
-google.golang.org/grpc/internal/balancerload
-google.golang.org/grpc/internal/binarylog
-google.golang.org/grpc/internal/channelz
-google.golang.org/grpc/internal/envconfig
-google.golang.org/grpc/internal/grpcrand
-google.golang.org/grpc/internal/grpcsync
-google.golang.org/grpc/internal/transport
-google.golang.org/grpc/keepalive
-google.golang.org/grpc/naming
-google.golang.org/grpc/peer
-google.golang.org/grpc/resolver
-google.golang.org/grpc/resolver/dns
-google.golang.org/grpc/resolver/passthrough
-google.golang.org/grpc/stats
-google.golang.org/grpc/tap
-google.golang.org/grpc/balancer/base
-google.golang.org/grpc/credentials/internal
-google.golang.org/grpc/binarylog/grpc_binarylog_v1
-google.golang.org/grpc/internal/syscall
-# gopkg.in/urfave/cli.v1 v1.20.0
-gopkg.in/urfave/cli.v1
