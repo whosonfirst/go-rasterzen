@@ -28,6 +28,7 @@ github.com/aws/aws-sdk-go/aws/awserr
 github.com/aws/aws-sdk-go/aws/session
 github.com/aws/aws-sdk-go/service/s3
 github.com/aws/aws-sdk-go/service/s3/s3manager
+github.com/aws/aws-sdk-go/service/sqs
 github.com/aws/aws-sdk-go/aws/endpoints
 github.com/aws/aws-sdk-go/internal/sdkio
 github.com/aws/aws-sdk-go/aws/awsutil
@@ -51,16 +52,16 @@ github.com/aws/aws-sdk-go/private/protocol/eventstream/eventstreamapi
 github.com/aws/aws-sdk-go/private/protocol/rest
 github.com/aws/aws-sdk-go/private/protocol/restxml
 github.com/aws/aws-sdk-go/service/s3/s3iface
+github.com/aws/aws-sdk-go/private/protocol/query
 github.com/aws/aws-sdk-go/internal/sdkrand
 github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds
 github.com/aws/aws-sdk-go/aws/credentials/endpointcreds
 github.com/aws/aws-sdk-go/aws/ec2metadata
-github.com/aws/aws-sdk-go/private/protocol/query
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
-github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/private/protocol/query/queryutil
+github.com/aws/aws-sdk-go/internal/sdkuri
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/fapian/geojson2svg v1.0.0
@@ -149,7 +150,7 @@ github.com/tidwall/pretty
 github.com/tidwall/sjson
 # github.com/whosonfirst/algnhsa v0.0.0-20190203000000-70f315bb89bd75b93a0ca381cf70a15b68209c32
 github.com/whosonfirst/algnhsa
-# github.com/whosonfirst/geojson2svg v1.0.1
+# github.com/whosonfirst/geojson2svg v1.0.2
 github.com/whosonfirst/geojson2svg/pkg/geojson2svg
 # github.com/whosonfirst/go-bindata v0.0.0-20180807000000-86a4bac5e0f5afa37bb2577dc92223452735d178
 github.com/whosonfirst/go-bindata

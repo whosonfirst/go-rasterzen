@@ -1,8 +1,11 @@
 package worker
 
 import (
+	"errors"
+	"github.com/aws/aws-sdk-go/aws"	
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/whosonfirst/go-whosonfirst-aws/session"
+	"github.com/go-spatial/geom/slippy"	
 	"strings"
 )
 
@@ -36,7 +39,7 @@ func NewSQSWorker(dsn map[string]string, queue_url string) (Worker, error) {
 
 	if !strings.HasPrefix(queue_url, "https://sqs") {
 
-		rsp, err := svc.GetQueueUrl(&sqs.GetQueueUrlInput{
+		rsp, err := client.GetQueueUrl(&sqs.GetQueueUrlInput{
 			QueueName: aws.String(queue_url),
 		})
 
