@@ -2,6 +2,14 @@ package main
 
 // see also: docs/rasterzen-seed-sqs-arch.jpg
 
+/*
+
+2019/08/06 23:41:00 ERROR failed to render {9 151 183} (rasterzen): AccessDeniedException: User:
+arn:aws:sts::{ACCOUNT}:assumed-role/{ROLE}/RasterzenSeedSQS is not authorized to perform:
+lambda:InvokeFunction on resource: arn:aws:lambda:{REGION}:{ACCOUNT}:function:{FUNCTION}
+
+*/
+
 import (
 	"context"
 	"encoding/json"
@@ -17,6 +25,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
+	"time"
 )
 
 type SQSHandlerFunc func(ctx context.Context, sqsEvent events.SQSEvent) error
@@ -36,30 +45,37 @@ func SQSHandler(wrkr worker.Worker) (SQSHandlerFunc, error) {
 				return err
 			}
 
-			// maybe get NextzenAPI key, etc. from SQSMessage?
-			
+			// to do: get NextzenAPI key, etc. from SQSMessage?
+			// wrkr, err := worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, s3_cache, nz_opts, svg_opts)
+
 			t := slippy.Tile{Z: msg.Z, X: msg.X, Y: msg.Y}
 
-			// DEBUGGING
-			
-			log.Println("RENDER", msg.Prefix, t)
-			continue
+			t1 := time.Now()
 
+			defer func() {
+				log.Printf("time to render %v (%s): %v\n", t, msg.Prefix, time.Since(t1))
+			}()
+
+			var render_err error
+			
 			switch msg.Prefix {
 			case "rasterzen":
-				wrkr.RenderRasterzenTile(t)
+				render_err = wrkr.RenderRasterzenTile(t)
 			case "geojson":
-				wrkr.RenderGeoJSONTile(t)
+				render_err = wrkr.RenderGeoJSONTile(t)
 			case "extent":
-				wrkr.RenderExtentTile(t)
+				render_err = wrkr.RenderExtentTile(t)
 			case "svg":
-				wrkr.RenderSVGTile(t)
+				render_err = wrkr.RenderSVGTile(t)
 			case "png":
-				wrkr.RenderPNGTile(t)
+				render_err = wrkr.RenderPNGTile(t)
 			default:
-				return errors.New("Invalid prefix")
+				render_err = errors.New("Invalid prefix")
 			}
 
+			if render_err != nil {
+				log.Printf("ERROR failed to render %v (%s): %v\n", t, msg.Prefix, render_err)
+			}
 		}
 
 		return nil
@@ -92,7 +108,7 @@ func main() {
 	if err != nil {
 		log.Fatal("FLAGS", err)
 	}
-	
+
 	nz_opts := &nextzen.Options{
 		ApiKey: *nextzen_apikey,
 		Origin: *nextzen_origin,
@@ -113,13 +129,13 @@ func main() {
 	opts, err := s3.NewS3CacheOptionsFromString(*s3_opts)
 
 	if err != nil {
-		log.Fatal("S3 OPTS", err)
+		log.Fatal(err)
 	}
 
 	s3_cache, err := s3.NewS3Cache(*s3_dsn, opts)
 
 	if err != nil {
-		log.Fatal("S3 CACHE", err)
+		log.Fatal(err)
 	}
 
 	var svg_opts *tile.RasterzenSVGOptions
@@ -129,7 +145,7 @@ func main() {
 		opts, err := tile.RasterzenSVGOptionsFromFile(*custom_svg_options)
 
 		if err != nil {
-			log.Fatal("SVG OPTIONS", err)
+			log.Fatal(err)
 		}
 
 		svg_opts = opts
@@ -139,7 +155,7 @@ func main() {
 		opts, err := tile.DefaultRasterzenSVGOptions()
 
 		if err != nil {
-			log.Fatal("SVG OPTIONS", err)
+			log.Fatal(err)
 		}
 
 		svg_opts = opts
@@ -148,7 +164,7 @@ func main() {
 	wrkr, err := worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, s3_cache, nz_opts, svg_opts)
 
 	if err != nil {
-		log.Fatal("LAMBDA ERROR", err)
+		log.Fatal(err)
 	}
 
 	handler, err := SQSHandler(wrkr)

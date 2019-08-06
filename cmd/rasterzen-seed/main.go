@@ -126,7 +126,7 @@ func main() {
 	flag.Var(&lambda_dsn, "lambda-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION'")
 
 	lambda_function := flag.String("lambda-function", "Rasterzen", "A valid AWS Lambda function name.")
-	
+
 	var sqs_dsn flags.DSNString
 	flag.Var(&sqs_dsn, "sqs-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION' and 'queue=QUEUE'")
 
