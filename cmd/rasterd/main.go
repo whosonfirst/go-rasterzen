@@ -8,7 +8,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/http"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/server"
-	"github.com/whosonfirst/go-rasterzen/tile"	
+	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
@@ -51,7 +51,7 @@ func main() {
 	geojson_handler := flag.Bool("geojson-handler", false, "Enable the GeoJSON tile handler.")
 
 	svg_options := flag.String("svg-options", "", "Custom RasterzenSVGOptions data. This may be a path to a JSON config file or a valid JSON string.")
-	
+
 	var path_png = flag.String("path-png", "/png/", "The path that PNG tiles should be served from")
 	var path_svg = flag.String("path-svg", "/svg/", "The path that SVG tiles should be served from")
 	var path_geojson = flag.String("path-geojson", "/geojson/", "The path that GeoJSON tiles should be served from")
@@ -201,7 +201,7 @@ func main() {
 	}
 
 	if *svg_handler {
-		
+
 		log.Println("enable SVG handler")
 
 		var svg_opts *tile.RasterzenSVGOptions
@@ -211,7 +211,7 @@ func main() {
 			var opts_body []byte
 
 			// because Lambda and environment variables
-			
+
 			if strings.HasPrefix(*svg_options, "{") {
 				opts_body = []byte(*svg_options)
 			} else {
@@ -229,7 +229,7 @@ func main() {
 				}
 
 				defer fh.Close()
-				
+
 				body, err := ioutil.ReadAll(fh)
 
 				if err != nil {
@@ -248,14 +248,14 @@ func main() {
 		} else {
 
 			opts, err := tile.DefaultRasterzenSVGOptions()
-			
+
 			if err != nil {
 				log.Fatal(err)
 			}
 
 			svg_opts = opts
 		}
-		
+
 		h, err := http.NewSVGHandler(c, nz_opts, svg_opts)
 
 		if err != nil {
