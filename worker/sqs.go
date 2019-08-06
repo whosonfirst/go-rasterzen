@@ -1,13 +1,21 @@
 package worker
 
 import (
+	"encoding/json"
 	"errors"
-	"github.com/aws/aws-sdk-go/aws"	
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-whosonfirst-aws/session"
-	"github.com/go-spatial/geom/slippy"	
 	"strings"
 )
+
+type SQSMessage struct {
+	Z      uint   `json:"z"`
+	X      uint   `json:"x"`
+	Y      uint   `json:"y"`
+	Prefix string `json:"prefix"`
+}
 
 type SQSWorker struct {
 	Worker
@@ -78,15 +86,26 @@ func (w *SQSWorker) RenderPNGTile(t slippy.Tile) error {
 	return w.renderTile(t, "png", "png")
 }
 
-func (w *SQSWorker) renderTile(t slippy.Tile, prefix, format string) error {
+func (w *SQSWorker) renderTile(t slippy.Tile, prefix string, format string) error {
 
-	body := "fix me"
-
-	msg := &sqs.SendMessageInput{
-		QueueUrl:    aws.String(w.queue_url),
-		MessageBody: aws.String(body),
+	msg := SQSMessage{
+		Z:      t.Z,
+		X:      t.X,
+		Y:      t.Y,
+		Prefix: prefix,
 	}
 
-	_, err := w.client.SendMessage(msg)
+	enc, err := json.Marshal(msg)
+
+	if err != nil {
+		return err
+	}
+
+	req := &sqs.SendMessageInput{
+		QueueUrl:    aws.String(w.queue_url),
+		MessageBody: aws.String(string(enc)),
+	}
+
+	_, err = w.client.SendMessage(req)
 	return err
 }

@@ -4,7 +4,7 @@ require (
 	github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718 // indirect
 	github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7 // indirect
 	github.com/arschles/assert v1.0.0 // indirect
-	github.com/aws/aws-lambda-go v1.10.0 // indirect
+	github.com/aws/aws-lambda-go v1.10.0
 	github.com/aws/aws-sdk-go v1.19.31
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-spatial/geom v0.0.0-20190319000000-c03a62f3a74a21c7fa19649e10f945b7c278069f
