@@ -119,13 +119,16 @@ func main() {
 
 	custom_svg_options := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
 
-	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local.")
+	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local, sqs.")
 	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
 
 	var lambda_dsn flags.DSNString
 	flag.Var(&lambda_dsn, "lambda-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION'")
 
 	lambda_function := flag.String("lambda-function", "Rasterzen", "A valid AWS Lambda function name.")
+	
+	var sqs_dsn flags.DSNString
+	flag.Var(&sqs_dsn, "sqs-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION' and 'queue=QUEUE'")
 
 	timings := flag.Bool("timings", false, "Display timings for tile seeding.")
 
@@ -281,6 +284,8 @@ func main() {
 		w, w_err = worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, c, nz_opts, svg_opts)
 	case "LOCAL":
 		w, w_err = worker.NewLocalWorker(c, nz_opts, svg_opts)
+	case "SQS":
+		w, w_err = worker.NewSQSWorker(sqs_dsn.Map())
 	default:
 		w_err = errors.New("Invalid worker")
 

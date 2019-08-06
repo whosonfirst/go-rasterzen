@@ -1,15 +1,3 @@
-vendor-deps:
-	go mod vendor
-
-fmt:
-	go fmt *.go
-	go fmt http/*.go
-	go fmt seed/*.go
-	go fmt tile/*.go
-	go fmt server/*.go
-	go fmt nextzen/*.go
-	go fmt worker/*.go
-
 assets:
 	go build -o bin/go-bindata ./vendor/github.com/whosonfirst/go-bindata/go-bindata/
 	go build -o bin/go-bindata-assetfs vendor/github.com/whosonfirst/go-bindata-assetfs/go-bindata-assetfs/main.go
@@ -23,6 +11,7 @@ tools:
 	rm -rf bin/*
 	go build -mod vendor -o bin/rasterd cmd/rasterd/main.go
 	go build -mod vendor -o bin/rasterzen-seed cmd/rasterzen-seed/main.go
+	# go build -mod vendor -o bin/rasterzen-seed-sqs cmd/rasterzen-seed-sqs/main.go
 	go build -mod vendor -o bin/rasterpng cmd/rasterpng/main.go
 	go build -mod vendor -o bin/rastersvg cmd/rastersvg/main.go
 
@@ -33,6 +22,13 @@ rebuild:
 lambda:	
 	if test -f main; then rm -f main; fi
 	if test -f deployment.zip; then rm -f deployment.zip; fi
-	GOOS=linux go build -mod vendor -o main cmd/rasterd.go
+	GOOS=linux go build -mod vendor -o main cmd/rasterd/main.go
+	zip deployment.zip main
+	rm -f main
+
+lambda-sqs:	
+	if test -f main; then rm -f main; fi
+	if test -f deployment.zip; then rm -f deployment.zip; fi
+	GOOS=linux go build -mod vendor -o main cmd/rasterzen-seed-sqs/main.go
 	zip deployment.zip main
 	rm -f main

@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+// TO DO: store/pass Nextzen options here...
+
 type SQSMessage struct {
 	Z      uint   `json:"z"`
 	X      uint   `json:"x"`
@@ -23,7 +25,7 @@ type SQSWorker struct {
 	queue_url string
 }
 
-func NewSQSWorker(dsn map[string]string, queue_url string) (Worker, error) {
+func NewSQSWorker(dsn map[string]string) (Worker, error) {
 
 	creds, ok := dsn["credentials"]
 
@@ -37,6 +39,12 @@ func NewSQSWorker(dsn map[string]string, queue_url string) (Worker, error) {
 		return nil, errors.New("Missing region")
 	}
 
+	queue_url, ok := dsn["queue"]
+
+	if !ok {
+		return nil, errors.New("Missing queue")
+	}
+	
 	sess, err := session.NewSessionWithCredentials(creds, region)
 
 	if err != nil {
@@ -88,6 +96,8 @@ func (w *SQSWorker) RenderPNGTile(t slippy.Tile) error {
 
 func (w *SQSWorker) renderTile(t slippy.Tile, prefix string, format string) error {
 
+	// see notes above
+	
 	msg := SQSMessage{
 		Z:      t.Z,
 		X:      t.X,
