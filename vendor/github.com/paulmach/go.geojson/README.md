@@ -3,24 +3,23 @@ go.geojson
 
 Go.geojson is a package for **encoding and decoding** [GeoJSON](http://geojson.org/) into Go structs.
 Supports both the [json.Marshaler](http://golang.org/pkg/encoding/json/#Marshaler) and [json.Unmarshaler](http://golang.org/pkg/encoding/json/#Unmarshaler)
-interfaces as well as [sql.Scanner](http://golang.org/pkg/database/sql/#Scanner) for directly scanning PostGIS query results.
+interfaces as well as [sql.Scanner](http://golang.org/pkg/database/sql/#Scanner) for directly scanner PostGIS query results.
 The package also provides helper functions such as `UnmarshalFeatureCollection`, `UnmarshalFeature` and `UnmarshalGeometry`.
 
-### Important
-This package is best for lightweight interaction with GeoJSON. If you want to actually do
-stuff with the geometry take a look at [orb/geojson](https://github.com/paulmach/orb/tree/master/geojson) which
-decodes the geometries into [orb](https://github.com/paulmach/orb) types which you can do all sorts of things with.
-
 #### To install
-
+	
 	go get github.com/paulmach/go.geojson
 
 #### To use, imports as package name `geojson`:
 
 	import "github.com/paulmach/go.geojson"
 
-[![Build Status](https://travis-ci.org/paulmach/go.geojson.svg?branch=master)](https://travis-ci.org/paulmach/go.geojson)
-[![Godoc Reference](https://godoc.org/github.com/paulmach/go.geojson?status.svg)](https://godoc.org/github.com/paulmach/go.geojson)
+<br />
+[![Build Status](https://travis-ci.org/paulmach/go.geojson.png?branch=master)](https://travis-ci.org/paulmach/go.geojson)
+&nbsp; &nbsp;
+[![Coverage Status](https://coveralls.io/repos/paulmach/go.geojson/badge.png?branch=master)](https://coveralls.io/r/paulmach/go.geojson?branch=master)
+&nbsp; &nbsp;
+[![Godoc Reference](https://godoc.org/github.com/paulmach/go.geojson?status.png)](https://godoc.org/github.com/paulmach/go.geojson)
 
 ## Examples
 
@@ -50,7 +49,7 @@ decodes the geometries into [orb](https://github.com/paulmach/orb) types which y
 
 		g.IsPoint() == true
 		g.Point == []float64{102.0, 0.5}
-
+	
 * #### Marshalling (Go -> JSON)
 
 		g := geojson.NewPointGeometry([]float64{1, 2})
@@ -70,7 +69,7 @@ decodes the geometries into [orb](https://github.com/paulmach/orb) types which y
 * #### Dealing with different Geometry types
 
 	A geometry can be of several types, causing problems in a statically typed language.
-	Thus there is a separate attribute on Geometry for each type.
+	Thus there is a separate attribute on Geometry for each type. 
 	See the [Geometry object](https://godoc.org/github.com/paulmach/go.geojson#Geometry) for more details.
 
 		g := geojson.UnmarshalGeometry([]byte(`

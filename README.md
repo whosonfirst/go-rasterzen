@@ -88,6 +88,8 @@ Usage of ./bin/rasterd:
     	A valid ini-style config file section. (default "rasterd")
   -svg-handler
     	Enable the SVG tile handler. (default true)
+  -svg-options string
+    	Custom RasterzenSVGOptions data. This may be a path to a JSON config file or a valid JSON string.	
   -www
     	Enable a simple web interface with a slippy map (at /) for testing and debugging.
 ```
@@ -149,10 +151,6 @@ $> ll ./cache/nextzen/13/*/*.json
 -rw-r--r--  1 wof  staff    2793 Jun 12 12:29 ./cache/nextzen/13/1313/3171.json
 -rw-r--r--  1 wof  staff  202508 Jun 12 12:29 ./cache/nextzen/13/1313/3172.json
 ```
-
-#### Notes
-
-* As of this writing it is not possible to define custom `RasterzenSVGOptions` with the `rasterd` tiles so everything will be stroked in black and polygons will have a semi-translucent white fill. Custom styling is supported in other tools and is in the works for `rasterd`.
 
 ### rasterzen-seed
 
@@ -332,8 +330,6 @@ Here's an example JSON file encoding SVG options:
 #### Styles
 
 Rasterzen does not support complex or sophisticated styling, nor does it have a robust query mechanism for doing so. Anything is possible but chances are it never will. It has "just enough" to do "just enough" which may not be enough for you, depending on your circumstances.
-
-_Important: Styles are not yet support when running `go-rasterzen` in a (AWS) Lambda context. They will be, but they aren't today._
 
 The following SVG styling attributes are supported:
 
