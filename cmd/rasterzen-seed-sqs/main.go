@@ -2,14 +2,6 @@ package main
 
 // see also: docs/rasterzen-seed-sqs-arch.jpg
 
-/*
-
-2019/08/06 23:41:00 ERROR failed to render {9 151 183} (rasterzen): AccessDeniedException: User:
-arn:aws:sts::{ACCOUNT}:assumed-role/{ROLE}/RasterzenSeedSQS is not authorized to perform:
-lambda:InvokeFunction on resource: arn:aws:lambda:{REGION}:{ACCOUNT}:function:{FUNCTION}
-
-*/
-
 import (
 	"context"
 	"encoding/json"
@@ -106,7 +98,7 @@ func main() {
 	err := flags.SetFlagsFromEnvVars("RASTERZEN_SEED")
 
 	if err != nil {
-		log.Fatal("FLAGS", err)
+		log.Fatal(err)
 	}
 
 	nz_opts := &nextzen.Options{
