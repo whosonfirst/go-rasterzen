@@ -8,7 +8,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
-	"log"
+	_ "log"
 )
 
 func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
@@ -23,8 +23,6 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 
 	nextzen_key := CacheKeyForTile(t, "nextzen", "json")
 	rasterzen_key := CacheKeyForTile(t, "rasterzen", "json")
-
-	log.Println("NEXTZEN", nextzen_key)
 
 	var nextzen_data io.ReadCloser   // stuff sent back from nextzen.org
 	var rasterzen_data io.ReadCloser // stuff sent back from nextzen.org

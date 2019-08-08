@@ -3,7 +3,8 @@ package nextzen
 // should this be in tile/nextzen.go ? perhaps...
 // (20190606/thisisaaronland)
 
-// known overzoom weirdness
+// known overzoom weirdness - basically everything is working properly
+// in this package and the weirdness is happening... where?
 // http://localhost:8080/#20/37.61694/-122.38095
 // http://localhost:8080/png/16/10489/25367.svg?api_key={APIKEY}
 // http://localhost:8080/png/20/167826/405878.svg?api_key={APIKEY}
@@ -235,12 +236,6 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 
 				geom := f.Geometry
 				clipped_geom := clip.Geometry(bounds, geom)
-
-				// log.Println("CLIP", geom, bounds, clipped_geom)
-
-				// I wish clip.Geometry returned errors rather than
-				// silently not clipping anything...
-				// https://github.com/paulmach/orb/blob/master/clip/helpers.go#L11-L23
 
 				if clipped_geom == nil {
 					continue

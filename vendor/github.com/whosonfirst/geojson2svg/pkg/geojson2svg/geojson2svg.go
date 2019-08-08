@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	_ "log"
+	"log"
 	"math"
 	"regexp"
 	"sort"
@@ -67,7 +67,7 @@ func (svg *SVG) Draw(width, height float64, opts ...Option) string {
 	var sf scaleFunc
 
 	if svg.Mercator {
-
+		log.Println("MERCATOR", width, height, svg.padding, svg.points())
 		sf = makeScaleFuncMercator(width, height, svg.padding, svg.points())
 	} else {
 		sf = makeScaleFunc(width, height, svg.padding, svg.points())
@@ -76,20 +76,25 @@ func (svg *SVG) Draw(width, height float64, opts ...Option) string {
 	content := bytes.NewBufferString("")
 	for _, g := range svg.geometries {
 		process(sf, content, g, "")
+		log.Println("CONTENT 1", content)
 	}
 	for _, f := range svg.features {
 		as := makeAttributesFromProperties(svg.useProp, f.Properties)
 		process(sf, content, f.Geometry, as)
+		log.Println("CONTENT 2", content)
 	}
 	for _, fc := range svg.featureCollections {
 		for _, f := range fc.Features {
 			as := makeAttributesFromProperties(svg.useProp, f.Properties)
 			process(sf, content, f.Geometry, as)
+		log.Println("CONTENT 3", content)			
 		}
 	}
 
+	debug_content := `<rect width="100%" height="100%" fill="#ff0000" stroke="#000000" stroke-width="1" />` + content.String()
+	
 	attributes := makeAttributes(svg.attributes)
-	return fmt.Sprintf(`<svg width="%f" height="%f"%s>%s</svg>`, width, height, attributes, content)
+	return fmt.Sprintf(`<svg width="%f" height="%f"%s>%s</svg>`, width, height, attributes, debug_content)
 }
 
 // AddGeometry adds a geojson geometry to the svg.
@@ -279,6 +284,7 @@ func drawPolygon(sf scaleFunc, w io.Writer, pps [][][]float64, attributes string
 		subPath := bytes.NewBufferString("M")
 		for _, p := range ps {
 			x, y := sf(p[0], p[1])
+			log.Println("POLYGON", p[0], p[1], x, y)
 			fmt.Fprintf(subPath, "%f %f,", x, y)
 		}
 		fmt.Fprintf(path, " %s", trim(subPath))

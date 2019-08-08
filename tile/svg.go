@@ -1,5 +1,28 @@
 package tile
 
+/*
+
+svg2geojson mercator scale function is all kinds of wrong at high zoom levels...
+
+http://localhost:8080/svg/20/167826/405878.svg?api_key={KEY}
+
+./bin/rasterd -www -geojson-handler -no-cache -nextzen-apikey {KEY}
+2019/08/07 18:11:46 disable all cache layers
+2019/08/07 18:11:46 enable PNG handler
+2019/08/07 18:11:46 enable SVG handler
+2019/08/07 18:11:46 enable GeoJSON handler
+2019/08/07 18:11:46 enable WWW handler
+2019/08/07 18:11:46 Listening on http://localhost:8080
+2019/08/07 18:11:49 OVERZOOM 20/167826/405878 -> 16/10489/25367 (4)
+2019/08/07 18:11:50 MERCATOR 512 512 {0 0 0 0} [[-122.38117218017578 37.61695095592253] [-122.38117218017578 37.61693631348849] [-122.3812075281723 37.61695095592253] [-122.38117218017578 37.61695095592253]]
+2019/08/07 18:11:50 POLYGON -122.38117218017578 37.61695095592253 512 0
+2019/08/07 18:11:50 POLYGON -122.38117218017578 37.61693631348849 512 267.7524112819788
+2019/08/07 18:11:50 POLYGON -122.3812075281723 37.61695095592253 0 0
+2019/08/07 18:11:50 POLYGON -122.38117218017578 37.61695095592253 512 0
+2019/08/07 18:11:50 CONTENT 2 <path d="M512.000000 0.000000,512.000000 267.752411,0.000000 0.000000,512.000000 0.000000 Z" fill="#ffffff" fill-opacity="0.5" kind="building" sort_rank="475" stroke="#000000" stroke-opacity="1" stroke-width="1"/>
+
+*/
+
 import (
 	"bufio"
 	"bytes"
