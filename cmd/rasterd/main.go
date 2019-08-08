@@ -32,7 +32,7 @@ func main() {
 
 	do_www := flag.Bool("www", false, "Enable a simple web interface with a slippy map (at /) for testing and debugging.")
 	www_debug := flag.Bool("www-debug", false, "Enable debugging features for the web interface.")
-	
+
 	no_cache := flag.Bool("no-cache", false, "Disable all caching.")
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
@@ -323,9 +323,9 @@ func main() {
 
 		www_opts := &http.WWWHandlerOptions{
 			NextzenAPIKey: *nextzen_apikey,
-			Debug: *www_debug,
+			Debug:         *www_debug,
 		}
-		
+
 		www_h, err := http.WWWHandler(www_opts)
 
 		if err != nil {

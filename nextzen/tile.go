@@ -3,6 +3,11 @@ package nextzen
 // should this be in tile/nextzen.go ? perhaps...
 // (20190606/thisisaaronland)
 
+// known overzoom weirdness
+// http://localhost:8080/#20/37.61694/-122.38095
+// http://localhost:8080/png/16/10489/25367.svg?api_key={APIKEY}
+// http://localhost:8080/png/20/167826/405878.svg?api_key={APIKEY}
+
 import (
 	"bytes"
 	"context"
@@ -71,6 +76,8 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 		fetch_z = max
 		fetch_x = int(ux)
 		fetch_y = int(uy)
+
+		log.Printf("OVERZOOM %d/%d/%d -> %d/%d/%d (%d)\b", z, x, y, fetch_z, fetch_x, fetch_y, mag)		
 	}
 
 	layer := "all"
@@ -229,6 +236,8 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 				geom := f.Geometry
 				clipped_geom := clip.Geometry(bounds, geom)
 
+				// log.Println("CLIP", geom, bounds, clipped_geom)
+
 				// I wish clip.Geometry returned errors rather than
 				// silently not clipping anything...
 				// https://github.com/paulmach/orb/blob/master/clip/helpers.go#L11-L23
@@ -241,12 +250,15 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 				cropped_fc.Append(f)
 			}
 
-			rsp := CroppedResponse{
-				Layer:             layer_name,
-				FeatureCollection: cropped_fc,
-			}
+			if len(cropped_fc.Features) > 0 {
+				
+				rsp := CroppedResponse{
+					Layer:             layer_name,
+					FeatureCollection: cropped_fc,
+				}
 
-			rsp_ch <- rsp
+				rsp_ch <- rsp
+			}
 
 		}(layer_name)
 	}

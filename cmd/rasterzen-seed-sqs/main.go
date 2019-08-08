@@ -49,7 +49,7 @@ func SQSHandler(wrkr worker.Worker) (SQSHandlerFunc, error) {
 			}()
 
 			var render_err error
-			
+
 			switch msg.Prefix {
 			case "rasterzen":
 				render_err = wrkr.RenderRasterzenTile(t)
