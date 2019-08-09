@@ -83,7 +83,7 @@ github.com/tidwall/pretty
 github.com/tidwall/sjson
 # github.com/whosonfirst/algnhsa v0.1.0
 github.com/whosonfirst/algnhsa
-# github.com/whosonfirst/geojson2svg v1.0.2
+# github.com/whosonfirst/geojson2svg v1.1.0
 github.com/whosonfirst/geojson2svg/pkg/geojson2svg
 # github.com/whosonfirst/go-bindata v0.1.0
 github.com/whosonfirst/go-bindata
