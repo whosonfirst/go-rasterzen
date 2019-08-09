@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
+	_ "log"
 	"math"
 	"regexp"
 	"sort"
@@ -40,6 +40,7 @@ type SVG struct {
 	featureCollections []*geojson.FeatureCollection
 	Mercator           bool
 	Extent		*Extent
+	Debug bool
 }
 
 // Padding represents the possible padding of the SVG.
@@ -58,12 +59,15 @@ func New() *SVG {
 		attributes: make(map[string]string),
 		Mercator:   false,
 		Extent: nil,
+		Debug: false,
 	}
 }
 
 // Draw renders the final SVG with the given options to a string.
 // All coordinates will be scaled to fit into the svg.
+
 func (svg *SVG) Draw(width, height float64, opts ...Option) string {
+	
 	for _, o := range opts {
 		o(svg)
 	}
@@ -71,8 +75,7 @@ func (svg *SVG) Draw(width, height float64, opts ...Option) string {
 	var sf scaleFunc
 
 	if svg.Mercator && svg.Extent != nil {
-		// sf = makeScaleFuncMercatorWithExtent(width, height, svg.padding, svg.Extent)
-		sf = makeScaleFuncMercator(width, height, svg.padding, svg.points())		
+		sf = makeScaleFuncMercatorWithExtent(width, height, svg.padding, svg.Extent)
 	} else if svg.Mercator  {		
 		sf = makeScaleFuncMercator(width, height, svg.padding, svg.points())
 	} else {
@@ -81,7 +84,9 @@ func (svg *SVG) Draw(width, height float64, opts ...Option) string {
 
 	content := bytes.NewBufferString("")
 
-	content.Write([]byte(`<rect width="100%" height="100%" fill="#ff0000" stroke="#000000" stroke-width="1" />`))
+	if svg.Debug {
+		content.Write([]byte(`<rect width="100%" height="100%" fill="#ff0000" stroke="#000000" stroke-width="1" />`))
+	}
 	
 	for _, g := range svg.geometries {
 		process(sf, content, g, "")
@@ -193,7 +198,6 @@ func process(sf scaleFunc, w io.Writer, g *geojson.Geometry, attributes string) 
 	// (20180615/thisisaaronland)
 
 	if g == nil {
-		// log.Println("BUNK GEOMETRY (process)")
 		return
 	}
 
@@ -223,7 +227,6 @@ func collect(g *geojson.Geometry) (ps [][]float64) {
 	// (20180615/thisisaaronland)
 
 	if g == nil {
-		// log.Println("BUNK GEOMETRY (collect)")
 		return
 	}
 
@@ -285,16 +288,14 @@ func drawMultiLineString(sf scaleFunc, w io.Writer, pps [][][]float64, attribute
 func drawPolygon(sf scaleFunc, w io.Writer, pps [][][]float64, attributes string) {
 	path := bytes.NewBufferString("")
 	for _, ps := range pps {
-		log.Println("POLYGON", len(ps))		
 		subPath := bytes.NewBufferString("M")
 		for _, p := range ps {
 			x, y := sf(p[0], p[1])
-			log.Println("POLYGON", p[0], p[1], x, y)
 			fmt.Fprintf(subPath, "%f %f,", x, y)
 		}
 		fmt.Fprintf(path, " %s", trim(subPath))
 	}
-	attributes=` stroke="white" stroke-width="5"`
+
 	fmt.Fprintf(w, `<path d="%s Z"%s/>`, trim(path), attributes)
 }
 
@@ -333,6 +334,7 @@ func makeAttributesFromProperties(useProp func(string) bool, props map[string]in
 }
 
 func makeScaleFunc(width, height float64, padding Padding, ps [][]float64) scaleFunc {
+	
 	w := width - padding.Left - padding.Right
 	h := width - padding.Top - padding.Bottom
 
@@ -345,15 +347,17 @@ func makeScaleFunc(width, height float64, padding Padding, ps [][]float64) scale
 	}
 
 	minX := ps[0][0]
-	maxX := ps[0][0]
 	minY := ps[0][1]
+	
+	maxX := ps[0][0]
 	maxY := ps[0][1]
 
 	for _, p := range ps[1:] {
 
 		minX = math.Min(minX, p[0])
-		maxX = math.Max(maxX, p[0])
 		minY = math.Min(minY, p[1])
+		
+		maxX = math.Max(maxX, p[0])		
 		maxY = math.Max(maxY, p[1])
 	}
 
@@ -383,14 +387,17 @@ func makeScaleFuncMercator(width, height float64, padding Padding, ps [][]float6
 		return func(x, y float64) (float64, float64) { return w / 2, h / 2 }
 	}
 
-	minX := 0.0
-	maxX := 0.0
-	minY := 0.0
-	maxY := 0.0
+	minX := ps[0][0]
+	minY := ps[0][1]
+	
+	maxX := ps[0][0]
+	maxY := ps[0][1]
 
-	for _, p := range ps {
-		minX = math.Min(minX, p[0])		
+	for _, p := range ps[1:] {
+
+		minX = math.Min(minX, p[0])
 		minY = math.Min(minY, p[1])
+		
 		maxX = math.Max(maxX, p[0])		
 		maxY = math.Max(maxY, p[1])
 	}
@@ -407,18 +414,12 @@ func makeScaleFuncMercator(width, height float64, padding Padding, ps [][]float6
 
 func makeScaleFuncMercatorWithExtent(width, height float64, padding Padding, extent *Extent) scaleFunc {
 
-	log.Println("EXTENT", extent)
-	
 	sw_pt := orb.Point{ extent.MinX, extent.MinY }
 	ne_pt := orb.Point{ extent.MaxX, extent.MaxY }
 
-	log.Println("WGS84", sw_pt, ne_pt)
-	
 	sw_merc := project.Point(sw_pt, project.WGS84.ToMercator)
 	ne_merc := project.Point(ne_pt, project.WGS84.ToMercator)
 
-	log.Println("MERC", sw_merc, ne_merc)
-	
 	minX := sw_merc[0]
 	minY := sw_merc[1]
 	
