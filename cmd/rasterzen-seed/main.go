@@ -102,7 +102,7 @@ func main() {
 	nextzen_uri := flag.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
 
 	var mode = flag.String("mode", "tiles", "The mode to use when calculating tiles. Valid modes are: extent, tiles.")
-	var separator = flag.String("separtor", ",", "The separating string for coordinates when calculating tiles in '-mode extent'")
+	var extent_separator = flag.String("extent-separator", ",", "The separating string for coordinates when calculating tiles in '-mode extent'")
 
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
@@ -324,7 +324,7 @@ func main() {
 
 		for _, str_extent := range extents {
 
-			ex, err := parse_extent(str_extent, *separator)
+			ex, err := parse_extent(str_extent, *extent_separator)
 
 			if err != nil {
 				logger.Fatal(err)

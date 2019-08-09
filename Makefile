@@ -32,3 +32,7 @@ lambda-sqs:
 	GOOS=linux go build -mod vendor -o main cmd/rasterzen-seed-sqs/main.go
 	zip deployment.zip main
 	rm -f main
+
+docker:
+	go mod vendor
+	docker build -t rasterzen-seed .
