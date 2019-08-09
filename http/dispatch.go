@@ -22,7 +22,7 @@ func init() {
 	re_path = regexp.MustCompile(`/(.*)/(\d+)/(\d+)/(\d+).(\w+)$`)
 }
 
-type DispatchFunc func(io.Reader, io.Writer) error
+type DispatchFunc func(*slippy.Tile, io.Reader, io.Writer) error
 
 type DispatchHandler struct {
 	Cache          cache.Cache
@@ -44,7 +44,7 @@ func NewDispatchHandler(c cache.Cache) (*DispatchHandler, error) {
 
 	default_headers := make(map[string]string)
 
-	default_func := func(r io.Reader, wr io.Writer) error {
+	default_func := func(t *slippy.Tile, r io.Reader, wr io.Writer) error {
 		_, err := io.Copy(wr, r)
 		return err
 	}
@@ -159,7 +159,7 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 	// this is the thing that transforms the rasterzen
 	// tile in to geojson, svg, png, etc.
 
-	err = h.Func(fh, wr)
+	err = h.Func(t, fh, wr)
 
 	buf.Flush()
 

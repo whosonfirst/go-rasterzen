@@ -1,33 +1,11 @@
 package tile
 
-/*
-
-svg2geojson mercator scale function is all kinds of wrong at high zoom levels...
-
-http://localhost:8080/svg/20/167826/405878.svg?api_key={KEY}
-
-./bin/rasterd -www -geojson-handler -no-cache -nextzen-apikey {KEY}
-2019/08/07 18:11:46 disable all cache layers
-2019/08/07 18:11:46 enable PNG handler
-2019/08/07 18:11:46 enable SVG handler
-2019/08/07 18:11:46 enable GeoJSON handler
-2019/08/07 18:11:46 enable WWW handler
-2019/08/07 18:11:46 Listening on http://localhost:8080
-2019/08/07 18:11:49 OVERZOOM 20/167826/405878 -> 16/10489/25367 (4)
-2019/08/07 18:11:50 MERCATOR 512 512 {0 0 0 0} [[-122.38117218017578 37.61695095592253] [-122.38117218017578 37.61693631348849] [-122.3812075281723 37.61695095592253] [-122.38117218017578 37.61695095592253]]
-2019/08/07 18:11:50 POLYGON -122.38117218017578 37.61695095592253 512 0
-2019/08/07 18:11:50 POLYGON -122.38117218017578 37.61693631348849 512 267.7524112819788
-2019/08/07 18:11:50 POLYGON -122.3812075281723 37.61695095592253 0 0
-2019/08/07 18:11:50 POLYGON -122.38117218017578 37.61695095592253 512 0
-2019/08/07 18:11:50 CONTENT 2 <path d="M512.000000 0.000000,512.000000 267.752411,0.000000 0.000000,512.000000 0.000000 Z" fill="#ffffff" fill-opacity="0.5" kind="building" sort_rank="475" stroke="#000000" stroke-opacity="1" stroke-width="1"/>
-
-*/
-
 import (
 	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
@@ -55,6 +33,7 @@ type RasterzenSVGStyles map[string]SVGStyle
 
 type RasterzenSVGOptions struct {
 	TileSize      float64            `json:"tile_size"`
+	TileExtent *geom.Extent `json:"tile_extent"`
 	Stroke        string             `json:"stroke"`
 	StrokeWidth   float64            `json:"stroke_width"`
 	StrokeOpacity float64            `json:"stroke_opacity"`
@@ -67,6 +46,7 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 
 	opts := RasterzenSVGOptions{
 		TileSize:      512.0,
+		TileExtent: nil,
 		Stroke:        "#000000",
 		StrokeWidth:   1.0,
 		StrokeOpacity: 1.0,
@@ -75,6 +55,21 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 	}
 
 	return &opts, nil
+}
+
+func (opts *RasterzenSVGOptions) Clone() *RasterzenSVGOptions {
+
+	clone := RasterzenSVGOptions{
+		TileSize:      opts.TileSize,
+		TileExtent: opts.TileExtent,
+		Stroke:        opts.Stroke,
+		StrokeWidth:   opts.StrokeWidth,
+		StrokeOpacity: opts.StrokeOpacity,
+		Fill:          opts.Fill,
+		FillOpacity:   opts.FillOpacity,
+	}
+
+	return &clone
 }
 
 func RasterzenSVGOptionsFromFile(path string) (*RasterzenSVGOptions, error) {
@@ -149,6 +144,8 @@ func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, svg_o
 	var buf bytes.Buffer
 	svg_wr := bufio.NewWriter(&buf)
 
+	svg_opts.TileExtent = t.Extent4326()
+	
 	err = RasterzenToSVGWithOptions(geojson_fh, svg_wr, svg_opts)
 
 	if err != nil {
@@ -182,10 +179,11 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 		return err
 	}
 
+	log.Println("SVG", svg_opts.TileExtent)
+	
 	tile_size := svg_opts.TileSize
 
 	s := geojson2svg.New()
-	s.Mercator = true
 
 	use_props := map[string]bool{
 		// "id": true,
@@ -440,7 +438,23 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 		props = append(props, k)
 	}
 
-	rsp := s.Draw(tile_size, tile_size,
+	s.Mercator = true
+
+	if svg_opts.TileExtent != nil {
+
+		log.Println("OMG", svg_opts.TileExtent)
+		
+		s.Extent = &geojson2svg.Extent{
+			MinX: svg_opts.TileExtent.MinX(),
+			MinY: svg_opts.TileExtent.MinY(),
+			MaxX: svg_opts.TileExtent.MaxX(),
+			MaxY: svg_opts.TileExtent.MaxY(),						
+		}
+
+		log.Println("WTF", s.Extent)
+	}
+	
+	rsp := s.Draw(tile_size, tile_size,		
 		geojson2svg.WithAttribute("xmlns", "http://www.w3.org/2000/svg"),
 		geojson2svg.WithAttribute("viewBox", fmt.Sprintf("0 0 %d %d", int(tile_size), int(tile_size))),
 		geojson2svg.UseProperties(props),

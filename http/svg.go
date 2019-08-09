@@ -4,6 +4,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
+	"github.com/go-spatial/geom/slippy"	
 	"io"
 	"log"
 	gohttp "net/http"
@@ -30,8 +31,12 @@ func SVGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 		"Access-Control-Allow-Origin": "*",
 	}
 
-	h.Func = func(in io.Reader, out io.Writer) error {
-		return tile.RasterzenToSVGWithOptions(in, out, h.SVGOptions)
+	h.Func = func(slippy_tile *slippy.Tile, in io.Reader, out io.Writer) error {
+
+		svg_opts := h.SVGOptions.Clone()
+		svg_opts.TileExtent = slippy_tile.Extent4326()
+		
+		return tile.RasterzenToSVGWithOptions(in, out, svg_opts)
 	}
 
 	h.Headers = headers
