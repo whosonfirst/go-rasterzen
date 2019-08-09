@@ -67,34 +67,31 @@ func (svg *SVG) Draw(width, height float64, opts ...Option) string {
 	var sf scaleFunc
 
 	if svg.Mercator {
-		log.Println("MERCATOR", width, height, svg.padding, svg.points())
 		sf = makeScaleFuncMercator(width, height, svg.padding, svg.points())
 	} else {
 		sf = makeScaleFunc(width, height, svg.padding, svg.points())
 	}
 
 	content := bytes.NewBufferString("")
+
+	content.Write([]byte(`<rect width="100%" height="100%" fill="#ff0000" stroke="#000000" stroke-width="1" />`))
+	
 	for _, g := range svg.geometries {
 		process(sf, content, g, "")
-		log.Println("CONTENT 1", content)
 	}
 	for _, f := range svg.features {
 		as := makeAttributesFromProperties(svg.useProp, f.Properties)
 		process(sf, content, f.Geometry, as)
-		log.Println("CONTENT 2", content)
 	}
 	for _, fc := range svg.featureCollections {
 		for _, f := range fc.Features {
 			as := makeAttributesFromProperties(svg.useProp, f.Properties)
 			process(sf, content, f.Geometry, as)
-		log.Println("CONTENT 3", content)			
 		}
 	}
-
-	debug_content := `<rect width="100%" height="100%" fill="#ff0000" stroke="#000000" stroke-width="1" />` + content.String()
 	
 	attributes := makeAttributes(svg.attributes)
-	return fmt.Sprintf(`<svg width="%f" height="%f"%s>%s</svg>`, width, height, attributes, debug_content)
+	return fmt.Sprintf(`<svg width="%f" height="%f"%s>%s</svg>`, width, height, attributes, content)
 }
 
 // AddGeometry adds a geojson geometry to the svg.
@@ -281,6 +278,7 @@ func drawMultiLineString(sf scaleFunc, w io.Writer, pps [][][]float64, attribute
 func drawPolygon(sf scaleFunc, w io.Writer, pps [][][]float64, attributes string) {
 	path := bytes.NewBufferString("")
 	for _, ps := range pps {
+		log.Println("POLYGON", len(ps))		
 		subPath := bytes.NewBufferString("M")
 		for _, p := range ps {
 			x, y := sf(p[0], p[1])
@@ -289,6 +287,7 @@ func drawPolygon(sf scaleFunc, w io.Writer, pps [][][]float64, attributes string
 		}
 		fmt.Fprintf(path, " %s", trim(subPath))
 	}
+	attributes=` stroke="white" stroke-width="5"`
 	fmt.Fprintf(w, `<path d="%s Z"%s/>`, trim(path), attributes)
 }
 
@@ -367,7 +366,7 @@ func makeScaleFunc(width, height float64, padding Padding, ps [][]float64) scale
 func makeScaleFuncMercator(width, height float64, padding Padding, ps [][]float64) scaleFunc {
 
 	w := width - padding.Left - padding.Right
-	h := width - padding.Top - padding.Bottom
+	h := height - padding.Top - padding.Bottom
 
 	if len(ps) == 0 {
 		return func(x, y float64) (float64, float64) { return x, y }
@@ -379,6 +378,8 @@ func makeScaleFuncMercator(width, height float64, padding Padding, ps [][]float6
 
 	sw_pt := orb.Point{ps[0][0], ps[0][1]}
 	ne_pt := orb.Point{ps[0][0], ps[0][1]}
+
+	log.Println("PT", sw_pt, ne_pt)
 	sw_merc := project.Point(sw_pt, project.WGS84.ToMercator)
 	ne_merc := project.Point(ne_pt, project.WGS84.ToMercator)
 
