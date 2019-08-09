@@ -1,10 +1,10 @@
 package http
 
 import (
+	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
-	"github.com/go-spatial/geom/slippy"	
 	"io"
 	"log"
 	gohttp "net/http"
@@ -32,7 +32,7 @@ func PNGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 	h.Func = func(slippy_tile *slippy.Tile, in io.Reader, out io.Writer) error {
 		return tile.RasterzenToPNG(in, out)
 	}
-	
+
 	h.Headers = headers
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {

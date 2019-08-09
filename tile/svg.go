@@ -33,7 +33,7 @@ type RasterzenSVGStyles map[string]SVGStyle
 
 type RasterzenSVGOptions struct {
 	TileSize      float64            `json:"tile_size"`
-	TileExtent *geom.Extent `json:"tile_extent"`
+	TileExtent    *geom.Extent       `json:"tile_extent"`
 	Stroke        string             `json:"stroke"`
 	StrokeWidth   float64            `json:"stroke_width"`
 	StrokeOpacity float64            `json:"stroke_opacity"`
@@ -46,7 +46,7 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 
 	opts := RasterzenSVGOptions{
 		TileSize:      512.0,
-		TileExtent: nil,
+		TileExtent:    nil,
 		Stroke:        "#000000",
 		StrokeWidth:   1.0,
 		StrokeOpacity: 1.0,
@@ -61,7 +61,7 @@ func (opts *RasterzenSVGOptions) Clone() *RasterzenSVGOptions {
 
 	clone := RasterzenSVGOptions{
 		TileSize:      opts.TileSize,
-		TileExtent: opts.TileExtent,
+		TileExtent:    opts.TileExtent,
 		Stroke:        opts.Stroke,
 		StrokeWidth:   opts.StrokeWidth,
 		StrokeOpacity: opts.StrokeOpacity,
@@ -145,7 +145,7 @@ func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, svg_o
 	svg_wr := bufio.NewWriter(&buf)
 
 	svg_opts.TileExtent = t.Extent4326()
-	
+
 	err = RasterzenToSVGWithOptions(geojson_fh, svg_wr, svg_opts)
 
 	if err != nil {
@@ -179,8 +179,6 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 		return err
 	}
 
-	log.Println("SVG", svg_opts.TileExtent)
-	
 	tile_size := svg_opts.TileSize
 
 	s := geojson2svg.New()
@@ -442,19 +440,15 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 
 	if svg_opts.TileExtent != nil {
 
-		log.Println("OMG", svg_opts.TileExtent)
-		
 		s.Extent = &geojson2svg.Extent{
 			MinX: svg_opts.TileExtent.MinX(),
 			MinY: svg_opts.TileExtent.MinY(),
 			MaxX: svg_opts.TileExtent.MaxX(),
-			MaxY: svg_opts.TileExtent.MaxY(),						
+			MaxY: svg_opts.TileExtent.MaxY(),
 		}
-
-		log.Println("WTF", s.Extent)
 	}
-	
-	rsp := s.Draw(tile_size, tile_size,		
+
+	rsp := s.Draw(tile_size, tile_size,
 		geojson2svg.WithAttribute("xmlns", "http://www.w3.org/2000/svg"),
 		geojson2svg.WithAttribute("viewBox", fmt.Sprintf("0 0 %d %d", int(tile_size), int(tile_size))),
 		geojson2svg.UseProperties(props),

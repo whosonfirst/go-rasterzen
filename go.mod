@@ -3,6 +3,7 @@ module github.com/whosonfirst/go-rasterzen
 go 1.12
 
 require (
+	github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718 // indirect
 	github.com/aws/aws-lambda-go v1.12.1
 	github.com/aws/aws-sdk-go v1.22.1
 	github.com/go-spatial/geom v0.0.0-20190706003858-2760310199f5
@@ -13,7 +14,7 @@ require (
 	github.com/tidwall/gjson v1.3.2
 	github.com/tidwall/sjson v1.0.4
 	github.com/whosonfirst/algnhsa v0.1.0
-	github.com/whosonfirst/geojson2svg v1.0.2
+	github.com/whosonfirst/geojson2svg v1.1.0
 	github.com/whosonfirst/go-bindata v0.1.0
 	github.com/whosonfirst/go-bindata-assetfs v1.0.1
 	github.com/whosonfirst/go-bindata-html-template v0.1.0

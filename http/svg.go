@@ -1,10 +1,10 @@
 package http
 
 import (
+	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
-	"github.com/go-spatial/geom/slippy"	
 	"io"
 	"log"
 	gohttp "net/http"
@@ -35,7 +35,7 @@ func SVGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 
 		svg_opts := h.SVGOptions.Clone()
 		svg_opts.TileExtent = slippy_tile.Extent4326()
-		
+
 		return tile.RasterzenToSVGWithOptions(in, out, svg_opts)
 	}
 

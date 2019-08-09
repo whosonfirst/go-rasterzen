@@ -77,8 +77,6 @@ func FetchTile(z int, x int, y int, opts *Options) (io.ReadCloser, error) {
 		fetch_z = max
 		fetch_x = int(ux)
 		fetch_y = int(uy)
-
-		log.Printf("OVERZOOM %d/%d/%d -> %d/%d/%d (%d)\b", z, x, y, fetch_z, fetch_x, fetch_y, mag)		
 	}
 
 	layer := "all"
@@ -246,7 +244,7 @@ func CropTile(z int, x int, y int, fh io.ReadCloser) (io.ReadCloser, error) {
 			}
 
 			if len(cropped_fc.Features) > 0 {
-				
+
 				rsp := CroppedResponse{
 					Layer:             layer_name,
 					FeatureCollection: cropped_fc,
