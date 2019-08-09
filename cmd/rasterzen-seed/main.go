@@ -50,9 +50,9 @@ func parse_zxy(str_zxy string) (int, int, int, error) {
 	return z, x, y, nil
 }
 
-func parse_extent(str_extent string) (*geom.Extent, error) {
+func parse_extent(str_extent string, sep string) (*geom.Extent, error) {
 
-	coords := strings.Split(str_extent, ",")
+	coords := strings.Split(str_extent, sep)
 
 	if len(coords) != 4 {
 		return nil, errors.New("Invalid string extent")
@@ -102,6 +102,7 @@ func main() {
 	nextzen_uri := flag.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
 
 	var mode = flag.String("mode", "tiles", "The mode to use when calculating tiles. Valid modes are: extent, tiles.")
+	var separator = flag.String("separtor", ",", "The separating string for coordinates when calculating tiles in '-mode extent'")
 
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
 	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
@@ -323,7 +324,7 @@ func main() {
 
 		for _, str_extent := range extents {
 
-			ex, err := parse_extent(str_extent)
+			ex, err := parse_extent(str_extent, *separator)
 
 			if err != nil {
 				logger.Fatal(err)
