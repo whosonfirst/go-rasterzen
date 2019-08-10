@@ -3,12 +3,6 @@ package nextzen
 // should this be in tile/nextzen.go ? perhaps...
 // (20190606/thisisaaronland)
 
-// known overzoom weirdness - basically everything is working properly
-// in this package and the weirdness is happening... where?
-// http://localhost:8080/#20/37.61694/-122.38095
-// http://localhost:8080/png/16/10489/25367.svg?api_key={APIKEY}
-// http://localhost:8080/png/20/167826/405878.svg?api_key={APIKEY}
-
 import (
 	"bytes"
 	"context"

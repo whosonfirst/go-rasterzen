@@ -30,10 +30,6 @@ func NewTileSet() (*TileSet, error) {
 
 func (ts *TileSet) AddTile(t slippy.Tile) error {
 
-	if t.Z > 16 {
-		return errors.New("Tiles > zoom 16 can not be rendered at this time.")
-	}
-
 	k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
 	ts.tile_map.LoadOrStore(k, t)
 	return nil
@@ -164,7 +160,7 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 				t1 := time.Now()
 
 				defer func() {
-					s.Logger.Status("Time to seed tile (%d/%d/%d) %v", t.Z, t.X, t.Y, time.Since(t1))
+					s.Logger.Debug("Time to seed tile (%d/%d/%d) %v", t.Z, t.X, t.Y, time.Since(t1))
 				}()
 			}
 
