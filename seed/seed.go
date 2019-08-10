@@ -7,22 +7,26 @@ import (
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-rasterzen/worker"
+	"github.com/whosonfirst/go-rasterzen/seed/catalog"	
 	"github.com/whosonfirst/go-whosonfirst-log"
-	"sync"
 	"sync/atomic"
 	"time"
 )
 
 type TileSet struct {
-	tile_map *sync.Map
+	tile_catalog catalog.SeedCatalog
 }
 
 func NewTileSet() (*TileSet, error) {
 
-	tm := new(sync.Map)
+	tm, err := catalog.NewInMemorySeedCatalog()
 
+	if err != nil {
+		return nil, err
+	}
+	
 	ts := TileSet{
-		tile_map: tm,
+		tile_catalog: tm,
 	}
 
 	return &ts, nil
@@ -31,12 +35,12 @@ func NewTileSet() (*TileSet, error) {
 func (ts *TileSet) AddTile(t slippy.Tile) error {
 
 	k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
-	ts.tile_map.LoadOrStore(k, t)
+	ts.tile_catalog.LoadOrStore(k, t)
 	return nil
 }
 
 func (ts *TileSet) Range(f func(key, value interface{}) bool) {
-	ts.tile_map.Range(f)
+	ts.tile_catalog.Range(f)
 }
 
 func (ts *TileSet) Count() int32 {
@@ -165,6 +169,10 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 			}
 
 			defer func() {
+
+				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)		
+				go ts.tile_catalog.Remove(k)				
+				
 				done_ch <- true
 				throttle <- true
 			}()
@@ -204,7 +212,7 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 }
 
 func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
-
+	
 	if s.SeedRasterzen {
 
 		// please figure me out... (20181105/thisisaaronland)
