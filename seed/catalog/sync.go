@@ -3,6 +3,7 @@ package catalog
 import (
 	"github.com/go-spatial/geom/slippy"
 	"sync"
+	"sync/atomic"
 )
 
 type SyncMapSeedCatalog struct {
@@ -34,4 +35,18 @@ func (m *SyncMapSeedCatalog) Remove(k string) error {
 func (m *SyncMapSeedCatalog) Range(f func(key, value interface{}) bool) error {
 	m.seed_catalog.Range(f)
 	return nil
+}
+
+func (m *SyncMapSeedCatalog) Count() int32 {
+
+	remaining := int32(0)
+
+	tile_func := func(key, value interface{}) bool {
+		atomic.AddInt32(&remaining, 1)
+		return true
+	}
+
+	m.Range(tile_func)
+
+	return remaining
 }

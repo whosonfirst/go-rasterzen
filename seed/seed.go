@@ -74,17 +74,7 @@ func (ts *TileSet) Range(f func(key, value interface{}) bool) {
 }
 
 func (ts *TileSet) Count() int32 {
-
-	remaining := int32(0)
-
-	tile_func := func(key, value interface{}) bool {
-		atomic.AddInt32(&remaining, 1)
-		return true
-	}
-
-	ts.Range(tile_func)
-
-	return remaining
+	return ts.tile_catalog.Count()
 }
 
 type TileSeeder struct {
@@ -204,11 +194,11 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 
 				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
 
-					err := ts.tile_catalog.Remove(k)
+				err := ts.tile_catalog.Remove(k)
 
-					if err != nil {
-						s.Logger.Warning("Failed to remove %s key from tile catalog: %s", k, err)						
-					}
+				if err != nil {
+					s.Logger.Warning("Failed to remove %s key from tile catalog: %s", k, err)
+				}
 
 				done_ch <- true
 				throttle <- true

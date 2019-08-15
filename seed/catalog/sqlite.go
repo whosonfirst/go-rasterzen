@@ -7,7 +7,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
-	"log"
+	_ "log"
 )
 
 type TileRecord struct {
@@ -150,20 +150,18 @@ func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
 
 func (m *SQLiteSeedCatalog) Remove(k string) error {
 
-     	m.db.Lock()
+	m.db.Lock()
 	defer m.db.Unlock()
 
 	conn, err := m.db.Conn()
 
 	if err != nil {
-	   log.Println("SAD 1")
 		return err
 	}
 
 	_, err = conn.Exec("DELETE FROM catalog WHERE key = ?", k)
 
 	if err != nil {
-	   log.Println("SAD 4", k, err)
 		return err
 	}
 
@@ -215,4 +213,25 @@ func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) error {
 	}
 
 	return nil
+}
+
+func (m *SQLiteSeedCatalog) Count() int32 {
+
+	conn, err := m.db.Conn()
+
+	if err != nil {
+		return -1
+	}
+
+	query := fmt.Sprintf("SELECT COUNT(key) FROM %s", m.table.Name())
+	row := conn.QueryRow(query)
+
+	var count int32	
+	err = row.Scan(&count)
+	
+	if err != nil {
+		return -1
+	}
+
+	return count
 }
