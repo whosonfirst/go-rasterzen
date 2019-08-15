@@ -9,6 +9,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-log"
+	golog "log"
 	"sync/atomic"
 	"time"
 )
@@ -19,7 +20,9 @@ type TileSet struct {
 
 func NewTileSet() (*TileSet, error) {
 
-	tm, err := catalog.NewInMemorySeedCatalog()
+	// tm, err := catalog.NewSyncMapSeedCatalog()
+
+	tm, err := catalog.NewSQLiteSeedCatalog("/usr/local/data/seed.db")
 
 	if err != nil {
 		return nil, err
@@ -216,6 +219,9 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 	if s.SeedRasterzen {
 
 		// please figure me out... (20181105/thisisaaronland)
+
+		cache_key := tile.CacheKeyForRasterzenTile(t)
+		golog.Println("RASTERZEN", cache_key)
 
 		/*
 			cache_key := tile.CacheKeyForRasterzenTile(t)

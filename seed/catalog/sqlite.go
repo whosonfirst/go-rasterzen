@@ -8,7 +8,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
-	"log"
+	_ "log"
 )
 
 type TileRecord struct {
@@ -55,7 +55,7 @@ func (t *SeedCatalogTable) Schema() string {
 
 	sql := `CREATE TABLE %s (
 		key TEXT NOT NULL PRIMARY KEY,
-		tile TEXT NOT NULL,
+		tile TEXT NOT NULL
 	);`
 
 	return fmt.Sprintf(sql, t.Name())
@@ -146,10 +146,13 @@ func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
 		Tile: t,
 	}
 
+	log.Println("ADD", k)
 	return m.table.IndexRecord(m.db, tile_record)
 }
 
 func (m *SQLiteSeedCatalog) Remove(k string) error {
+
+	log.Println("REMOVE", k)
 
 	conn, err := m.db.Conn()
 
@@ -178,20 +181,18 @@ func (m *SQLiteSeedCatalog) Remove(k string) error {
 	return nil
 }
 
-func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) {
-	
+func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) error {
+
 	conn, err := m.db.Conn()
 
 	if err != nil {
-		log.Println(err)
-		return 
+		return err
 	}
 
 	rows, err := conn.Query(fmt.Sprintf("SELECT * FROM %s", m.table.Name()))
 
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
 
 	defer rows.Close()
@@ -200,12 +201,11 @@ func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) {
 
 		var key string
 		var enc_tile string
-		
+
 		err = rows.Scan(&key, &enc_tile)
 
 		if err != nil {
-			log.Println(err)
-			return
+			return err
 		}
 
 		var t slippy.Tile
@@ -213,8 +213,7 @@ func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) {
 		err = json.Unmarshal([]byte(enc_tile), &t)
 
 		if err != nil {
-			log.Println(err)
-			return
+			return err
 		}
 
 		f(key, t)
@@ -223,9 +222,8 @@ func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) {
 	err = rows.Err()
 
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
 
-	// m.seed_catalog.Range(f)
+	return nil
 }

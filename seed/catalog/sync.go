@@ -5,32 +5,33 @@ import (
 	"sync"
 )
 
-type InMemorySeedCatalog struct {
+type SyncMapSeedCatalog struct {
 	SeedCatalog
 	seed_catalog *sync.Map
 }
 
-func NewInMemorySeedCatalog() (SeedCatalog, error) {
+func NewSyncMapSeedCatalog() (SeedCatalog, error) {
 
 	seed_catalog := new(sync.Map)
 
-	m := InMemorySeedCatalog{
+	m := SyncMapSeedCatalog{
 		seed_catalog: seed_catalog,
 	}
 
 	return &m, nil
 }
 
-func (m *InMemorySeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
+func (m *SyncMapSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
 	m.seed_catalog.LoadOrStore(k, t)
 	return nil
 }
 
-func (m *InMemorySeedCatalog) Remove(k string) error {
+func (m *SyncMapSeedCatalog) Remove(k string) error {
 	m.seed_catalog.Delete(k)
 	return nil
 }
 
-func (m *InMemorySeedCatalog) Range(f func(key, value interface{}) bool) {
+func (m *SyncMapSeedCatalog) Range(f func(key, value interface{}) bool) error {
 	m.seed_catalog.Range(f)
+	return nil
 }
