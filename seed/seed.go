@@ -11,7 +11,6 @@ import (
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-log"
-	golog "log"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -205,10 +204,11 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 
 				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
 
-				// PLEASE FIX ME...
-				// 2019/08/15 12:42:17 REMOVE 17/20898/50582 database table is locked
+					err := ts.tile_catalog.Remove(k)
 
-				go ts.tile_catalog.Remove(k)
+					if err != nil {
+						s.Logger.Warning("Failed to remove %s key from tile catalog: %s", k, err)						
+					}
 
 				done_ch <- true
 				throttle <- true
@@ -254,8 +254,6 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 
 		cache_key := tile.CacheKeyForRasterzenTile(t)
 		_, cache_err := s.cache.Get(cache_key)
-
-		golog.Println("RASTERZEN", cache_key, cache_err)
 
 		if cache_err != nil {
 

@@ -1,14 +1,13 @@
 package catalog
 
 import (
-	_ "database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
-	_ "log"
+	"log"
 )
 
 type TileRecord struct {
@@ -151,27 +150,20 @@ func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
 
 func (m *SQLiteSeedCatalog) Remove(k string) error {
 
+     	m.db.Lock()
+	defer m.db.Unlock()
+
 	conn, err := m.db.Conn()
 
 	if err != nil {
+	   log.Println("SAD 1")
 		return err
 	}
 
-	tx, err := conn.Begin()
+	_, err = conn.Exec("DELETE FROM catalog WHERE key = ?", k)
 
 	if err != nil {
-		return err
-	}
-
-	stmt, err := tx.Prepare("DELETE FROM catalog WHERE key =?")
-
-	if err != nil {
-		return err
-	}
-
-	_, err = stmt.Exec(k)
-
-	if err != nil {
+	   log.Println("SAD 4", k, err)
 		return err
 	}
 
