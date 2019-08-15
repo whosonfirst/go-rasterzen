@@ -11,7 +11,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-log"
-	// golog "log"
+	golog "log"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -255,7 +255,7 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 		cache_key := tile.CacheKeyForRasterzenTile(t)
 		_, cache_err := s.cache.Get(cache_key)
 
-		// golog.Println("RASTERZEN", cache_key, cache_err)
+		golog.Println("RASTERZEN", cache_key, cache_err)
 
 		if cache_err != nil {
 
