@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718 // indirect
+	github.com/aaronland/go-string v0.1.1
 	github.com/aws/aws-lambda-go v1.12.1
 	github.com/aws/aws-sdk-go v1.22.1
 	github.com/go-spatial/geom v0.0.0-20190706003858-2760310199f5

@@ -4,12 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aaronland/go-string/dsn"	
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/seed/catalog"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-rasterzen/worker"
+	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-log"
-	golog "log"
+	// golog "log"
+	"strings"
 	"sync/atomic"
 	"time"
 )
@@ -18,25 +21,50 @@ type TileSet struct {
 	tile_catalog catalog.SeedCatalog
 }
 
-func NewTileSet() (*TileSet, error) {
+func NewTileSetFromDSN(str_dsn string) (*TileSet, error) {
 
-	// tm, err := catalog.NewSyncMapSeedCatalog()
-
-	tm, err := catalog.NewSQLiteSeedCatalog("/usr/local/data/seed.db")
+	dsn_map, err := dsn.StringToDSNWithKeys(str_dsn, "catalog")
 
 	if err != nil {
 		return nil, err
 	}
 
+	var seed_catalog catalog.SeedCatalog
+
+	switch strings.ToUpper(dsn_map["catalog"]) {
+	case "SQLITE":
+
+		sqlite_dsn, ok := dsn_map["dsn"]
+
+		if ok {
+			seed_catalog, err = catalog.NewSQLiteSeedCatalog(sqlite_dsn)
+		} else {
+			err = errors.New("Missing 'dsn' property")
+		}
+		
+	case "SYNC":
+		seed_catalog, err = catalog.NewSyncMapSeedCatalog()
+	default:
+		err = errors.New("Invalid catalog")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return NewTileSet(seed_catalog)
+}
+
+func NewTileSet(seed_catalog catalog.SeedCatalog) (*TileSet, error) {
+
 	ts := TileSet{
-		tile_catalog: tm,
+		tile_catalog: seed_catalog,
 	}
 
 	return &ts, nil
 }
 
 func (ts *TileSet) AddTile(t slippy.Tile) error {
-
 	k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
 	ts.tile_catalog.LoadOrStore(k, t)
 	return nil
@@ -62,6 +90,7 @@ func (ts *TileSet) Count() int32 {
 
 type TileSeeder struct {
 	worker        worker.Worker
+	cache         cache.Cache
 	MaxWorkers    int
 	SeedRasterzen bool
 	SeedGeoJSON   bool
@@ -73,12 +102,13 @@ type TileSeeder struct {
 	Logger        *log.WOFLogger
 }
 
-func NewTileSeeder(w worker.Worker) (*TileSeeder, error) {
+func NewTileSeeder(w worker.Worker, c cache.Cache) (*TileSeeder, error) {
 
 	logger := log.SimpleWOFLogger()
 
 	s := TileSeeder{
 		worker:        w,
+		cache:         c,
 		SeedRasterzen: true,
 		SeedSVG:       true,
 		SeedPNG:       false,
@@ -174,6 +204,10 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 			defer func() {
 
 				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
+
+				// PLEASE FIX ME...
+				// 2019/08/15 12:42:17 REMOVE 17/20898/50582 database table is locked
+
 				go ts.tile_catalog.Remove(k)
 
 				done_ch <- true
@@ -218,27 +252,18 @@ func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
 
 	if s.SeedRasterzen {
 
-		// please figure me out... (20181105/thisisaaronland)
-
 		cache_key := tile.CacheKeyForRasterzenTile(t)
-		golog.Println("RASTERZEN", cache_key)
+		_, cache_err := s.cache.Get(cache_key)
 
-		/*
-			cache_key := tile.CacheKeyForRasterzenTile(t)
+		// golog.Println("RASTERZEN", cache_key, cache_err)
 
-			cached, err := worker.IsCached(s.worker.cache, cache_key)
+		if cache_err != nil {
+
+			err := s.worker.RenderRasterzenTile(t)
 
 			if err != nil {
-				return err
+				return false, []error{err}
 			}
-
-			if !cached {
-		*/
-
-		err := s.worker.RenderRasterzenTile(t)
-
-		if err != nil {
-			return false, []error{err}
 		}
 	}
 

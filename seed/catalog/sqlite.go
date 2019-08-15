@@ -146,13 +146,10 @@ func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
 		Tile: t,
 	}
 
-	log.Println("ADD", k)
 	return m.table.IndexRecord(m.db, tile_record)
 }
 
 func (m *SQLiteSeedCatalog) Remove(k string) error {
-
-	log.Println("REMOVE", k)
 
 	conn, err := m.db.Conn()
 
