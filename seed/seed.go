@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/aaronland/go-string/dsn"	
+	"github.com/aaronland/go-string/dsn"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/seed/catalog"
 	"github.com/whosonfirst/go-rasterzen/tile"
@@ -41,7 +41,7 @@ func NewTileSetFromDSN(str_dsn string) (*TileSet, error) {
 		} else {
 			err = errors.New("Missing 'dsn' property")
 		}
-		
+
 	case "SYNC":
 		seed_catalog, err = catalog.NewSyncMapSeedCatalog()
 	default:
