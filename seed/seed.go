@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-spatial/geom/slippy"
+	"github.com/whosonfirst/go-rasterzen/seed/catalog"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-rasterzen/worker"
-	"github.com/whosonfirst/go-rasterzen/seed/catalog"	
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"sync/atomic"
 	"time"
@@ -24,7 +24,7 @@ func NewTileSet() (*TileSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	ts := TileSet{
 		tile_catalog: tm,
 	}
@@ -170,9 +170,9 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 
 			defer func() {
 
-				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)		
-				go ts.tile_catalog.Remove(k)				
-				
+				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
+				go ts.tile_catalog.Remove(k)
+
 				done_ch <- true
 				throttle <- true
 			}()
@@ -212,7 +212,7 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 }
 
 func (s *TileSeeder) seedTiles(t slippy.Tile) (bool, []error) {
-	
+
 	if s.SeedRasterzen {
 
 		// please figure me out... (20181105/thisisaaronland)

@@ -8,7 +8,6 @@ require (
 	github.com/aws/aws-sdk-go v1.22.1
 	github.com/go-spatial/geom v0.0.0-20190706003858-2760310199f5
 	github.com/jtacoma/uritemplates v1.0.0
-	github.com/mattn/go-sqlite3 v1.11.0
 	github.com/paulmach/orb v0.1.3
 	github.com/srwiley/oksvg v0.0.0-20190414003808-c520f0a6c5cc
 	github.com/srwiley/rasterx v0.0.0-20181219215540-696f7edb7a7e

@@ -1,7 +1,7 @@
 package catalog
 
 import (
-	"github.com/go-spatial/geom/slippy"	
+	"github.com/go-spatial/geom/slippy"
 )
 
 type SeedCatalog interface {

@@ -1,8 +1,8 @@
 package catalog
 
-import(
+import (
+	"github.com/go-spatial/geom/slippy"
 	"sync"
-	"github.com/go-spatial/geom/slippy"	
 )
 
 type InMemorySeedCatalog struct {
@@ -34,4 +34,3 @@ func (m *InMemorySeedCatalog) Remove(k string) error {
 func (m *InMemorySeedCatalog) Range(f func(key, value interface{}) bool) {
 	m.seed_catalog.Range(f)
 }
-

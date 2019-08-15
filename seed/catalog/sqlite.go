@@ -1,17 +1,18 @@
 package catalog
 
-import(
+import (
 	_ "database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/go-spatial/geom/slippy"	
+	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
-	"github.com/whosonfirst/go-whosonfirst-sqlite/database"	
+	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
+	"log"
 )
 
 type TileRecord struct {
-	Key string `json:"key"`
+	Key  string      `json:"key"`
 	Tile slippy.Tile `json:"tile"`
 }
 
@@ -86,7 +87,7 @@ func (t *SeedCatalogTable) IndexRecord(db sqlite.Database, i interface{}) error 
 	if err != nil {
 		return err
 	}
-	
+
 	sql := fmt.Sprintf(`INSERT OR REPLACE INTO %s (
 		key, tile
 	) VALUES (
@@ -112,7 +113,7 @@ func (t *SeedCatalogTable) IndexRecord(db sqlite.Database, i interface{}) error 
 
 type SQLiteSeedCatalog struct {
 	SeedCatalog
-	db *database.SQLiteDatabase
+	db    *database.SQLiteDatabase
 	table sqlite.Table
 }
 
@@ -129,9 +130,9 @@ func NewSQLiteSeedCatalog(dsn string) (SeedCatalog, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	m := SQLiteSeedCatalog{
-		db: db,
+		db:    db,
 		table: tbl,
 	}
 
@@ -141,7 +142,7 @@ func NewSQLiteSeedCatalog(dsn string) (SeedCatalog, error) {
 func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
 
 	tile_record := TileRecord{
-		Key: k,
+		Key:  k,
 		Tile: t,
 	}
 
@@ -161,23 +162,70 @@ func (m *SQLiteSeedCatalog) Remove(k string) error {
 	if err != nil {
 		return err
 	}
-	
-	stmt, err := tx.Prepare("DELETE FROM catalog WHERE tile =?")
+
+	stmt, err := tx.Prepare("DELETE FROM catalog WHERE key =?")
 
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = stmt.Exec(k)
 
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
 func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) {
+	
+	conn, err := m.db.Conn()
+
+	if err != nil {
+		log.Println(err)
+		return 
+	}
+
+	rows, err := conn.Query(fmt.Sprintf("SELECT * FROM %s", m.table.Name()))
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var key string
+		var enc_tile string
+		
+		err = rows.Scan(&key, &enc_tile)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		var t slippy.Tile
+
+		err = json.Unmarshal([]byte(enc_tile), &t)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		f(key, t)
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	// m.seed_catalog.Range(f)
 }
-

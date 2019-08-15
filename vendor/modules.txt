@@ -58,6 +58,8 @@ github.com/go-spatial/geom
 github.com/jmespath/go-jmespath
 # github.com/jtacoma/uritemplates v1.0.0
 github.com/jtacoma/uritemplates
+# github.com/mattn/go-sqlite3 v1.11.0
+github.com/mattn/go-sqlite3
 # github.com/patrickmn/go-cache v2.1.0+incompatible
 github.com/patrickmn/go-cache
 # github.com/paulmach/go.geojson v0.0.0-20161109192638-16c6a8e9da10
@@ -91,6 +93,8 @@ github.com/whosonfirst/go-bindata
 github.com/whosonfirst/go-bindata-assetfs
 # github.com/whosonfirst/go-bindata-html-template v0.1.0
 github.com/whosonfirst/go-bindata-html-template
+# github.com/whosonfirst/go-spatialite v0.1.0
+github.com/whosonfirst/go-spatialite
 # github.com/whosonfirst/go-whosonfirst-aws v0.1.3
 github.com/whosonfirst/go-whosonfirst-aws/session
 github.com/whosonfirst/go-whosonfirst-aws/s3
@@ -104,11 +108,18 @@ github.com/whosonfirst/go-whosonfirst-cache-s3
 github.com/whosonfirst/go-whosonfirst-cli/flags
 # github.com/whosonfirst/go-whosonfirst-crawl v0.1.0
 github.com/whosonfirst/go-whosonfirst-crawl
+# github.com/whosonfirst/go-whosonfirst-flags v0.1.0
+github.com/whosonfirst/go-whosonfirst-flags/existential
+github.com/whosonfirst/go-whosonfirst-flags
 # github.com/whosonfirst/go-whosonfirst-log v0.1.0
 github.com/whosonfirst/go-whosonfirst-log
 # github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
 github.com/whosonfirst/go-whosonfirst-mimetypes
 github.com/whosonfirst/go-whosonfirst-mimetypes/lookup
+# github.com/whosonfirst/go-whosonfirst-sqlite v0.1.1
+github.com/whosonfirst/go-whosonfirst-sqlite
+github.com/whosonfirst/go-whosonfirst-sqlite/database
+github.com/whosonfirst/go-whosonfirst-sqlite/utils
 # github.com/whosonfirst/walk v0.0.0-20160802000000-c0a349674b73681a7272f5ce6ade8ea28055059f
 github.com/whosonfirst/walk
 # golang.org/x/image v0.0.0-20190802002840-cff245a6509b
