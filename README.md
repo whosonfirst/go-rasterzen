@@ -157,10 +157,12 @@ $> ll ./cache/nextzen/13/*/*.json
 Pre-seed one or more rasterzen tiles (and their SVG or PNG derivatives).
 
 ```
-./bin/rasterzen-seed -h
+> ./bin/rasterzen-seed -h
 Usage of ./bin/rasterzen-seed:
   -extent value
     	One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.
+  -extent-separator string
+    	The separating string for coordinates when calculating tiles in '-mode extent' (default ",")
   -fs-cache
     	Cache tiles with a filesystem-based cache.
   -fs-root string
@@ -193,6 +195,10 @@ Usage of ./bin/rasterzen-seed:
     	A valid go-whosonfirst-cache-s3 options string
   -seed-all
     	See all the tile formats
+  -seed-extent
+    	Seed "extent" tiles (as GeoJSON).
+  -seed-geojson
+    	Seed GeoJSON tiles.
   -seed-max-workers int
     	The maximum number of concurrent workers to invoke when seeding tiles (default 100)
   -seed-png
@@ -201,8 +207,12 @@ Usage of ./bin/rasterzen-seed:
     	Seed Rasterzen tiles.
   -seed-svg
     	Seed SVG tiles.
+  -seed-tileset-catalog-dsn string
+    	A valid tile.SeedCatalog DSN string. Required parameters are 'catalog=CATALOG' (default "catalog=sync")
   -seed-worker string
-    	The type of worker for seeding tiles. Valid workers are: lambda, local. (default "local")
+    	The type of worker for seeding tiles. Valid workers are: lambda, local, sqs. (default "local")
+  -sqs-dsn value
+    	A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION' and 'queue=QUEUE'
   -svg-options string
     	The path to a valid RasterzenSVGOptions JSON file.
   -timings
@@ -240,6 +250,20 @@ $> ./bin/rasterzen-seed -mode extent -extent '-122.405228 37.604481 -122.355044 
 Note that in the example above we haven't specified any local caching sources, as we did in the first example, so tiles will be rendered in AWS and cached (or not) depending on how your Lambda function is configured.
 
 Essentially what the second example is doing is pre-seeding an S3 cache which might be something you'd want to do if you want to serve `PNG` tiles but a) don't want to suffer what the (sometimes very long) wait times generating raster tiles or b) don't want to deal with the hoop-jumping around images and AWS Lambda / API Gateway integrations (see below).
+
+#### seed-tileset-catalog-dsn
+
+The `seed-tileset-catalog-dsn` parameter defines how tiles to be seeded are catalogued. By default an in-memory catalog is created using `sync.Map` but if you have a lot of tiles to seed this can rapidly cause out-of-memory problems. The `seed-tileset-catalog-dsn` parameter expects a `catalog=CATALOG` property followed by (0) or more `key=value` properties, all separated by whitespace.
+
+##### catalog=sqlite
+
+You must also pass the following key/value pairs:
+
+* `dsn=DSN` - Any valid DSN string that is accepted by the [go-sqlite3](https://github.com/mattn/go-sqlite3) package.
+
+##### catalog=sync
+
+No additional key/value pairs are required.
 
 ### rastersvg
 

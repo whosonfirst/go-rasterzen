@@ -11,7 +11,6 @@ import (
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-log"
-	golog "log"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -112,8 +111,6 @@ func NewTileSeeder(w worker.Worker, c cache.Cache) (*TileSeeder, error) {
 
 func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []error) {
 
-	golog.Println("START SEEDING")
-
 	t1 := time.Now()
 
 	if s.Timings {
@@ -132,9 +129,7 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
 
-	golog.Println("COUNT")
 	count := ts.Count()
-	golog.Println("COUNT IS", count)
 
 	var remaining int32
 	atomic.StoreInt32(&remaining, count)
@@ -153,6 +148,8 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 			for range ticker.C {
 
 				select {
+				case <-ctx.Done():
+					return
 				case <-ticker_ch:
 					return
 				default:

@@ -16,7 +16,6 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"
-	golog "log"
 	"os"
 	"strconv"
 	"strings"
@@ -122,7 +121,7 @@ func main() {
 
 	custom_svg_options := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
 
-	seed_tileset_catalog_dsn := flag.String("seed-tileset-catalog-dsn", "catalog=sync", "A valid tile.SeedCatalog DSN string.")
+	seed_tileset_catalog_dsn := flag.String("seed-tileset-catalog-dsn", "catalog=sync", "A valid tile.SeedCatalog DSN string. Required parameters are 'catalog=CATALOG'")
 
 	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local, sqs.")
 	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
@@ -322,6 +321,11 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	// start pre-seeding any tiles that have been added _before_ we
+	// finished cataloging all the tiles to seed - we invoke the
+	// preseed_cancel() function below to stop this when we're ready
+	// to seed to full set
+	
 	preseed_ctx, preseed_cancel := context.WithCancel(context.Background())
 	defer preseed_cancel()
 
@@ -335,12 +339,16 @@ func main() {
 
 			select {
 			case <-preseed_ctx.Done():
-				golog.Println("ALL DONE")
 				return
 			default:
 
+				// only one pre-seeding at a time so that we don't end
+				// up with (n) * max workers running simultaneously
+				
 				if !pre_seeding {
+					
 					pre_seeding = true
+					
 					go func() {
 						seeder.SeedTileSet(preseed_ctx, tileset)
 						pre_seeding = false
@@ -395,9 +403,7 @@ func main() {
 		logger.Fatal("Invalid or unsupported mode")
 	}
 
-	golog.Println("FINISH PRE-SEEDING")
-
-	preseed_cancel()
+	preseed_cancel()	// see notes above
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
