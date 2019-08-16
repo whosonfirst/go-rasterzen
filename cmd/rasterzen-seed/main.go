@@ -345,8 +345,6 @@ func main() {
 						seeder.SeedTileSet(preseed_ctx, tileset)
 						pre_seeding = false
 					}()
-				} else {
-					golog.Println("PRESEEDING...")
 				}
 			}
 
@@ -397,7 +395,7 @@ func main() {
 		logger.Fatal("Invalid or unsupported mode")
 	}
 
-	golog.Println("FINISHED SEEDING")
+	golog.Println("FINISH PRE-SEEDING")
 
 	preseed_cancel()
 
