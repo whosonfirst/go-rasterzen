@@ -16,9 +16,11 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"
+	golog "log"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func parse_zxy(str_zxy string) (int, int, int, error) {
@@ -320,6 +322,38 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	preseed_ctx, preseed_cancel := context.WithCancel(context.Background())
+	defer preseed_cancel()
+
+	pre_seeding := false
+
+	go func() {
+
+	c := time.Tick(15 * time.Second)
+
+	  for range c {
+
+	  select {
+	  case <- preseed_ctx.Done():
+	  golog.Println("ALL DONE")
+	  return 
+	  default:
+
+		if !pre_seeding {
+			pre_seeding = true
+			go func() {
+				seeder.SeedTileSet(preseed_ctx, tileset)
+				pre_seeding = false
+			}()
+		}else {
+		golog.Println("PRESEEDING...")
+		}
+	  }	
+	
+	}
+
+	}()
+
 	switch strings.ToUpper(*mode) {
 
 	case "EXTENT":
@@ -362,6 +396,10 @@ func main() {
 	default:
 		logger.Fatal("Invalid or unsupported mode")
 	}
+
+	golog.Println("FINISHED SEEDING")
+
+	preseed_cancel()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

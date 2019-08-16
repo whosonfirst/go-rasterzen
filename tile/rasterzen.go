@@ -46,12 +46,8 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 		}
 
 		defer t.Close()
-
-		if nextzen.IsOverZoom(z) {
-			nextzen_data = t
-		} else {
-			nextzen_data, err = c.Set(nextzen_key, t)
-		}
+		
+		nextzen_data, err = c.Set(nextzen_key, t)
 
 		if err != nil {
 			return nil, err
