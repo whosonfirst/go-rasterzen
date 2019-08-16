@@ -122,7 +122,7 @@ func main() {
 
 	custom_svg_options := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
 
-	seed_tileset_dsn := flag.String("seed-tileset-dsn", "catalog=sync", "...")
+	seed_tileset_catalog_dsn := flag.String("seed-tileset-catalog-dsn", "catalog=sync", "A valid tile.SeedCatalog DSN string.")
 
 	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local, sqs.")
 	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
@@ -316,7 +316,7 @@ func main() {
 	seeder.SeedGeoJSON = *seed_geojson
 	seeder.SeedExtent = *seed_extent
 
-	tileset, err := seed.NewTileSetFromDSN(*seed_tileset_dsn)
+	tileset, err := seed.NewTileSetFromDSN(*seed_tileset_catalog_dsn)
 
 	if err != nil {
 		logger.Fatal(err)
