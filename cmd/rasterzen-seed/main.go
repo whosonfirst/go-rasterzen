@@ -329,28 +329,28 @@ func main() {
 
 	go func() {
 
-	c := time.Tick(15 * time.Second)
+		c := time.Tick(15 * time.Second)
 
-	  for range c {
+		for range c {
 
-	  select {
-	  case <- preseed_ctx.Done():
-	  golog.Println("ALL DONE")
-	  return 
-	  default:
+			select {
+			case <-preseed_ctx.Done():
+				golog.Println("ALL DONE")
+				return
+			default:
 
-		if !pre_seeding {
-			pre_seeding = true
-			go func() {
-				seeder.SeedTileSet(preseed_ctx, tileset)
-				pre_seeding = false
-			}()
-		}else {
-		golog.Println("PRESEEDING...")
+				if !pre_seeding {
+					pre_seeding = true
+					go func() {
+						seeder.SeedTileSet(preseed_ctx, tileset)
+						pre_seeding = false
+					}()
+				} else {
+					golog.Println("PRESEEDING...")
+				}
+			}
+
 		}
-	  }	
-	
-	}
 
 	}()
 

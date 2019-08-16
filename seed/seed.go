@@ -112,7 +112,7 @@ func NewTileSeeder(w worker.Worker, c cache.Cache) (*TileSeeder, error) {
 
 func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []error) {
 
-     golog.Println("START SEEDING")
+	golog.Println("START SEEDING")
 
 	t1 := time.Now()
 

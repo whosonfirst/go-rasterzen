@@ -7,7 +7,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
-	_ "log"	
+	_ "log"
 	"sync"
 )
 
@@ -115,7 +115,7 @@ type SQLiteSeedCatalog struct {
 	SeedCatalog
 	db    *database.SQLiteDatabase
 	table sqlite.Table
-	mu *sync.RWMutex
+	mu    *sync.RWMutex
 }
 
 func NewSQLiteSeedCatalog(dsn string) (SeedCatalog, error) {
@@ -137,7 +137,7 @@ func NewSQLiteSeedCatalog(dsn string) (SeedCatalog, error) {
 	m := SQLiteSeedCatalog{
 		db:    db,
 		table: tbl,
-		mu: mu,
+		mu:    mu,
 	}
 
 	return &m, nil
@@ -150,8 +150,8 @@ func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
 		Tile: t,
 	}
 
-     m.mu.Lock()
-     defer m.mu.Unlock()
+	m.mu.Lock()
+	defer m.mu.Unlock()
 
 	return m.table.IndexRecord(m.db, tile_record)
 }
@@ -161,8 +161,8 @@ func (m *SQLiteSeedCatalog) Remove(k string) error {
 	m.db.Lock()
 	defer m.db.Unlock()
 
-     m.mu.Lock()
-     defer m.mu.Unlock()
+	m.mu.Lock()
+	defer m.mu.Unlock()
 
 	conn, err := m.db.Conn()
 
@@ -181,8 +181,8 @@ func (m *SQLiteSeedCatalog) Remove(k string) error {
 
 func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) error {
 
-     m.mu.Lock()
-     defer m.mu.Unlock()
+	m.mu.Lock()
+	defer m.mu.Unlock()
 
 	conn, err := m.db.Conn()
 
@@ -231,8 +231,8 @@ func (m *SQLiteSeedCatalog) Range(f func(key, value interface{}) bool) error {
 
 func (m *SQLiteSeedCatalog) Count() int32 {
 
-     m.mu.Lock()
-     defer m.mu.Unlock()
+	m.mu.Lock()
+	defer m.mu.Unlock()
 
 	conn, err := m.db.Conn()
 
@@ -243,9 +243,9 @@ func (m *SQLiteSeedCatalog) Count() int32 {
 	query := fmt.Sprintf("SELECT COUNT(key) FROM %s", m.table.Name())
 	row := conn.QueryRow(query)
 
-	var count int32	
+	var count int32
 	err = row.Scan(&count)
-	
+
 	if err != nil {
 		return -1
 	}
