@@ -592,6 +592,6 @@ https://tile.nextzen.org/tilezen/vector/v1/256/{layer}/{z}/{x}/{y}.json?api_key=
 
 * https://developers.nextzen.org/
 * https://mapzen.com/documentation/vector-tiles/layers/
-* https://github.com/whosonfirst/go-whosonfirst-rasterzen
-* https://github.com/fapian/geojson2svg
+* https://github.com/whosonfirst/geojson2svg
 * https://github.com/srwiley/oksvg
+* https://github.com/whosonfirst/go-whosonfirst-rasterzen
