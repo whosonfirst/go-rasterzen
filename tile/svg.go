@@ -72,6 +72,11 @@ func (opts *RasterzenSVGOptions) Clone() *RasterzenSVGOptions {
 	return &clone
 }
 
+func RasterzenSVGOptionsFromString(body string) (*RasterzenSVGOptions, error) {
+	r := strings.NewReader(body)
+	return RasterzenSVGOptionsFromReader(r)
+}
+
 func RasterzenSVGOptionsFromFile(path string) (*RasterzenSVGOptions, error) {
 
 	abs_path, err := filepath.Abs(path)

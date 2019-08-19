@@ -258,8 +258,14 @@ func main() {
 
 		if *custom_svg_options != "" {
 
-			opts, err := tile.RasterzenSVGOptionsFromFile(*custom_svg_options)
+			var opts *tile.RasterzenSVGOptions
 
+			if strings.HasPrefix(*custom_svg_options, "{") {
+				opts, err = tile.RasterzenSVGOptionsFromString(*custom_svg_options)
+			} else {
+				opts, err = tile.RasterzenSVGOptionsFromFile(*custom_svg_options)
+			}
+			
 			if err != nil {
 				logger.Fatal(err)
 			}
