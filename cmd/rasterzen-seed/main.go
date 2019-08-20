@@ -135,7 +135,8 @@ func main() {
 	flag.Var(&sqs_dsn, "sqs-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION' and 'queue=QUEUE'")
 
 	timings := flag.Bool("timings", false, "Display timings for tile seeding.")
-
+	strict := flag.Bool("strict", false, "Exit 0 (failure) at the end of seeding a tile set if any errors are encountered.")
+	
 	flag.Parse()
 
 	if *seed_all {
@@ -422,7 +423,9 @@ func main() {
 			logger.Warning(e)
 		}
 
-		os.Exit(1)
+		if *strict {
+			os.Exit(1)
+		}
 	}
 
 	os.Exit(0)
