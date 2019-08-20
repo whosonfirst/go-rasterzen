@@ -12,8 +12,8 @@ github.com/aws/aws-lambda-go v1.10.0/go.mod h1:zUsUQhAUjYzR8AuduJPCfhBuKWUaDbQiP
 github.com/aws/aws-lambda-go v1.12.1 h1:rMToYOcPFYDixQ7VNNPg78LmiqPgWD5f8zdLL+EsDAk=
 github.com/aws/aws-lambda-go v1.12.1/go.mod h1:z4ywteZ5WwbIEzG0tXizIAUlUwkTNNknX4upd5Z5XJM=
 github.com/aws/aws-sdk-go v1.20.21/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
-github.com/aws/aws-sdk-go v1.22.1 h1://WJvJi9iq/i5TWHuK3hIC23xCZYH7Qv7SIN2vZVqxY=
-github.com/aws/aws-sdk-go v1.22.1/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
+github.com/aws/aws-sdk-go v1.23.4 h1:F6f/iQRhuSfrpUdy80q29898H0NYN27pX+95tkJ+BIY=
+github.com/aws/aws-sdk-go v1.23.4/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fapian/geojson2svg v1.0.0 h1:ctSBSFIH3ETeJBkDOb0jiTDuAK8ZtMYgRzHbMrAKh8w=
@@ -43,6 +43,8 @@ github.com/paulmach/orb v0.1.3/go.mod h1:VFlX/8C+IQ1p6FTRRKzKoOPJnvEtA5G0Veuqwbu
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/shaxbee/go-spatialite v0.0.0-20180425212100-9b4c81899e0e h1:61v08FVpeA7foksKH9uEygA+q4YlGYAZCTsqixaH9rU=
+github.com/shaxbee/go-spatialite v0.0.0-20180425212100-9b4c81899e0e/go.mod h1:tRDdwai9gBsMVwqexZx2+O5F9QY49MxJFo1zlI/MdkU=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d h1:zE9ykElWQ6/NYmHa3jpm/yHnI4xSofP+UP6SpjHcSeM=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
 github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a h1:pa8hGb/2YqsZKovtsgrwcDH1RZhVbTKCjLp47XpqCDs=
@@ -75,12 +77,12 @@ github.com/whosonfirst/go-bindata-html-template v0.1.0 h1:+9hTVO4SHL/74CtdLAIZ0/
 github.com/whosonfirst/go-bindata-html-template v0.1.0/go.mod h1:9hFeWQjFjARoh9WhqK29XTyMUewjs9xEiBUrawmM1lM=
 github.com/whosonfirst/go-spatialite v0.1.0 h1:jKbVmIeUSsDfPX4DWTeiSR9zGJFETIF1A3YdK6IShBY=
 github.com/whosonfirst/go-spatialite v0.1.0/go.mod h1:w1O/DKimk4wiV+5d2BzWYnxvbdhMhkeU01cpfIeEorQ=
-github.com/whosonfirst/go-whosonfirst-aws v0.1.3 h1:qnC7HcQyYrW8JRfcUZjsdNMZjDbf3rhnW77kFDQdCgY=
-github.com/whosonfirst/go-whosonfirst-aws v0.1.3/go.mod h1:ev1Lhw+fDMbnAb0srHyJeAJW9n12gV4La3ZkX6opvbw=
+github.com/whosonfirst/go-whosonfirst-aws v0.1.4 h1:sAUYnV7+r80LPqjoqfBZkXLAnMsxCbhMyiUJURRUolU=
+github.com/whosonfirst/go-whosonfirst-aws v0.1.4/go.mod h1:ev1Lhw+fDMbnAb0srHyJeAJW9n12gV4La3ZkX6opvbw=
 github.com/whosonfirst/go-whosonfirst-cache v0.1.0 h1:ryWTsHj7gAEjwHC/WjsjROpFflsz3SCa7W9Qnk4EU7k=
 github.com/whosonfirst/go-whosonfirst-cache v0.1.0/go.mod h1:P5Tx34j2M50qX/kTfXY516apwGzJGkFSBYQI7TGArKw=
-github.com/whosonfirst/go-whosonfirst-cache-s3 v0.0.0-20180725183234-440d3bfdb2a9 h1:QP1OfmYcTuRSzRKpCt1rU9Y0cCZtWyfJVxeWAITJxhI=
-github.com/whosonfirst/go-whosonfirst-cache-s3 v0.0.0-20180725183234-440d3bfdb2a9/go.mod h1:fQGSiP4v/HFVYG3DTIM0SGe+a8zzgbOEybMCZfva+c8=
+github.com/whosonfirst/go-whosonfirst-cache-s3 v0.1.0 h1:Y9wS6xBHkA3qATCeQuJZcCrVtZthYJobZG2GqsVnoGg=
+github.com/whosonfirst/go-whosonfirst-cache-s3 v0.1.0/go.mod h1:9x8f2IHdgkq+VWVKY5Ra0Jd32T4e+u5mnFr1BqqWEdM=
 github.com/whosonfirst/go-whosonfirst-cli v0.1.0 h1:Wwj9z0R/ryHmPmpVm5jCbXdG4agJzKMWXDtPVReN/KA=
 github.com/whosonfirst/go-whosonfirst-cli v0.1.0/go.mod h1:Edy+amD+fMq1QS1yxB3u8maA8I93q/LG7JRNh+fsdfc=
 github.com/whosonfirst/go-whosonfirst-crawl v0.1.0 h1:HD8xJcPME3nWoJH58SXT84q0tjBCF3Oc5jrmk5eIriQ=

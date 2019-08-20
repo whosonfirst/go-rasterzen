@@ -1,12 +1,8 @@
 # go-whosonfirst-cache-s3
 
-## Important
-
-This is too soon for you to try using.
-
 ## Install
 
-You will need to have both `Go` (specifically a version of Go more recent than 1.7 so let's just assume you need [Go 1.9](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
+You will need to have both `Go` (specifically version Go [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
 
 ```
 make bin

@@ -92,7 +92,7 @@ func NewS3Cache(dsn string, opts *S3CacheOptions) (cache.Cache, error) {
 }
 
 func (c *S3Cache) Name() string {
-     return "s3"
+	return "s3"
 }
 
 func (c *S3Cache) Get(key string) (io.ReadCloser, error) {
