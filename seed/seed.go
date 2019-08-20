@@ -31,7 +31,7 @@ func (e *SeedError) String() string {
 
 type TileSet struct {
 	tile_catalog catalog.SeedCatalog
-	ToSeed int64
+	ToSeed       int64
 }
 
 func NewTileSetFromDSN(str_dsn string) (*TileSet, error) {
@@ -49,11 +49,29 @@ func NewTileSetFromDSN(str_dsn string) (*TileSet, error) {
 
 		sqlite_dsn, ok := dsn_map["dsn"]
 
-		if ok {
-			seed_catalog, err = catalog.NewSQLiteSeedCatalog(sqlite_dsn)
-		} else {
+		if !ok {
 			err = errors.New("Missing 'dsn' property")
+			break
 		}
+
+		/*
+
+				if !strings.HasPrefix(sqlite_dsn, ":memory:"){
+
+					parts := strings.Split(sqlite_dsn, "?")
+					path := parts[0]
+
+		 			_, err := os.Stat(path){
+
+						if err == nil {
+
+						}
+					}
+				}
+
+		*/
+
+		seed_catalog, err = catalog.NewSQLiteSeedCatalog(sqlite_dsn)
 
 	case "SYNC":
 		seed_catalog, err = catalog.NewSyncMapSeedCatalog()
@@ -72,7 +90,7 @@ func NewTileSet(seed_catalog catalog.SeedCatalog) (*TileSet, error) {
 
 	ts := TileSet{
 		tile_catalog: seed_catalog,
-		ToSeed: 0,
+		ToSeed:       0,
 	}
 
 	return &ts, nil
@@ -82,7 +100,7 @@ func (ts *TileSet) AddTile(t slippy.Tile) error {
 	k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
 	ts.tile_catalog.LoadOrStore(k, t)
 
-	atomic.AddInt64(&ts.ToSeed, 1)	
+	atomic.AddInt64(&ts.ToSeed, 1)
 	return nil
 }
 

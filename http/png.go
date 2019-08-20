@@ -10,7 +10,7 @@ import (
 	gohttp "net/http"
 )
 
-func NewPNGHandler(c cache.Cache, nz_opts *nextzen.Options) (gohttp.HandlerFunc, error) {
+func NewPNGHandler(c cache.Cache, nz_opts *nextzen.Options, svg_opts *tile.RasterzenSVGOptions) (gohttp.HandlerFunc, error) {
 
 	d, err := NewDispatchHandler(c)
 
@@ -19,6 +19,8 @@ func NewPNGHandler(c cache.Cache, nz_opts *nextzen.Options) (gohttp.HandlerFunc,
 	}
 
 	d.NextzenOptions = nz_opts
+	d.SVGOptions = svg_opts
+
 	return PNGHandler(d)
 }
 
@@ -30,7 +32,7 @@ func PNGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 	}
 
 	h.Func = func(slippy_tile *slippy.Tile, in io.Reader, out io.Writer) error {
-		return tile.RasterzenToPNG(in, out)
+		return tile.RasterzenToPNG(in, out, h.SVGOptions)
 	}
 
 	h.Headers = headers

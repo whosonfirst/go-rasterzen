@@ -11,6 +11,17 @@ import (
 
 func RasterzenToImage(in io.Reader) (image.Image, error) {
 
+	opts, err := DefaultRasterzenSVGOptions()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return RasterzenToImageWithOptions(in, opts)
+}
+
+func RasterzenToImageWithOptions(in io.Reader, svg_opts *RasterzenSVGOptions) (image.Image, error) {
+
 	tmpfile, err := ioutil.TempFile("", "svg")
 
 	if err != nil {
@@ -26,7 +37,7 @@ func RasterzenToImage(in io.Reader) (image.Image, error) {
 		}
 	}()
 
-	err = RasterzenToSVG(in, tmpfile)
+	err = RasterzenToSVGWithOptions(in, tmpfile, svg_opts)
 
 	if err != nil {
 		return nil, err

@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 )
 
-func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
+func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, svg_opts *RasterzenSVGOptions) (io.ReadCloser, error) {
 
 	png_key := CacheKeyForTile(t, "png", "png")
 
@@ -35,7 +35,7 @@ func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.R
 	var buf bytes.Buffer
 	png_wr := bufio.NewWriter(&buf)
 
-	err = RasterzenToPNG(rasterzen_fh, png_wr)
+	err = RasterzenToPNG(rasterzen_fh, png_wr, svg_opts)
 
 	if err != nil {
 		return nil, err
@@ -49,9 +49,9 @@ func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.R
 	return c.Set(png_key, png_fh)
 }
 
-func RasterzenToPNG(in io.Reader, out io.Writer) error {
+func RasterzenToPNG(in io.Reader, out io.Writer, svg_opts *RasterzenSVGOptions) error {
 
-	img, err := RasterzenToImage(in)
+	img, err := RasterzenToImageWithOptions(in, svg_opts)
 
 	if err != nil {
 		return err

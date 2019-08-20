@@ -255,7 +255,7 @@ func main() {
 
 	var svg_opts *tile.RasterzenSVGOptions
 
-	if *seed_svg {
+	if *seed_svg || *seed_png {
 
 		if *custom_svg_options != "" {
 

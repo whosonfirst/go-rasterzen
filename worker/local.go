@@ -55,6 +55,6 @@ func (w *LocalWorker) RenderSVGTile(t slippy.Tile) error {
 
 func (w *LocalWorker) RenderPNGTile(t slippy.Tile) error {
 
-	_, err := tile.RenderPNGTile(t, w.cache, w.nextzen_options)
+	_, err := tile.RenderPNGTile(t, w.cache, w.nextzen_options, w.svg_options)
 	return err
 }
