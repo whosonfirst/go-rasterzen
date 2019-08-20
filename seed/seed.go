@@ -16,6 +16,19 @@ import (
 	"time"
 )
 
+type SeedError struct {
+	Details error
+	Tile    slippy.Tile
+}
+
+func (e *SeedError) Error() string {
+	return e.String()
+}
+
+func (e *SeedError) String() string {
+	return fmt.Sprintf("Unable to seed %v because %s", e.Tile, e.Details)
+}
+
 type TileSet struct {
 	tile_catalog catalog.SeedCatalog
 }
@@ -211,8 +224,7 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 			if !ok {
 
 				for _, e := range errs {
-					msg := fmt.Sprintf("Unable to seed %v because %s", t, e)
-					err_ch <- errors.New(msg)
+					err_ch <- &SeedError{Details: e, Tile: t}
 				}
 			}
 

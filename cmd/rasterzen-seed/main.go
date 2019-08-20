@@ -136,7 +136,7 @@ func main() {
 
 	timings := flag.Bool("timings", false, "Display timings for tile seeding.")
 	strict := flag.Bool("strict", false, "Exit 0 (failure) at the end of seeding a tile set if any errors are encountered.")
-	
+
 	flag.Parse()
 
 	if *seed_all {
@@ -266,7 +266,7 @@ func main() {
 			} else {
 				opts, err = tile.RasterzenSVGOptionsFromFile(*custom_svg_options)
 			}
-			
+
 			if err != nil {
 				logger.Fatal(err)
 			}
@@ -332,7 +332,7 @@ func main() {
 	// finished cataloging all the tiles to seed - we invoke the
 	// preseed_cancel() function below to stop this when we're ready
 	// to seed to full set
-	
+
 	preseed_ctx, preseed_cancel := context.WithCancel(context.Background())
 	defer preseed_cancel()
 
@@ -351,11 +351,11 @@ func main() {
 
 				// only one pre-seeding at a time so that we don't end
 				// up with (n) * max workers running simultaneously
-				
+
 				if !pre_seeding {
-					
+
 					pre_seeding = true
-					
+
 					go func() {
 						seeder.SeedTileSet(preseed_ctx, tileset)
 						pre_seeding = false
@@ -410,7 +410,7 @@ func main() {
 		logger.Fatal("Invalid or unsupported mode")
 	}
 
-	preseed_cancel()	// see notes above
+	preseed_cancel() // see notes above
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
