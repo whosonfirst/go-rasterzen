@@ -9,11 +9,13 @@ import (
 type WWWHandlerOptions struct {
 	NextzenAPIKey string
 	Debug         bool
+	TileFormat    string
 }
 
 type WWWTemplateVars struct {
 	NextzenAPIKey string
 	Debug         bool
+	TileFormat    string
 }
 
 func WWWHandler(opts *WWWHandlerOptions) (gohttp.HandlerFunc, error) {
@@ -30,6 +32,7 @@ func WWWHandler(opts *WWWHandlerOptions) (gohttp.HandlerFunc, error) {
 	vars := WWWTemplateVars{
 		NextzenAPIKey: opts.NextzenAPIKey,
 		Debug:         opts.Debug,
+		TileFormat:    opts.TileFormat,
 	}
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {

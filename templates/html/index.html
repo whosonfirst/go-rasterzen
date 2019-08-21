@@ -19,7 +19,7 @@
     
     <script>
       var api_key = '{{ .NextzenAPIKey }}';
-      var format = 'svg';
+      var format = '{{ .TileFormat }}';
 
       var map = L.map('map').setView([37.613858, -122.37366], 13);
       var layer = L.tileLayer('http://localhost:8080/' + format + '/{z}/{x}/{y}.' + format + '?api_key=' + api_key, {maxZoom: 22});

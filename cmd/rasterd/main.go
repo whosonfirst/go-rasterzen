@@ -29,6 +29,7 @@ func main() {
 
 	do_www := flag.Bool("www", false, "Enable a simple web interface with a slippy map (at /) for testing and debugging.")
 	www_debug := flag.Bool("www-debug", false, "Enable debugging features for the web interface.")
+	www_tile_format := flag.String("www-tile-format", "svg", "Valid options are: png, svg.")
 
 	no_cache := flag.Bool("no-cache", false, "Disable all caching.")
 	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
@@ -301,6 +302,7 @@ func main() {
 		www_opts := &http.WWWHandlerOptions{
 			NextzenAPIKey: *nextzen_apikey,
 			Debug:         *www_debug,
+			TileFormat:    *www_tile_format,
 		}
 
 		www_h, err := http.WWWHandler(www_opts)

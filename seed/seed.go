@@ -56,18 +56,18 @@ func NewTileSetFromDSN(str_dsn string) (*TileSet, error) {
 
 		/*
 
-				if !strings.HasPrefix(sqlite_dsn, ":memory:"){
+					if !strings.HasPrefix(sqlite_dsn, ":memory:"){
 
-					parts := strings.Split(sqlite_dsn, "?")
-					path := parts[0]
+						parts := strings.Split(sqlite_dsn, "?")
+						path := parts[0]
 
-		 			_, err := os.Stat(path){
+			 			_, err := os.Stat(path){
 
-						if err == nil {
+							if err == nil {
 
+							}
 						}
 					}
-				}
 
 		*/
 
