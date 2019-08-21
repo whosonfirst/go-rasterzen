@@ -147,7 +147,7 @@ func staticCssRasterdCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/rasterd.css", size: 71, mode: os.FileMode(420), modTime: time.Unix(1559854162, 0)}
+	info := bindataFileInfo{name: "static/css/rasterd.css", size: 71, mode: os.FileMode(420), modTime: time.Unix(1565377542, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
