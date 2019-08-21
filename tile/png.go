@@ -35,6 +35,8 @@ func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, svg_o
 	var buf bytes.Buffer
 	png_wr := bufio.NewWriter(&buf)
 
+	svg_opts.TileExtent = t.Extent4326()
+
 	err = RasterzenToPNG(rasterzen_fh, png_wr, svg_opts)
 
 	if err != nil {
