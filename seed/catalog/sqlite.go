@@ -143,7 +143,48 @@ func NewSQLiteSeedCatalog(dsn string) (SeedCatalog, error) {
 	return &m, nil
 }
 
-func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
+func (m *SQLiteSeedCatalog) Load(k string) (interface{}, bool) {
+
+	conn, err := m.db.Conn()
+
+	if err != nil {
+		return nil, false
+	}
+
+	query := fmt.Sprintf("SELECT key, tile FROM %s WHERE key = ?", m.table.Name())
+	row := conn.QueryRow(query, k)
+
+	var key string
+	var str_tile string
+
+	err = row.Scan(&key, &str_tile)
+
+	if err != nil {
+		return nil, false
+	}
+
+	var t slippy.Tile
+	err = json.Unmarshal([]byte(str_tile), &t)
+
+	if err != nil {
+		return nil, false
+	}
+
+	rsp := TileRecord{
+		Key:  key,
+		Tile: t,
+	}
+
+	return rsp, true
+}
+
+func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) (interface{}, bool) {
+
+	rsp, ok := m.Load(k)
+
+	if ok {
+		return rsp, ok
+	}
 
 	tile_record := TileRecord{
 		Key:  k,
@@ -153,7 +194,13 @@ func (m *SQLiteSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	return m.table.IndexRecord(m.db, tile_record)
+	err := m.table.IndexRecord(m.db, tile_record)
+
+	if err != nil {
+		return nil, false
+	}
+
+	return tile_record, false
 }
 
 func (m *SQLiteSeedCatalog) Remove(k string) error {

@@ -235,13 +235,8 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 
 			defer func() {
 
-				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
-
-				err := ts.tile_catalog.Remove(k)
-
-				if err != nil {
-					s.Logger.Warning("Failed to remove %s key from tile catalog: %s", k, err)
-				}
+				// k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
+				// ts.tile_catalog.Delete(k)
 
 				done_ch <- true
 				throttle <- true

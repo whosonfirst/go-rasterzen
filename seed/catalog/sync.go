@@ -22,14 +22,16 @@ func NewSyncMapSeedCatalog() (SeedCatalog, error) {
 	return &m, nil
 }
 
-func (m *SyncMapSeedCatalog) LoadOrStore(k string, t slippy.Tile) error {
-	m.seed_catalog.LoadOrStore(k, t)
-	return nil
+func (m *SyncMapSeedCatalog) Load(k string) (interface{}, bool) {
+	return m.seed_catalog.Load(k)
 }
 
-func (m *SyncMapSeedCatalog) Remove(k string) error {
+func (m *SyncMapSeedCatalog) LoadOrStore(k string, t slippy.Tile) (interface{}, bool) {
+	return m.seed_catalog.LoadOrStore(k, t)
+}
+
+func (m *SyncMapSeedCatalog) Delete(k string) {
 	m.seed_catalog.Delete(k)
-	return nil
 }
 
 func (m *SyncMapSeedCatalog) Range(f func(key, value interface{}) bool) error {

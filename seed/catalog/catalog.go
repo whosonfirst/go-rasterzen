@@ -5,8 +5,9 @@ import (
 )
 
 type SeedCatalog interface {
-	LoadOrStore(string, slippy.Tile) error
-	Remove(string) error
+	Load(string) (interface{}, bool)
+	LoadOrStore(string, slippy.Tile) (interface{}, bool)
+	Delete(string)
 	Range(func(key, value interface{}) bool) error
 	Count() int32
 }
