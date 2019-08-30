@@ -124,7 +124,7 @@ func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error 
 				case <-ticker_ch:
 					return
 				default:
-					tileset.Logger.Status("Still gathering tiles, %d (%v)", tileset.ToSeed, time.Since(t1))
+					tileset.Logger.Status("Still gathering tiles, %d so far (%v)", tileset.ToSeed, time.Since(t1))
 				}
 			}
 		}()

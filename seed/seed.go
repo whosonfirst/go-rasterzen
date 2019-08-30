@@ -158,12 +158,13 @@ func NewTileSeeder(w worker.Worker, c cache.Cache) (*TileSeeder, error) {
 
 func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []error) {
 
+	count := ts.Count()
 	t1 := time.Now()
 
 	if s.Timings {
 
 		defer func() {
-			s.Logger.Status("Time to seed all tiles %v", time.Since(t1))
+			s.Logger.Status("Time to seed %d tiles %v", count, time.Since(t1))
 		}()
 	}
 
@@ -175,8 +176,6 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
-
-	count := ts.Count()
 
 	var remaining int32
 	atomic.StoreInt32(&remaining, count)
