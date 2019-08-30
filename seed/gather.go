@@ -107,9 +107,11 @@ func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error 
 		t1 := time.Now()
 
 		ticker := time.NewTicker(time.Second * 5)
+		ticker_ch := make(chan bool)
 
 		defer func() {
-			tileset.Logger.Status("Time to gather %d tiles: %v\n", tileset.ToSeed, time.Since(t1))
+			ticker_ch <- true
+			tileset.Logger.Status("Time to gather tiles: %v\n", time.Since(t1))
 		}()
 
 		go func() {
@@ -119,8 +121,10 @@ func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error 
 				select {
 				case <-ctx.Done():
 					return
+				case <-ticker_ch:
+					return
 				default:
-					tileset.Logger.Status("%d tiles added since %v (%v)", tileset.ToSeed, t1, time.Since(t1))
+					tileset.Logger.Status("Still gather tiles (%v)", time.Since(t1))
 				}
 			}
 		}()
