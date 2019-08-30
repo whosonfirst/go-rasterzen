@@ -20,18 +20,22 @@ rebuild:
 	@make assets
 	@make tools
 
-lambda:	
+lambda:
+	@make lambda-seed
+	@make lambda-seed-sqs
+
+lambda-seed:	
 	if test -f main; then rm -f main; fi
-	if test -f deployment.zip; then rm -f deployment.zip; fi
+	if test -f rasterzen-seed.zip; then rm -f rasterzen-seed.zip; fi
 	GOOS=linux go build -mod vendor -o main cmd/rasterd/main.go
-	zip deployment.zip main
+	zip rasterzen-seed.zip main
 	rm -f main
 
-lambda-sqs:	
+lambda-seed-sqs:	
 	if test -f main; then rm -f main; fi
-	if test -f deployment.zip; then rm -f deployment.zip; fi
+	if test -f rasterzen-seed-sqs.zip; then rm -f rasterzen-seed-sqs.zip; fi
 	GOOS=linux go build -mod vendor -o main cmd/rasterzen-seed-sqs/main.go
-	zip deployment.zip main
+	zip rasterzen-seed-sqs.zip main
 	rm -f main
 
 docker:

@@ -10,6 +10,6 @@ bin
 .travis.yml
 *.db
 *.svg
-deployment.zip
+*.zip
 cache
 debug
