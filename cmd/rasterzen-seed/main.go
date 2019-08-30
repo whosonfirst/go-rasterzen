@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"github.com/go-spatial/geom"
-	"github.com/go-spatial/geom/slippy"
 	"github.com/jtacoma/uritemplates"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/seed"
@@ -17,77 +15,8 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"
 	"os"
-	"strconv"
 	"strings"
-	"time"
 )
-
-func parse_zxy(str_zxy string) (int, int, int, error) {
-
-	parts := strings.Split(str_zxy, "/")
-
-	if len(parts) != 3 {
-		return 0, 0, 0, errors.New("Invalid xzy string")
-	}
-
-	z, err := strconv.Atoi(parts[0])
-
-	if err != nil {
-		return 0, 0, 0, err
-	}
-
-	x, err := strconv.Atoi(parts[1])
-
-	if err != nil {
-		return 0, 0, 0, err
-	}
-
-	y, err := strconv.Atoi(parts[2])
-
-	if err != nil {
-		return 0, 0, 0, err
-	}
-
-	return z, x, y, nil
-}
-
-func parse_extent(str_extent string, sep string) (*geom.Extent, error) {
-
-	coords := strings.Split(str_extent, sep)
-
-	if len(coords) != 4 {
-		return nil, errors.New("Invalid string extent")
-	}
-
-	minx, err := strconv.ParseFloat(coords[0], 64)
-
-	if err != nil {
-		return nil, err
-	}
-
-	miny, err := strconv.ParseFloat(coords[1], 64)
-
-	if err != nil {
-		return nil, err
-	}
-
-	maxy, err := strconv.ParseFloat(coords[3], 64)
-
-	if err != nil {
-		return nil, err
-	}
-
-	maxx, err := strconv.ParseFloat(coords[2], 64)
-
-	if err != nil {
-		return nil, err
-	}
-
-	min := [2]float64{minx, miny}
-	max := [2]float64{maxx, maxy}
-
-	return geom.NewExtent(min, max), nil
-}
 
 func main() {
 
@@ -328,89 +257,27 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	// start pre-seeding any tiles that have been added _before_ we
-	// finished cataloging all the tiles to seed - we invoke the
-	// preseed_cancel() function below to stop this when we're ready
-	// to seed to full set
-
-	preseed_ctx, preseed_cancel := context.WithCancel(context.Background())
-	defer preseed_cancel()
-
-	pre_seeding := false
-
-	go func() {
-
-		c := time.Tick(15 * time.Second)
-
-		for range c {
-
-			select {
-			case <-preseed_ctx.Done():
-				return
-			default:
-
-				// only one pre-seeding at a time so that we don't end
-				// up with (n) * max workers running simultaneously
-
-				if !pre_seeding {
-
-					pre_seeding = true
-
-					go func() {
-						seeder.SeedTileSet(preseed_ctx, tileset)
-						pre_seeding = false
-					}()
-				}
-			}
-
-		}
-
-	}()
+	var gather_func seed.GatherTilesFunc
 
 	switch strings.ToUpper(*mode) {
 
 	case "EXTENT":
-
-		for _, str_extent := range extents {
-
-			ex, err := parse_extent(str_extent, *extent_separator)
-
-			if err != nil {
-				logger.Fatal(err)
-			}
-
-			for z := *min_zoom; z <= *max_zoom; z++ {
-
-				for _, t := range slippy.FromBounds(ex, uint(z)) {
-					tileset.AddTile(t)
-				}
-			}
-		}
-
+		gather_func, err = seed.NewGatherTilesExtentFunc(extents, *extent_separator, *min_zoom, *max_zoom)
 	case "TILES":
-
-		for _, str_zxy := range flag.Args() {
-
-			z, x, y, err := parse_zxy(str_zxy)
-
-			if err != nil {
-				logger.Fatal(err)
-			}
-
-			t := slippy.Tile{
-				Z: uint(z),
-				X: uint(x),
-				Y: uint(y),
-			}
-
-			tileset.AddTile(t)
-		}
-
+		gather_func, err = seed.NewGatherTilesFunc(flag.Args())
 	default:
-		logger.Fatal("Invalid or unsupported mode")
+		err = errors.New("Invalid or unsupported mode")
 	}
 
-	preseed_cancel() // see notes above
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	err = seed.GatherTiles(tileset, seeder, gather_func)
+
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
