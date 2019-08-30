@@ -4,17 +4,18 @@ import (
 	"context"
 	"errors"
 	"github.com/go-spatial/geom"
-	"github.com/go-spatial/geom/slippy"	
+	"github.com/go-spatial/geom/slippy"
+	_ "log"
 	"strconv"
 	"strings"
 	"time"
 )
 
-type GatherTilesFunc func(*TileSet) error
+type GatherTilesFunc func(context.Context, *TileSet) error
 
 func NewGatherTilesFunc(tiles []string) (GatherTilesFunc, error) {
 
-	gather_func := func(tileset *TileSet) error {
+	gather_func := func(ctx context.Context, tileset *TileSet) error {
 
 		for _, str_zxy := range tiles {
 
@@ -41,7 +42,7 @@ func NewGatherTilesFunc(tiles []string) (GatherTilesFunc, error) {
 
 func NewGatherTilesExtentFunc(extents []string, sep string, min_zoom int, max_zoom int) (GatherTilesFunc, error) {
 
-	gather_func := func(tileset *TileSet) error {
+	gather_func := func(ctx context.Context, tileset *TileSet) error {
 
 		for _, str_extent := range extents {
 
@@ -58,7 +59,7 @@ func NewGatherTilesExtentFunc(extents []string, sep string, min_zoom int, max_zo
 				}
 			}
 		}
-		
+
 		return nil
 	}
 
@@ -67,13 +68,8 @@ func NewGatherTilesExtentFunc(extents []string, sep string, min_zoom int, max_zo
 
 func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error {
 
-	// start pre-seeding any tiles that have been added _before_ we
-	// finished cataloging all the tiles to seed - we invoke the
-	// preseed_cancel() function below to stop this when we're ready
-	// to seed to full set
-
-	preseed_ctx, preseed_cancel := context.WithCancel(context.Background())
-	defer preseed_cancel()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	pre_seeding := false
 
@@ -84,7 +80,7 @@ func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error 
 		for range c {
 
 			select {
-			case <-preseed_ctx.Done():
+			case <-ctx.Done():
 				return
 			default:
 
@@ -96,7 +92,7 @@ func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error 
 					pre_seeding = true
 
 					go func() {
-						seeder.SeedTileSet(preseed_ctx, tileset)
+						seeder.SeedTileSet(ctx, tileset)
 						pre_seeding = false
 					}()
 				}
@@ -106,7 +102,32 @@ func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error 
 
 	}()
 
-	return f(tileset)
+	if tileset.Timings {
+
+		t1 := time.Now()
+
+		ticker := time.NewTicker(time.Second * 5)
+
+		defer func() {
+			tileset.Logger.Status("Time to gather %d tiles: %v\n", tileset.ToSeed, time.Since(t1))
+		}()
+
+		go func() {
+
+			for range ticker.C {
+
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					tileset.Logger.Status("%d tiles added since %v (%v)", tileset.ToSeed, t1, time.Since(t1))
+				}
+			}
+		}()
+
+	}
+
+	return f(ctx, tileset)
 }
 
 func parse_extent(str_extent string, sep string) (*geom.Extent, error) {

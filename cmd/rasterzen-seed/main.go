@@ -257,6 +257,9 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	tileset.Logger = logger
+	tileset.Timings = *timings
+
 	var gather_func seed.GatherTilesFunc
 
 	switch strings.ToUpper(*mode) {

@@ -32,6 +32,8 @@ func (e *SeedError) String() string {
 type TileSet struct {
 	tile_catalog catalog.SeedCatalog
 	ToSeed       int64
+	Timings      bool
+	Logger       *log.WOFLogger
 }
 
 func NewTileSetFromDSN(str_dsn string) (*TileSet, error) {
@@ -88,9 +90,13 @@ func NewTileSetFromDSN(str_dsn string) (*TileSet, error) {
 
 func NewTileSet(seed_catalog catalog.SeedCatalog) (*TileSet, error) {
 
+	logger := log.SimpleWOFLogger()
+
 	ts := TileSet{
 		tile_catalog: seed_catalog,
 		ToSeed:       0,
+		Timings:      false,
+		Logger:       logger,
 	}
 
 	return &ts, nil
