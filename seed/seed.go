@@ -103,10 +103,16 @@ func NewTileSet(seed_catalog catalog.SeedCatalog) (*TileSet, error) {
 }
 
 func (ts *TileSet) AddTile(t slippy.Tile) error {
-	k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
-	ts.tile_catalog.LoadOrStore(k, t)
 
-	atomic.AddInt64(&ts.ToSeed, 1)
+	k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
+
+	_, ok := ts.tile_catalog.LoadOrStore(k, t)
+
+	if !ok {
+		ts.Logger.Debug("Add tile %v ", k)
+		atomic.AddInt64(&ts.ToSeed, 1)
+	}
+
 	return nil
 }
 
@@ -236,6 +242,12 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 			defer func() {
 
 				// k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
+				// ts.Logger.Status("Tile seeding complete for %v", k)
+
+				// we used to do this but it can lead to situations where the same tile
+				// gets added (and seeded) over and over and over again so we don't do
+				// that anymore (20190830/thisisaaronland)
+
 				// ts.tile_catalog.Delete(k)
 
 				done_ch <- true
