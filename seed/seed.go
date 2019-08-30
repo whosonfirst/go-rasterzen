@@ -159,6 +159,11 @@ func NewTileSeeder(w worker.Worker, c cache.Cache) (*TileSeeder, error) {
 func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []error) {
 
 	count := ts.Count()
+
+	if count == 0 {
+		return true, nil
+	}
+
 	t1 := time.Now()
 
 	if s.Timings {
