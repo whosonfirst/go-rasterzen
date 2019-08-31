@@ -145,6 +145,9 @@ func NewSQLiteSeedCatalog(dsn string) (SeedCatalog, error) {
 
 func (m *SQLiteSeedCatalog) Load(k string) (interface{}, bool) {
 
+	m.db.Lock()
+	defer m.db.Unlock()
+	
 	conn, err := m.db.Conn()
 
 	if err != nil {

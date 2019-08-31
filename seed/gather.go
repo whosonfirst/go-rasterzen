@@ -71,46 +71,13 @@ func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	pre_seeding := false
-
-	go func() {
-
-		c := time.Tick(15 * time.Second)
-
-		for range c {
-
-			select {
-			case <-ctx.Done():
-				return
-			default:
-
-				// only one pre-seeding at a time so that we don't end
-				// up with (n) * max workers running simultaneously
-
-				if !pre_seeding {
-
-					pre_seeding = true
-
-					go func() {
-						seeder.SeedTileSet(ctx, tileset)
-						pre_seeding = false
-					}()
-				}
-			}
-
-		}
-
-	}()
-
 	if tileset.Timings {
 
 		t1 := time.Now()
 
 		ticker := time.NewTicker(time.Second * 5)
-		ticker_ch := make(chan bool)
 
 		defer func() {
-			ticker_ch <- true
 			tileset.Logger.Status("Time to gather %d tiles: %v\n", tileset.ToSeed, time.Since(t1))
 		}()
 
@@ -120,8 +87,6 @@ func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error 
 
 				select {
 				case <-ctx.Done():
-					return
-				case <-ticker_ch:
 					return
 				default:
 					tileset.Logger.Status("Still gathering tiles, %d so far (%v)", tileset.ToSeed, time.Since(t1))
