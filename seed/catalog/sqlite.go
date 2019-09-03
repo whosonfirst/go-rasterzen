@@ -68,6 +68,9 @@ func (t *SeedCatalogTable) InitializeTable(db sqlite.Database) error {
 
 func (t *SeedCatalogTable) IndexRecord(db sqlite.Database, i interface{}) error {
 
+	db.Lock()
+	defer db.Unlock()
+
 	conn, err := db.Conn()
 
 	if err != nil {
@@ -147,7 +150,7 @@ func (m *SQLiteSeedCatalog) Load(k string) (interface{}, bool) {
 
 	m.db.Lock()
 	defer m.db.Unlock()
-	
+
 	conn, err := m.db.Conn()
 
 	if err != nil {
