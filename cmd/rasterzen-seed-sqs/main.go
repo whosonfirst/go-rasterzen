@@ -17,6 +17,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -86,7 +87,9 @@ func main() {
 	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
 	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
+	custom_rz_options := flag.String("rasterzen-options", "", "The path to a valid RasterzenOptions JSON file.")
 	custom_svg_options := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
+	custom_png_options := flag.String("png-options", "", "The path to a valid RasterzenPNGOptions JSON file.")
 
 	var lambda_dsn flags.DSNString
 	flag.Var(&lambda_dsn, "lambda-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION'")
@@ -130,7 +133,36 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var rz_opts *tile.RasterzenOptions
 	var svg_opts *tile.RasterzenSVGOptions
+	var png_opts *tile.RasterzenPNGOptions
+
+	if *custom_rz_options != "" {
+
+		var opts *tile.RasterzenOptions
+
+		if strings.HasPrefix(*custom_rz_options, "{") {
+			opts, err = tile.RasterzenOptionsFromString(*custom_rz_options)
+		} else {
+			opts, err = tile.RasterzenOptionsFromFile(*custom_rz_options)
+		}
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		rz_opts = opts
+
+	} else {
+
+		opts, err := tile.DefaultRasterzenOptions()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		rz_opts = opts
+	}
 
 	if *custom_svg_options != "" {
 
@@ -153,7 +185,34 @@ func main() {
 		svg_opts = opts
 	}
 
-	wrkr, err := worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, s3_cache, nz_opts, svg_opts)
+	if *custom_png_options != "" {
+
+		var opts *tile.RasterzenPNGOptions
+
+		if strings.HasPrefix(*custom_png_options, "{") {
+			opts, err = tile.RasterzenPNGOptionsFromString(*custom_png_options)
+		} else {
+			opts, err = tile.RasterzenPNGOptionsFromFile(*custom_png_options)
+		}
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		png_opts = opts
+
+	} else {
+
+		opts, err := tile.DefaultRasterzenPNGOptions()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		png_opts = opts
+	}
+
+	wrkr, err := worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, s3_cache, nz_opts, rz_opts, svg_opts, png_opts)
 
 	if err != nil {
 		log.Fatal(err)
