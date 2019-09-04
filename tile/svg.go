@@ -40,6 +40,7 @@ type RasterzenSVGOptions struct {
 	Fill          string             `json:"fill"`
 	FillOpacity   float64            `json:"fill_opacity"`
 	Styles        RasterzenSVGStyles `json:"styles"`
+	Refresh       bool               `json:"refresh"`
 }
 
 func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
@@ -52,6 +53,7 @@ func DefaultRasterzenSVGOptions() (*RasterzenSVGOptions, error) {
 		StrokeOpacity: 1.0,
 		Fill:          "#ffffff",
 		FillOpacity:   0.5,
+		Refresh:       false,
 	}
 
 	return &opts, nil
@@ -125,20 +127,23 @@ type FeatureCollection struct {
 	Features []interface{} `json:"features"`
 }
 
-func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, svg_opts *RasterzenSVGOptions) (io.ReadCloser, error) {
+func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_opts *RasterzenOptions, svg_opts *RasterzenSVGOptions) (io.ReadCloser, error) {
 
 	svg_key := CacheKeyForTile(t, "svg", "svg")
 
 	var svg_data io.ReadCloser
 	var err error
 
-	svg_data, err = c.Get(svg_key)
+	if !svg_opts.Refresh {
 
-	if err == nil {
-		return svg_data, nil
+		svg_data, err = c.Get(svg_key)
+
+		if err == nil {
+			return svg_data, nil
+		}
 	}
 
-	geojson_fh, err := RenderRasterzenTile(t, c, nz_opts)
+	geojson_fh, err := RenderRasterzenTile(t, c, nz_opts, rz_opts)
 
 	if err != nil {
 		return nil, err

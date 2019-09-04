@@ -9,9 +9,73 @@ import (
 	"io"
 	"io/ioutil"
 	_ "log"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
-func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
+type RasterzenOptions struct {
+	Refresh bool `json:"refresh"`
+}
+
+func DefaultRasterzenOptions() (*RasterzenOptions, error) {
+
+	opts := RasterzenOptions{
+		Refresh: false,
+	}
+
+	return &opts, nil
+}
+
+func RasterzenOptionsFromString(body string) (*RasterzenOptions, error) {
+	r := strings.NewReader(body)
+	return RasterzenOptionsFromReader(r)
+}
+
+func RasterzenOptionsFromFile(path string) (*RasterzenOptions, error) {
+
+	abs_path, err := filepath.Abs(path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fh, err := os.Open(abs_path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer fh.Close()
+
+	return RasterzenOptionsFromReader(fh)
+}
+
+func RasterzenOptionsFromReader(fh io.Reader) (*RasterzenOptions, error) {
+
+	body, err := ioutil.ReadAll(fh)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return RasterzenOptionsFromBytes(body)
+}
+
+func RasterzenOptionsFromBytes(body []byte) (*RasterzenOptions, error) {
+
+	var rz_opts *RasterzenOptions
+
+	err := json.Unmarshal(body, &rz_opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rz_opts, nil
+}
+
+func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_opts *RasterzenOptions) (io.ReadCloser, error) {
 
 	z := int(t.Z)
 	x := int(t.X)
@@ -29,10 +93,12 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options)
 
 	var err error
 
-	rasterzen_data, err = c.Get(rasterzen_key)
+	if !rz_opts.Refresh {
+		rasterzen_data, err = c.Get(rasterzen_key)
 
-	if err == nil {
-		return rasterzen_data, nil
+		if err == nil {
+			return rasterzen_data, nil
+		}
 	}
 
 	nextzen_data, err = c.Get(nextzen_key)

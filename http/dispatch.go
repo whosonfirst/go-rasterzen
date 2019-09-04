@@ -25,16 +25,23 @@ func init() {
 type DispatchFunc func(*slippy.Tile, io.Reader, io.Writer) error
 
 type DispatchHandler struct {
-	Cache          cache.Cache
-	Func           DispatchFunc
-	Headers        map[string]string
-	NextzenOptions *nextzen.Options
-	SVGOptions     *tile.RasterzenSVGOptions
+	Cache            cache.Cache
+	Func             DispatchFunc
+	Headers          map[string]string
+	NextzenOptions   *nextzen.Options
+	RasterzenOptions *tile.RasterzenOptions
+	SVGOptions       *tile.RasterzenSVGOptions
 }
 
 func NewDispatchHandler(c cache.Cache) (*DispatchHandler, error) {
 
 	default_svg_opts, err := tile.DefaultRasterzenSVGOptions()
+
+	if err != nil {
+		return nil, err
+	}
+
+	default_rz_opts, err := tile.DefaultRasterzenOptions()
 
 	if err != nil {
 		return nil, err
@@ -50,11 +57,12 @@ func NewDispatchHandler(c cache.Cache) (*DispatchHandler, error) {
 	}
 
 	h := DispatchHandler{
-		Cache:          c,
-		NextzenOptions: default_nz_opts,
-		SVGOptions:     default_svg_opts,
-		Func:           default_func,
-		Headers:        default_headers,
+		Cache:            c,
+		NextzenOptions:   default_nz_opts,
+		RasterzenOptions: default_rz_opts,
+		SVGOptions:       default_svg_opts,
+		Func:             default_func,
+		Headers:          default_headers,
 	}
 
 	return &h, nil
@@ -139,7 +147,9 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 		nz_opts.ApiKey = api_key
 	}
 
-	fh, err := tile.RenderRasterzenTile(*t, h.Cache, nz_opts)
+	rz_opts := h.RasterzenOptions
+
+	fh, err := tile.RenderRasterzenTile(*t, h.Cache, nz_opts, rz_opts)
 
 	if err != nil {
 		return err

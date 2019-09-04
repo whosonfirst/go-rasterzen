@@ -12,7 +12,7 @@ import (
 	"io/ioutil"
 )
 
-func RenderGeoJSONTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
+func RenderGeoJSONTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_opts *RasterzenOptions) (io.ReadCloser, error) {
 
 	geojson_key := CacheKeyForTile(t, "geojson", "geojson")
 
@@ -25,7 +25,7 @@ func RenderGeoJSONTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (
 		return geojson_data, nil
 	}
 
-	rasterzen_fh, err := RenderRasterzenTile(t, c, nz_opts)
+	rasterzen_fh, err := RenderRasterzenTile(t, c, nz_opts, rz_opts)
 
 	if err != nil {
 		return nil, err

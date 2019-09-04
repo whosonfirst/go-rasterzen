@@ -48,7 +48,9 @@ func main() {
 	seed_extent := flag.Bool("seed-extent", false, "Seed \"extent\" tiles (as GeoJSON).")
 	seed_all := flag.Bool("seed-all", false, "See all the tile formats")
 
+	custom_rz_options := flag.String("rasterzen-options", "", "The path to a valid RasterzenOptions JSON file.")
 	custom_svg_options := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
+	custom_png_options := flag.String("png-options", "", "The path to a valid RasterzenPNGOptions JSON file.")
 
 	seed_tileset_catalog_dsn := flag.String("seed-tileset-catalog-dsn", "catalog=sync", "A valid tile.SeedCatalog DSN string. Required parameters are 'catalog=CATALOG'")
 
@@ -66,6 +68,12 @@ func main() {
 	timings := flag.Bool("timings", false, "Display timings for tile seeding.")
 	strict := flag.Bool("strict", false, "Exit 0 (failure) at the end of seeding a tile set if any errors are encountered.")
 
+	refresh_rasterzen := flag.Bool("refresh_rasterzen", false, "Force rasterzen tiles to be generated even if they are already cached.")
+	refresh_svg := flag.Bool("refresh_svg", false, "Force SVG tiles to be generated even if they are already cached.")
+	refresh_png := flag.Bool("refresh_png", false, "Force PNG tiles to be generated even if they are already cached.")
+
+	refresh_all := flag.Bool("refresh_all", false, "Force all tiles to be generated even if they are already cached.")
+
 	flag.Parse()
 
 	if *seed_all {
@@ -74,6 +82,12 @@ func main() {
 		*seed_extent = true
 		*seed_svg = true
 		*seed_png = true
+	}
+
+	if *refresh_all {
+		*refresh_rasterzen = true
+		*refresh_svg = true
+		*refresh_png = true
 	}
 
 	logger := log.SimpleWOFLogger()
@@ -97,6 +111,8 @@ func main() {
 
 		nz_opts.URITemplate = template
 	}
+
+	// TO DO: UPDATE TO USE go-cache and go-cache-blob
 
 	caches := make([]cache.Cache, 0)
 
@@ -182,7 +198,36 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	var rz_opts *tile.RasterzenOptions
 	var svg_opts *tile.RasterzenSVGOptions
+	var png_opts *tile.RasterzenPNGOptions
+
+	if *custom_rz_options != "" {
+
+		var opts *tile.RasterzenOptions
+
+		if strings.HasPrefix(*custom_png_options, "{") {
+			opts, err = tile.RasterzenOptionsFromString(*custom_rz_options)
+		} else {
+			opts, err = tile.RasterzenOptionsFromFile(*custom_rz_options)
+		}
+
+		if err != nil {
+			logger.Fatal(err)
+		}
+
+		rz_opts = opts
+
+	} else {
+
+		opts, err := tile.DefaultRasterzenOptions()
+
+		if err != nil {
+			logger.Fatal(err)
+		}
+
+		rz_opts = opts
+	}
 
 	if *seed_svg || *seed_png {
 
@@ -213,7 +258,37 @@ func main() {
 			svg_opts = opts
 		}
 
+		if *custom_png_options != "" {
+
+			var opts *tile.RasterzenPNGOptions
+
+			if strings.HasPrefix(*custom_png_options, "{") {
+				opts, err = tile.RasterzenPNGOptionsFromString(*custom_png_options)
+			} else {
+				opts, err = tile.RasterzenPNGOptionsFromFile(*custom_png_options)
+			}
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			png_opts = opts
+
+		} else {
+
+			opts, err := tile.DefaultRasterzenPNGOptions()
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			png_opts = opts
+		}
 	}
+
+	rz_opts.Refresh = *refresh_rasterzen
+	svg_opts.Refresh = *refresh_svg
+	png_opts.Refresh = *refresh_png
 
 	var w worker.Worker
 	var w_err error
@@ -221,9 +296,9 @@ func main() {
 	switch strings.ToUpper(*seed_worker) {
 
 	case "LAMBDA":
-		w, w_err = worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, c, nz_opts, svg_opts)
+		w, w_err = worker.NewLambdaWorker(lambda_dsn.Map(), *lambda_function, c, nz_opts, rz_opts, svg_opts, png_opts)
 	case "LOCAL":
-		w, w_err = worker.NewLocalWorker(c, nz_opts, svg_opts)
+		w, w_err = worker.NewLocalWorker(c, nz_opts, rz_opts, svg_opts, png_opts)
 	case "SQS":
 		w, w_err = worker.NewSQSWorker(sqs_dsn.Map())
 	default:

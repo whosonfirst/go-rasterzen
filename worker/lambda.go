@@ -38,14 +38,16 @@ type seedRequestQuery struct {
 
 type LambdaWorker struct {
 	Worker
-	function        string
-	client          *lambda.Lambda
-	cache           cache.Cache
-	nextzen_options *nextzen.Options
-	svg_options     *tile.RasterzenSVGOptions
+	function          string
+	client            *lambda.Lambda
+	cache             cache.Cache
+	nextzen_options   *nextzen.Options
+	rasterzen_options *tile.RasterzenOptions
+	svg_options       *tile.RasterzenSVGOptions
+	png_options       *tile.RasterzenPNGOptions
 }
 
-func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache, nz_opts *nextzen.Options, svg_opts *tile.RasterzenSVGOptions) (Worker, error) {
+func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache, nz_opts *nextzen.Options, rz_opts *tile.RasterzenOptions, svg_opts *tile.RasterzenSVGOptions, png_opts *tile.RasterzenPNGOptions) (Worker, error) {
 
 	creds, ok := dsn["credentials"]
 
@@ -68,11 +70,13 @@ func NewLambdaWorker(dsn map[string]string, function string, c cache.Cache, nz_o
 	client := lambda.New(sess)
 
 	w := LambdaWorker{
-		client:          client,
-		function:        function,
-		cache:           c,
-		nextzen_options: nz_opts,
-		svg_options:     svg_opts,
+		client:            client,
+		function:          function,
+		cache:             c,
+		nextzen_options:   nz_opts,
+		rasterzen_options: rz_opts,
+		svg_options:       svg_opts,
+		png_options:       png_opts,
 	}
 
 	return &w, nil
@@ -99,6 +103,8 @@ func (w *LambdaWorker) RenderPNGTile(t slippy.Tile) error {
 }
 
 func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
+
+	// handle refresh stuff here...
 
 	cache_key := tile.CacheKeyForTile(t, prefix, format)
 

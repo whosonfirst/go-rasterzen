@@ -134,6 +134,7 @@ type TileSeeder struct {
 	SeedSVG       bool
 	SeedPNG       bool
 	SVGOptions    *tile.RasterzenSVGOptions
+	Force         bool
 	Timings       bool
 	Logger        *log.WOFLogger
 }
