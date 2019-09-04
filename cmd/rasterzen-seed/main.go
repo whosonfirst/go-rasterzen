@@ -68,11 +68,11 @@ func main() {
 	timings := flag.Bool("timings", false, "Display timings for tile seeding.")
 	strict := flag.Bool("strict", false, "Exit 0 (failure) at the end of seeding a tile set if any errors are encountered.")
 
-	refresh_rasterzen := flag.Bool("refresh_rasterzen", false, "Force rasterzen tiles to be generated even if they are already cached.")
-	refresh_svg := flag.Bool("refresh_svg", false, "Force SVG tiles to be generated even if they are already cached.")
-	refresh_png := flag.Bool("refresh_png", false, "Force PNG tiles to be generated even if they are already cached.")
+	refresh_rasterzen := flag.Bool("refresh-rasterzen", false, "Force rasterzen tiles to be generated even if they are already cached.")
+	refresh_svg := flag.Bool("refresh-svg", false, "Force SVG tiles to be generated even if they are already cached.")
+	refresh_png := flag.Bool("refresh-png", false, "Force PNG tiles to be generated even if they are already cached.")
 
-	refresh_all := flag.Bool("refresh_all", false, "Force all tiles to be generated even if they are already cached.")
+	refresh_all := flag.Bool("refresh-all", false, "Force all tiles to be generated even if they are already cached.")
 
 	flag.Parse()
 
@@ -356,7 +356,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-
+	
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

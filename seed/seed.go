@@ -246,8 +246,8 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 
 			defer func() {
 
-				// k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
-				// ts.Logger.Status("Tile seeding complete for %v", k)
+				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
+				ts.Logger.Debug("Tile seeding complete for %v", k)
 
 				// we used to do this but it can lead to situations where the same tile
 				// gets added (and seeded) over and over and over again so we don't do

@@ -23,7 +23,7 @@ Some important caveats:
 
 * Labels... it's easiest just to not even think about them yet.
 
-* There is caching but no cache invalidation, yet
+* There is caching but only minimal cache invalidation, and it's still kind of buggy.
 
 ## Install
 
@@ -187,6 +187,18 @@ Usage of ./bin/rasterzen-seed:
     	An optional HTTP 'Origin' host to pass along with your Nextzen requests.
   -nextzen-uri string
     	A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.
+  -png-options string
+    	The path to a valid RasterzenPNGOptions JSON file.
+  -rasterzen-options string
+    	The path to a valid RasterzenOptions JSON file.
+  -refresh-all
+    	Force all tiles to be generated even if they are already cached.
+  -refresh-png
+    	Force PNG tiles to be generated even if they are already cached.
+  -refresh-rasterzen
+    	Force rasterzen tiles to be generated even if they are already cached.
+  -refresh-svg
+    	Force SVG tiles to be generated even if they are already cached.
   -s3-cache
     	Cache tiles with a S3-based cache.
   -s3-dsn string
@@ -213,6 +225,8 @@ Usage of ./bin/rasterzen-seed:
     	The type of worker for seeding tiles. Valid workers are: lambda, local, sqs. (default "local")
   -sqs-dsn value
     	A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION' and 'queue=QUEUE'
+  -strict
+    	Exit 0 (failure) at the end of seeding a tile set if any errors are encountered.
   -svg-options string
     	The path to a valid RasterzenSVGOptions JSON file.
   -timings
