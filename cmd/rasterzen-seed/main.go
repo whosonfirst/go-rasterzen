@@ -356,7 +356,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

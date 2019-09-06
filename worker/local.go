@@ -35,30 +35,55 @@ func NewLocalWorker(c cache.Cache, nz_opts *nextzen.Options, rz_opts *tile.Raste
 
 func (w *LocalWorker) RenderRasterzenTile(t slippy.Tile) error {
 
-	_, err := tile.RenderRasterzenTile(t, w.cache, w.nextzen_options, w.rasterzen_options)
-	return err
+	fh, err := tile.RenderRasterzenTile(t, w.cache, w.nextzen_options, w.rasterzen_options)
+
+	if err != nil {
+		return err
+	}
+
+	return fh.Close()
 }
 
 func (w *LocalWorker) RenderGeoJSONTile(t slippy.Tile) error {
 
-	_, err := tile.RenderGeoJSONTile(t, w.cache, w.nextzen_options, w.rasterzen_options)
-	return err
+	fh, err := tile.RenderGeoJSONTile(t, w.cache, w.nextzen_options, w.rasterzen_options)
+
+	if err != nil {
+		return err
+	}
+
+	return fh.Close()
 }
 
 func (w *LocalWorker) RenderExtentTile(t slippy.Tile) error {
 
-	_, err := tile.RenderExtentTile(t, w.cache, w.nextzen_options)
-	return err
+	fh, err := tile.RenderExtentTile(t, w.cache, w.nextzen_options)
+
+	if err != nil {
+		return err
+	}
+
+	return fh.Close()
 }
 
 func (w *LocalWorker) RenderSVGTile(t slippy.Tile) error {
 
-	_, err := tile.RenderSVGTile(t, w.cache, w.nextzen_options, w.rasterzen_options, w.svg_options)
-	return err
+	fh, err := tile.RenderSVGTile(t, w.cache, w.nextzen_options, w.rasterzen_options, w.svg_options)
+
+	if err != nil {
+		return err
+	}
+
+	return fh.Close()
 }
 
 func (w *LocalWorker) RenderPNGTile(t slippy.Tile) error {
 
-	_, err := tile.RenderPNGTile(t, w.cache, w.nextzen_options, w.rasterzen_options, w.svg_options, w.png_options)
-	return err
+	fh, err := tile.RenderPNGTile(t, w.cache, w.nextzen_options, w.rasterzen_options, w.svg_options, w.png_options)
+
+	if err != nil {
+		return err
+	}
+
+	return fh.Close()
 }

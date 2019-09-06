@@ -297,7 +297,7 @@ func (s *TileSeeder) SeedTiles(t slippy.Tile) (bool, []error) {
 	if s.SeedRasterzen {
 
 		cache_key := tile.CacheKeyForRasterzenTile(t)
-		_, cache_err := s.cache.Get(cache_key)
+		cache_fh, cache_err := s.cache.Get(cache_key)
 
 		if cache_err != nil {
 
@@ -306,6 +306,9 @@ func (s *TileSeeder) SeedTiles(t slippy.Tile) (bool, []error) {
 			if err != nil {
 				return false, []error{err}
 			}
+
+		} else {
+			cache_fh.Close()
 		}
 	}
 

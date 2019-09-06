@@ -197,6 +197,11 @@ func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
 
 	fh := ioutil.NopCloser(r)
 
-	_, err = w.cache.Set(cache_key, fh)
-	return err
+	cache_fh, err := w.cache.Set(cache_key, fh)
+
+	if err != nil {
+		return nil
+	}
+
+	return cache_fh.Close()
 }
