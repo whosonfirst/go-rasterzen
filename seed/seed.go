@@ -11,6 +11,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/worker"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-log"
+	"runtime"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -143,13 +144,15 @@ func NewTileSeeder(w worker.Worker, c cache.Cache) (*TileSeeder, error) {
 
 	logger := log.SimpleWOFLogger()
 
+	max_workers := runtime.NumCPU() * 2
+
 	s := TileSeeder{
 		worker:        w,
 		cache:         c,
 		SeedRasterzen: true,
 		SeedSVG:       true,
 		SeedPNG:       false,
-		MaxWorkers:    100,
+		MaxWorkers:    max_workers,
 		Timings:       false,
 		Logger:        logger,
 	}
@@ -215,65 +218,54 @@ func (s *TileSeeder) SeedTileSet(ctx context.Context, ts *TileSet) (bool, []erro
 
 	tile_func := func(key, value interface{}) bool {
 
+		select {
+		case <-ctx.Done():
+			return true
+		default:
+			// pass
+		}
+
 		t := value.(slippy.Tile)
+		t1 := time.Now()
 
-		go func(t slippy.Tile, throttle chan bool, done_ch chan bool, err_ch chan error) {
+		<-throttle
 
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				// pass
-			}
-
-			<-throttle
-
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				// pass
-			}
-
-			if s.Timings {
-
-				t1 := time.Now()
-
-				defer func() {
-					s.Logger.Debug("Time to seed tile (%d/%d/%d) %v", t.Z, t.X, t.Y, time.Since(t1))
-				}()
-			}
+		if s.Timings {
+			s.Logger.Status("Time to wait to seed tile (%d/%d/%d) %v", t.Z, t.X, t.Y, time.Since(t1))
 
 			defer func() {
-
-				k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
-				ts.Logger.Debug("Tile seeding complete for %v", k)
-
-				// we used to do this but it can lead to situations where the same tile
-				// gets added (and seeded) over and over and over again so we don't do
-				// that anymore (20190830/thisisaaronland)
-
-				// ts.tile_catalog.Delete(k)
-
-				done_ch <- true
-				throttle <- true
+				s.Logger.Status("Time to complete tile seeding (%d/%d/%d) %v", t.Z, t.X, t.Y, time.Since(t1))
 			}()
+		}
 
-			ok, errs := s.SeedTiles(t)
+		defer func() {
 
-			if !ok {
+			k := fmt.Sprintf("%d/%d/%d", t.Z, t.X, t.Y)
+			ts.Logger.Debug("Tile seeding complete for %v", k)
 
-				for _, e := range errs {
-					err_ch <- &SeedError{Details: e, Tile: t}
-				}
+			// we used to do this but it can lead to situations where the same tile
+			// gets added (and seeded) over and over and over again so we don't do
+			// that anymore (20190830/thisisaaronland)
+
+			// ts.tile_catalog.Delete(k)
+
+			done_ch <- true
+			throttle <- true
+		}()
+
+		ok, errs := s.SeedTiles(t)
+
+		if !ok {
+
+			for _, e := range errs {
+				err_ch <- &SeedError{Details: e, Tile: t}
 			}
-
-		}(t, throttle, done_ch, err_ch)
+		}
 
 		return true
 	}
 
-	ts.Range(tile_func)
+	go ts.Range(tile_func)
 
 	errors := make([]error, 0)
 
