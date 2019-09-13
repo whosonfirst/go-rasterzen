@@ -11,18 +11,20 @@ import (
 	"time"
 )
 
-type GatherTilesFunc func(context.Context, *TileSet) error
+type GatherTilesFunc func(context.Context, *TileSet) (int64, error)
 
 func NewGatherTilesFunc(tiles []string) (GatherTilesFunc, error) {
 
-	gather_func := func(ctx context.Context, tileset *TileSet) error {
+	gather_func := func(ctx context.Context, tileset *TileSet) (int64, error) {
+
+		count := int64(0)
 
 		for _, str_zxy := range tiles {
 
 			z, x, y, err := parse_zxy(str_zxy)
 
 			if err != nil {
-				return err
+				return count, err
 			}
 
 			t := slippy.Tile{
@@ -31,10 +33,16 @@ func NewGatherTilesFunc(tiles []string) (GatherTilesFunc, error) {
 				Y: uint(y),
 			}
 
-			tileset.AddTile(t)
+			err = tileset.AddTile(t)
+
+			if err != nil {
+				return count, err
+			}
+
+			count += 1
 		}
 
-		return nil
+		return count, nil
 	}
 
 	return gather_func, nil
@@ -42,31 +50,39 @@ func NewGatherTilesFunc(tiles []string) (GatherTilesFunc, error) {
 
 func NewGatherTilesExtentFunc(extents []string, sep string, min_zoom int, max_zoom int) (GatherTilesFunc, error) {
 
-	gather_func := func(ctx context.Context, tileset *TileSet) error {
+	gather_func := func(ctx context.Context, tileset *TileSet) (int64, error) {
+
+		count := int64(0)
 
 		for _, str_extent := range extents {
 
 			ex, err := parse_extent(str_extent, sep)
 
 			if err != nil {
-				return err
+				return count, err
 			}
 
 			for z := min_zoom; z <= max_zoom; z++ {
 
 				for _, t := range slippy.FromBounds(ex, uint(z)) {
-					tileset.AddTile(t)
+					err = tileset.AddTile(t)
+
+					if err != nil {
+						return count, err
+					}
+
+					count += 1
 				}
 			}
 		}
 
-		return nil
+		return count, nil
 	}
 
 	return gather_func, nil
 }
 
-func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) error {
+func GatherTiles(tileset *TileSet, seeder *TileSeeder, f GatherTilesFunc) (int64, error) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

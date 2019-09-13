@@ -351,7 +351,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	err = seed.GatherTiles(tileset, seeder, gather_func)
+	_, err = seed.GatherTiles(tileset, seeder, gather_func)
 
 	if err != nil {
 		logger.Fatal(err)
