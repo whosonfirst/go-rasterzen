@@ -2,35 +2,101 @@
 
 Go tools and libraries for crawling a directory of Who's On First data
 
-## Usage
+## Install
 
-_Please rewrite me..._
+You will need to have both `Go` (specifically version [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
 
-## To do
+```
+make tools
+```
 
-* Documentation
-* Proper error handling
-* Remove GeoJSON specific stuff (or at least move it in to its own little playground)
+All of this package's dependencies are bundled with the code in the `vendor` directory.
 
-## Caveats
+## Example
 
-This package relies on [a fork of the origin walk package](https://github.com/whosonfirst/walk) that relies on `runtime.GOMAXPROCS` to determine the number of concurrent processes used to crawl a directory tree.
+### crawl.Crawl
+
+```
+package main
+
+import (
+	"flag"
+	"fmt"
+	"github.com/whosonfirst/go-whosonfirst-crawl"
+	"log"
+	"os"
+	"time"
+	"sync/atomic"
+)
+
+func main() {
+
+	root := flag.String("root", "", "The root directory you want to crawl")
+
+	flag.Parse()
+
+	var files int64
+	var dirs int64
+	
+	callback := func(path string, info os.FileInfo) error {
+		
+		if info.IsDir() {
+			atomic.AddInt64(&dirs, 1)
+			return nil
+		}
+		
+		atomic.AddInt64(&files, 1)			
+		return nil
+	}
+	
+	t0 := time.Now()
+	
+	defer func(){
+		t1 := float64(time.Since(t0)) / 1e9
+		fmt.Printf("walked %d files (and %d dirs) in %s in %.3f seconds\n", files, dirs, *root, t1)
+	}()
+	
+	c := crawl.NewCrawler(*root)
+	err := c.Crawl(callback)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+### crawl.CrawlWithContext
+
+_Please write me_
+
+### crawl.CrawlWithChannels
+
+_Please write me_
 
 ## Tools
 
-### wof-crawl-validate
-
-For example:
+### wof-count
 
 ```
-./bin/wof-crawl-validate /usr/local/data/whosonfirst-data/data
-validate JSON files in /usr/local/data/whosonfirst-data/data
-2017/04/08 00:32:31 failed to parse /usr/local/data/whosonfirst-data/data/858/660/49/85866049.geojson, because invalid character '<' looking for beginning of object key string
-2017/04/08 00:32:58 walked 504915 files (and 0 dirs) in 85.370 seconds
-2017/04/08 00:32:58 okay 504914 errors 1
+./bin/wof-count /usr/local/data/sfomuseum-data-flights-2019-*
+go build -o bin/wof-count cmd/wof-count/main.go
+count files and directories in  /usr/local/data/sfomuseum-data-flights-2019-01
+walked 98116 files (and 0 dirs) in 4.203 seconds
+count files and directories in  /usr/local/data/sfomuseum-data-flights-2019-02
+walked 87989 files (and 0 dirs) in 4.969 seconds
+count files and directories in  /usr/local/data/sfomuseum-data-flights-2019-03
+walked 102354 files (and 0 dirs) in 6.178 seconds
+count files and directories in  /usr/local/data/sfomuseum-data-flights-2019-04
+walked 107775 files (and 0 dirs) in 6.377 seconds
+count files and directories in  /usr/local/data/sfomuseum-data-flights-2019-05
+walked 143200 files (and 0 dirs) in 7.565 seconds
+count files and directories in  /usr/local/data/sfomuseum-data-flights-2019-06
+walked 124490 files (and 0 dirs) in 6.326 seconds
+count files and directories in  /usr/local/data/sfomuseum-data-flights-2019-07
+walked 63 files (and 0 dirs) in 0.007 seconds
+count files and directories in  /usr/local/data/sfomuseum-data-flights-2019-08
+walked 43 files (and 0 dirs) in 0.005 seconds
 ```
-
-_Note: This only validates JSON-iness and not WOF-iness. Maybe someday it will do the latter but today it does not._
 
 ## See also
 

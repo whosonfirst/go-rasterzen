@@ -75,6 +75,8 @@ github.com/whosonfirst/go-bindata-assetfs v1.0.1 h1:AA328GrND8/uDkf5+5U9Fakgr7Qk
 github.com/whosonfirst/go-bindata-assetfs v1.0.1/go.mod h1:ZCQnq9roYYk19IAwLQyMnDPSmE+lns9K85+85JSQ4DI=
 github.com/whosonfirst/go-bindata-html-template v0.1.0 h1:+9hTVO4SHL/74CtdLAIZ0/t2elnNr4betJVP6IP7Y0U=
 github.com/whosonfirst/go-bindata-html-template v0.1.0/go.mod h1:9hFeWQjFjARoh9WhqK29XTyMUewjs9xEiBUrawmM1lM=
+github.com/whosonfirst/go-geojson-svg v0.0.1 h1:WhIi6aeEiOQqtWT8+VUYRP5IxnUy2Jb+m8YkUSucFnM=
+github.com/whosonfirst/go-geojson-svg v0.0.1/go.mod h1:pMYvTOZyW4spjrZNyZzZtZh0XO2BYPKv+UTtRlk0d0E=
 github.com/whosonfirst/go-spatialite v0.1.0 h1:jKbVmIeUSsDfPX4DWTeiSR9zGJFETIF1A3YdK6IShBY=
 github.com/whosonfirst/go-spatialite v0.1.0/go.mod h1:w1O/DKimk4wiV+5d2BzWYnxvbdhMhkeU01cpfIeEorQ=
 github.com/whosonfirst/go-whosonfirst-aws v0.1.4 h1:sAUYnV7+r80LPqjoqfBZkXLAnMsxCbhMyiUJURRUolU=
@@ -87,6 +89,8 @@ github.com/whosonfirst/go-whosonfirst-cli v0.1.0 h1:Wwj9z0R/ryHmPmpVm5jCbXdG4agJ
 github.com/whosonfirst/go-whosonfirst-cli v0.1.0/go.mod h1:Edy+amD+fMq1QS1yxB3u8maA8I93q/LG7JRNh+fsdfc=
 github.com/whosonfirst/go-whosonfirst-crawl v0.1.0 h1:HD8xJcPME3nWoJH58SXT84q0tjBCF3Oc5jrmk5eIriQ=
 github.com/whosonfirst/go-whosonfirst-crawl v0.1.0/go.mod h1:ZIYj6wdjduyJkWHwg4P3gNeLgWMW9uHZOn04eusRnLI=
+github.com/whosonfirst/go-whosonfirst-crawl v0.2.0 h1:Ti39C2TYIO3SP6GFdyObfEGdYYy8Pdhm3reVE7JMkmQ=
+github.com/whosonfirst/go-whosonfirst-crawl v0.2.0/go.mod h1:0t0OFAJ3MpllNw7hI5TpS+wJtx13nzM/DBLYUKJDJu0=
 github.com/whosonfirst/go-whosonfirst-flags v0.1.0 h1:llb2wtsI2y+gHZCmWaamMCx4YDRE8ZXQRRYqC7qB4so=
 github.com/whosonfirst/go-whosonfirst-flags v0.1.0/go.mod h1:bovMiQphaVhqemXFmNVf9Ts0tqnWtzHRFMUSKX+zTE8=
 github.com/whosonfirst/go-whosonfirst-log v0.1.0 h1:mWYI5hn16uyeLxBmPsLSvYV4rQKK/cxGVhM+bC2ZoGc=
@@ -98,6 +102,8 @@ github.com/whosonfirst/go-whosonfirst-sqlite v0.1.1 h1:mhVDxo2q2xRf9Dwi9sJ7gwhC5
 github.com/whosonfirst/go-whosonfirst-sqlite v0.1.1/go.mod h1:0/8mpMRT0BFcJcEX5TybAsSMFLKWYEO32H7b1wTPJkk=
 github.com/whosonfirst/walk v0.0.0-20160802000000-c0a349674b73681a7272f5ce6ade8ea28055059f h1:hvKIIx2IuWmRtOdpDk29quD+t7GowpHZxz8bCfIGE58=
 github.com/whosonfirst/walk v0.0.0-20160802000000-c0a349674b73681a7272f5ce6ade8ea28055059f/go.mod h1:U/1VXxlMzNZbyylg18AzEeHkGi1RXiBCMKpaM2XR+tQ=
+github.com/whosonfirst/walk v0.0.0-20160803014805-c0a349674b73 h1:/43peH8y6Wg+dAgQ97swaPN8c3/M6hi8lawr1vDblzs=
+github.com/whosonfirst/walk v0.0.0-20160803014805-c0a349674b73/go.mod h1:U/1VXxlMzNZbyylg18AzEeHkGi1RXiBCMKpaM2XR+tQ=
 github.com/whosonfirst/warning v0.1.0/go.mod h1:cAez7FpC/UEUrbiOXZO15v2JM8eijtFHQlN93AGFy1k=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/image v0.0.0-20190802002840-cff245a6509b h1:+qEpEAPhDZ1o0x3tHzZTQDArnOixOzGD9HUJfcg0mb4=

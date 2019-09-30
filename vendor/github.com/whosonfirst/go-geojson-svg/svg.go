@@ -2,7 +2,7 @@
 // geometries, features and featurecollections into a SVG image.
 //
 // See the tests for usage examples.
-package geojson2svg
+package svg
 
 import (
 	"bytes"

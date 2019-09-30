@@ -24,6 +24,13 @@ lambda:
 	@make lambda-seed
 	@make lambda-seed-sqs
 
+lambda-rasterd:	
+	if test -f main; then rm -f main; fi
+	if test -f rasterd.zip; then rm -f rasterd.zip; fi
+	GOOS=linux go build -mod vendor -o main cmd/rasterd/main.go
+	zip rasterd.zip main
+	rm -f main
+
 lambda-seed:	
 	if test -f main; then rm -f main; fi
 	if test -f rasterzen-seed.zip; then rm -f rasterzen-seed.zip; fi

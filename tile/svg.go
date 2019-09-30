@@ -9,7 +9,7 @@ import (
 	"github.com/go-spatial/geom/slippy"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"github.com/whosonfirst/geojson2svg/pkg/geojson2svg"
+	"github.com/whosonfirst/go-geojson-svg"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
@@ -191,7 +191,7 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 
 	tile_size := svg_opts.TileSize
 
-	s := geojson2svg.New()
+	s := svg.New()
 
 	use_props := map[string]bool{
 		// "id": true,
@@ -450,7 +450,7 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 
 	if svg_opts.TileExtent != nil {
 
-		s.Extent = &geojson2svg.Extent{
+		s.Extent = &svg.Extent{
 			MinX: svg_opts.TileExtent.MinX(),
 			MinY: svg_opts.TileExtent.MinY(),
 			MaxX: svg_opts.TileExtent.MaxX(),
@@ -459,9 +459,9 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 	}
 
 	rsp := s.Draw(tile_size, tile_size,
-		geojson2svg.WithAttribute("xmlns", "http://www.w3.org/2000/svg"),
-		geojson2svg.WithAttribute("viewBox", fmt.Sprintf("0 0 %d %d", int(tile_size), int(tile_size))),
-		geojson2svg.UseProperties(props),
+		svg.WithAttribute("xmlns", "http://www.w3.org/2000/svg"),
+		svg.WithAttribute("viewBox", fmt.Sprintf("0 0 %d %d", int(tile_size), int(tile_size))),
+		svg.UseProperties(props),
 	)
 
 	_, err = out.Write([]byte(rsp))
