@@ -371,31 +371,18 @@ func RasterzenToSVGWithOptions(in io.Reader, out io.Writer, svg_opts *RasterzenS
 					}
 				}
 
+				// log.Println(kind, detail, geom_type)
 				// log.Println("STYLES", query, use_style)
 
 				if !use_style {
 					continue
 				}
 
-				if style.Stroke != "" {
-					stroke = style.Stroke
-				}
-
-				if style.StrokeWidth != 0.0 {
-					stroke_width = style.StrokeWidth
-				}
-
-				if style.StrokeOpacity != 0.0 {
-					stroke_opacity = style.StrokeOpacity
-				}
-
-				if style.Fill != "" {
-					fill = style.Fill
-				}
-
-				if style.FillOpacity != 0.0 {
-					fill_opacity = style.FillOpacity
-				}
+				stroke = style.Stroke
+				stroke_width = style.StrokeWidth
+				stroke_opacity = style.StrokeOpacity
+				fill = style.Fill
+				fill_opacity = style.FillOpacity
 			}
 
 			// because we are still working out the details for both
