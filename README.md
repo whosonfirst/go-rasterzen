@@ -401,20 +401,31 @@ For example:
     "fill_opacity": 0.0,
     "styles": {
 	"geometry.type=[Polygon,MultiPolygon] properties.kind=[ocean,water,lake]":{
+	    "stroke": "#515151",
+	    "stroke_width": 1.0,
+	    "stroke_opacity": 1.0,
+	    "fill": "#000000",
 	    "fill_opacity": 0.2
 	},
 	"properties.landuse_kind=[apron,aerodrome]": {
-	    "stroke":"#ffffff",	    
+	    "stroke":"#ffffff",
+	    "stroke_width": 1.0,
+	    "stroke_opacity": 1.0,	    
 	    "fill": "#f11499"
+	    "fill_opacity": 0.0	    
 	},
 	"geometry.type=[Polygon,MultiPolygon] properties.landuse_kind=[apron,aerodrome]": {
-	    "stroke":"#ffffff",	    
+	    "stroke":"#ffffff",
+	    "stroke_width": 1.0,
+	    "stroke_opacity": 1.0,
 	    "fill": "#f11499",
 	    "fill_opacity": 0.2
 	}		
     }
 }
 ```
+
+_A note about overriding default styles: As of this writing you need to specify all the `fill` and `stroke` attributes rather than just those you want to override. It shouldn't be this way but it is necessary because of the way that Go unmarshals JSON in to structs. There is [an open ticket](https://github.com/whosonfirst/go-rasterzen/issues/19) to address this._
 
 Which would end up looking like this:
 
