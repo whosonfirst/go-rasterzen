@@ -58,6 +58,10 @@ func main() {
 
 	flag.Parse()
 
+	if *nextzen_apikey == "" && *nextzen_uri == "" {
+		log.Println("Missing -nextzen-apikey flag. Unless you've already cached your tiles you won't be able to fetch tiles to render!")
+	}
+
 	if *config != "" {
 
 		err := flags.SetFlagsFromConfig(*config, *section)
