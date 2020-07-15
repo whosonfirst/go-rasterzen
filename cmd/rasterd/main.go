@@ -13,7 +13,6 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/multi"
 	"github.com/whosonfirst/go-cache"
-	"github.com/whosonfirst/go-cache-multicache"
 	"github.com/whosonfirst/go-rasterzen/http"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
@@ -155,7 +154,7 @@ func main() {
 		caches = append(caches, c)
 	}
 
-	c, err := multicache.NewMultiCache(ctx, caches...)
+	c, err := cache.NewMultiCache(ctx, caches...)
 
 	if err != nil {
 		log.Fatal(err)

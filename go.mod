@@ -19,9 +19,8 @@ require (
 	github.com/whosonfirst/go-bindata v0.1.0
 	github.com/whosonfirst/go-bindata-assetfs v1.0.1
 	github.com/whosonfirst/go-bindata-html-template v0.1.0
-	github.com/whosonfirst/go-cache v0.1.0
+	github.com/whosonfirst/go-cache v0.2.0
 	github.com/whosonfirst/go-cache-blob v0.1.1
-	github.com/whosonfirst/go-cache-multicache v0.0.0-20200715214926-70a2c8d38f0f
 	github.com/whosonfirst/go-geojson-svg v0.0.3
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.4
 	github.com/whosonfirst/go-whosonfirst-cache v0.1.0

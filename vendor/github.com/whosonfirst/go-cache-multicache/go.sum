@@ -1,6 +1,0 @@
-github.com/aaronland/go-roster v0.0.2 h1:2Fu7v4VQLRLRL/Zgr6R9S5JxsW75Ab/K88QtMVX532s=
-github.com/aaronland/go-roster v0.0.2/go.mod h1:AcovpxlG1XxJxX2Fjqlm63fEIBhCjEIBV4lP87FZDmI=
-github.com/patrickmn/go-cache v2.1.0+incompatible h1:HRMgzkcYKYpi3C8ajMPV8OFXaaRUnok+kx1WdO15EQc=
-github.com/patrickmn/go-cache v2.1.0+incompatible/go.mod h1:3Qf8kWWT7OJRJbdiICTKqZju1ZixQ/KpMGzzAfe6+WQ=
-github.com/whosonfirst/go-cache v0.1.0 h1:w6o4pWT/q2q/uclV72EU3D9CCKOgU+w+D+GKpaYz4PM=
-github.com/whosonfirst/go-cache v0.1.0/go.mod h1:M5Iche+26mVKFph49/pxS5W4ULZ9Dr01mebPqswG8QU=

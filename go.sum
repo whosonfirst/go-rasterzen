@@ -226,6 +226,8 @@ github.com/whosonfirst/go-bindata-html-template v0.1.0 h1:+9hTVO4SHL/74CtdLAIZ0/
 github.com/whosonfirst/go-bindata-html-template v0.1.0/go.mod h1:9hFeWQjFjARoh9WhqK29XTyMUewjs9xEiBUrawmM1lM=
 github.com/whosonfirst/go-cache v0.1.0 h1:w6o4pWT/q2q/uclV72EU3D9CCKOgU+w+D+GKpaYz4PM=
 github.com/whosonfirst/go-cache v0.1.0/go.mod h1:M5Iche+26mVKFph49/pxS5W4ULZ9Dr01mebPqswG8QU=
+github.com/whosonfirst/go-cache v0.2.0 h1:S1tKyS5aVCGkQyh9jQHi2u0i0tp0W/vW8CfX9BB6wJw=
+github.com/whosonfirst/go-cache v0.2.0/go.mod h1:M5Iche+26mVKFph49/pxS5W4ULZ9Dr01mebPqswG8QU=
 github.com/whosonfirst/go-cache-blob v0.1.1 h1:uyr3TSwSGS1PyhVpEV8JknJkRxVXSgG0ui03eLyluwM=
 github.com/whosonfirst/go-cache-blob v0.1.1/go.mod h1:RCbOA5QrazMfClbFBXYyMhcGhCODvfxaRmZ1RDQL2B4=
 github.com/whosonfirst/go-cache-multicache v0.0.0-20200715214926-70a2c8d38f0f h1:K3yBv/IE6Ly92bEO52RmIMCzgnAJ7b2pyf5DojGD/Ao=
