@@ -4,10 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/aaronland/go-http-server"
 	"github.com/jtacoma/uritemplates"
 	"github.com/whosonfirst/go-rasterzen/http"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/aaronland/go-http-server"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
@@ -28,7 +28,7 @@ func main() {
 	var port = flag.Int("port", 0, "The port for rasterd to listen for requests on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
 
 	var server_uri = flag.String("server-uri", "http://localhost:8080", "A valid aaronland/go-http-server URI.")
-	
+
 	do_www := flag.Bool("www", false, "Enable a simple web interface with a slippy map (at /) for testing and debugging.")
 	www_debug := flag.Bool("www-debug", false, "Enable debugging features for the web interface.")
 	www_tile_format := flag.String("www-tile-format", "svg", "Valid options are: png, svg.")
@@ -61,7 +61,7 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
-	
+
 	if *nextzen_apikey == "" && *nextzen_uri == "" {
 		log.Println("Missing -nextzen-apikey flag. Unless you've already cached your tiles you won't be able to fetch tiles to render!")
 	}
@@ -70,7 +70,7 @@ func main() {
 		log.Println("Setting -server-uri flag from DEPRETCATED -procotol, -host and -port flags.")
 		*server_uri = fmt.Sprintf("%s://%s:%d", *proto, *host, *port)
 	}
-	
+
 	if *config != "" {
 
 		err := flags.SetFlagsFromConfig(*config, *section)

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
@@ -131,7 +130,7 @@ type FeatureCollection struct {
 func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_opts *RasterzenOptions, svg_opts *RasterzenSVGOptions) (io.ReadCloser, error) {
 
 	log.Println("RENDER SVG", t)
-		
+
 	svg_key := CacheKeyForTile(t, "svg", "svg")
 
 	var svg_data io.ReadCloser
@@ -157,25 +156,7 @@ func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_op
 	var buf bytes.Buffer
 	svg_wr := bufio.NewWriter(&buf)
 
-	// svg_opts.TileExtent = t.Extent4326()
-
-	grid, err := slippy.NewGrid(4326)
-
-	if err != nil {
-		return nil, err
-	}
-
-	ext, ok := slippy.Extent(grid, &t)
-
-	if !ok {
-		return nil, errors.New("Unable to determine tile extent")
-	}
-
-	log.Println("TILE", t)
-	log.Println("GRID", grid)
-	log.Println("EXTENT", ext)
-	
-	svg_opts.TileExtent = ext
+	svg_opts.TileExtent = Extent4326(&t)
 
 	err = RasterzenToSVGWithOptions(geojson_fh, svg_wr, svg_opts)
 

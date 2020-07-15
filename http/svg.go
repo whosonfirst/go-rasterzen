@@ -1,7 +1,6 @@
 package http
 
 import (
-	"errors"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
@@ -33,28 +32,9 @@ func SVGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 	}
 
 	h.Func = func(slippy_tile *slippy.Tile, in io.Reader, out io.Writer) error {
-		
+
 		svg_opts := h.SVGOptions.Clone()
-
-		// svg_opts.TileExtent = slippy_tile.Extent4326()
-
-		grid, err := slippy.NewGrid(4326)
-
-		if err != nil {
-			return err
-		}
-
-		ext, ok := slippy.Extent(grid, slippy_tile)
-
-		if !ok {
-			return errors.New("Unable to determine tile extent")
-		}
-
-		log.Println("TILE", slippy_tile)
-		log.Println("GRID", grid)
-		log.Println("EXTENT", ext)
-		
-		svg_opts.TileExtent = ext
+		svg_opts.TileExtent = tile.Extent4326(slippy_tile)
 
 		return tile.RasterzenToSVGWithOptions(in, out, svg_opts)
 	}

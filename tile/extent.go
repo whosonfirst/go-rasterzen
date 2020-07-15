@@ -3,6 +3,7 @@ package tile
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/paulmach/orb/maptile"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
@@ -10,6 +11,7 @@ import (
 	"io"
 	"io/ioutil"
 	_ "log"
+	"math"
 )
 
 type Feature struct {
@@ -89,4 +91,55 @@ func RenderExtentTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (i
 	extent_fh := ioutil.NopCloser(r)
 
 	return c.Set(extent_key, extent_fh)
+}
+
+/*
+
+	the following methods were copied over from
+	https://github.com/go-spatial/geom/blob/4a3ad4ba2b912d8dc0e39eedb0eb1b6b5e228d7d/slippy/tile.go
+
+	because they were removed at some point and replaced
+	with this:
+
+	grid, err := slippy.NewGrid(4326)
+
+	if err != nil {
+		return err
+	}
+
+	ext, ok := slippy.Extent(grid, slippy_tile)
+
+	if !ok {
+		return errors.New("Unable to determine tile extent")
+	}
+
+	I can not figure out how to use these new methods to simply return
+	a 4326 bounding box for a tile or more specifically a correct
+	bounding box... (20200715/thisisaaronland)
+
+	2020/07/15 13:52:24 TILE &{15 5242 12685}
+	2020/07/15 13:52:24 GRID &{4326 2 180 90}
+	2020/07/15 13:52:24 EXTENT &[-151.204833984375 20.313720703125 -151.1993408203125 20.3192138671875]
+
+*/
+
+func Tile2Lon(zoom, x uint) float64 {
+	return float64(x)/math.Exp2(float64(zoom))*360.0 - 180.0
+}
+
+func Tile2Lat(zoom, y uint) float64 {
+	var n float64 = math.Pi
+	if y != 0 {
+		n = math.Pi - 2.0*math.Pi*float64(y)/math.Exp2(float64(zoom))
+	}
+
+	return 180.0 / math.Pi * math.Atan(0.5*(math.Exp(n)-math.Exp(-n)))
+}
+
+func Extent4326(t *slippy.Tile) *geom.Extent {
+
+	return geom.NewExtent(
+		[2]float64{Tile2Lon(t.Z, t.X), Tile2Lat(t.Z, t.Y+1)},
+		[2]float64{Tile2Lon(t.Z, t.X+1), Tile2Lat(t.Z, t.Y)},
+	)
 }
