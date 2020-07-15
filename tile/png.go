@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-whosonfirst-cache"
@@ -103,7 +104,21 @@ func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_op
 	var buf bytes.Buffer
 	png_wr := bufio.NewWriter(&buf)
 
-	svg_opts.TileExtent = t.Extent4326()
+	// svg_opts.TileExtent = t.Extent4326()
+
+	grid, err := slippy.NewGrid(4326)
+
+	if err != nil {
+		return nil, err
+	}
+
+	ext, ok := slippy.Extent(grid, &t)
+
+	if !ok {
+		return nil, errors.New("Unable to determine tile extent")
+	}
+
+	svg_opts.TileExtent = ext
 
 	err = RasterzenToPNG(rasterzen_fh, png_wr, svg_opts)
 

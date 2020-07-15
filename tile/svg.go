@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
@@ -154,7 +155,21 @@ func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_op
 	var buf bytes.Buffer
 	svg_wr := bufio.NewWriter(&buf)
 
-	svg_opts.TileExtent = t.Extent4326()
+	// svg_opts.TileExtent = t.Extent4326()
+
+	grid, err := slippy.NewGrid(4326)
+
+	if err != nil {
+		return nil, err
+	}
+
+	ext, ok := slippy.Extent(grid, &t)
+
+	if !ok {
+		return nil, errors.New("Unable to determine tile extent")
+	}
+
+	svg_opts.TileExtent = ext
 
 	err = RasterzenToSVGWithOptions(geojson_fh, svg_wr, svg_opts)
 
