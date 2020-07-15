@@ -33,7 +33,7 @@ func SVGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 	}
 
 	h.Func = func(slippy_tile *slippy.Tile, in io.Reader, out io.Writer) error {
-
+		
 		svg_opts := h.SVGOptions.Clone()
 
 		// svg_opts.TileExtent = slippy_tile.Extent4326()
@@ -50,6 +50,10 @@ func SVGHandler(h *DispatchHandler) (gohttp.HandlerFunc, error) {
 			return errors.New("Unable to determine tile extent")
 		}
 
+		log.Println("TILE", slippy_tile)
+		log.Println("GRID", grid)
+		log.Println("EXTENT", ext)
+		
 		svg_opts.TileExtent = ext
 
 		return tile.RasterzenToSVGWithOptions(in, out, svg_opts)

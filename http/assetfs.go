@@ -9,10 +9,10 @@
 package http
 
 import (
+	"github.com/whosonfirst/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/whosonfirst/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -87,7 +87,7 @@ func staticJavascriptLeafletHashJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/javascript/leaflet-hash.js", size: 3462, mode: os.FileMode(420), modTime: time.Unix(1557964121, 0)}
+	info := bindataFileInfo{name: "static/javascript/leaflet-hash.js", size: 3462, mode: os.FileMode(420), modTime: time.Unix(1560785501, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -107,7 +107,7 @@ func staticJavascriptLeafletJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/javascript/leaflet.js", size: 139571, mode: os.FileMode(420), modTime: time.Unix(1557964121, 0)}
+	info := bindataFileInfo{name: "static/javascript/leaflet.js", size: 139571, mode: os.FileMode(420), modTime: time.Unix(1560785501, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -127,7 +127,7 @@ func staticCssLeafletCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/leaflet.css", size: 14198, mode: os.FileMode(420), modTime: time.Unix(1557964121, 0)}
+	info := bindataFileInfo{name: "static/css/leaflet.css", size: 14198, mode: os.FileMode(420), modTime: time.Unix(1560785501, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func staticCssRasterdCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/rasterd.css", size: 71, mode: os.FileMode(420), modTime: time.Unix(1565377542, 0)}
+	info := bindataFileInfo{name: "static/css/rasterd.css", size: 71, mode: os.FileMode(420), modTime: time.Unix(1570024695, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -205,9 +205,9 @@ func AssetNames() []string {
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
 	"static/javascript/leaflet-hash.js": staticJavascriptLeafletHashJs,
-	"static/javascript/leaflet.js":      staticJavascriptLeafletJs,
-	"static/css/leaflet.css":            staticCssLeafletCss,
-	"static/css/rasterd.css":            staticCssRasterdCss,
+	"static/javascript/leaflet.js": staticJavascriptLeafletJs,
+	"static/css/leaflet.css": staticCssLeafletCss,
+	"static/css/rasterd.css": staticCssRasterdCss,
 }
 
 // AssetDir returns the file names below a certain
@@ -249,7 +249,6 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"static": &bintree{nil, map[string]*bintree{
 		"css": &bintree{nil, map[string]*bintree{
@@ -258,7 +257,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		}},
 		"javascript": &bintree{nil, map[string]*bintree{
 			"leaflet-hash.js": &bintree{staticJavascriptLeafletHashJs, map[string]*bintree{}},
-			"leaflet.js":      &bintree{staticJavascriptLeafletJs, map[string]*bintree{}},
+			"leaflet.js": &bintree{staticJavascriptLeafletJs, map[string]*bintree{}},
 		}},
 	}},
 }}
@@ -309,6 +308,7 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
 
 func assetFS() *assetfs.AssetFS {
 	assetInfo := func(path string) (os.FileInfo, error) {

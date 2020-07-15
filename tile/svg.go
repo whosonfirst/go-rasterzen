@@ -130,6 +130,8 @@ type FeatureCollection struct {
 
 func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_opts *RasterzenOptions, svg_opts *RasterzenSVGOptions) (io.ReadCloser, error) {
 
+	log.Println("RENDER SVG", t)
+		
 	svg_key := CacheKeyForTile(t, "svg", "svg")
 
 	var svg_data io.ReadCloser
@@ -169,6 +171,10 @@ func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_op
 		return nil, errors.New("Unable to determine tile extent")
 	}
 
+	log.Println("TILE", t)
+	log.Println("GRID", grid)
+	log.Println("EXTENT", ext)
+	
 	svg_opts.TileExtent = ext
 
 	err = RasterzenToSVGWithOptions(geojson_fh, svg_wr, svg_opts)
