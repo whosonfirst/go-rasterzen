@@ -3,6 +3,7 @@ module github.com/whosonfirst/go-rasterzen
 go 1.12
 
 require (
+	github.com/aaronland/go-http-server v0.0.4
 	github.com/aaronland/go-string v0.1.2
 	github.com/aws/aws-lambda-go v1.17.0
 	github.com/aws/aws-sdk-go v1.33.6
@@ -18,7 +19,7 @@ require (
 	github.com/tidwall/gjson v1.6.0
 	github.com/tidwall/match v1.0.1 // indirect
 	github.com/tidwall/sjson v1.1.1
-	github.com/whosonfirst/algnhsa v0.1.0
+	github.com/whosonfirst/algnhsa v0.1.0 // indirect
 	github.com/whosonfirst/geojson2svg v1.1.0 // indirect
 	github.com/whosonfirst/go-bindata v0.1.0
 	github.com/whosonfirst/go-bindata-assetfs v1.0.1

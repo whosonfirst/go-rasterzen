@@ -1,3 +1,7 @@
+# github.com/aaronland/go-http-server v0.0.4
+github.com/aaronland/go-http-server
+# github.com/aaronland/go-roster v0.0.2
+github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
 github.com/aaronland/go-string/dsn
 # github.com/aws/aws-lambda-go v1.17.0

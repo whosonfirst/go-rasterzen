@@ -1,19 +1,19 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"github.com/jtacoma/uritemplates"
 	"github.com/whosonfirst/go-rasterzen/http"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/whosonfirst/go-rasterzen/server"
+	"github.com/aaronland/go-http-server"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
 	gohttp "net/http"
-	gourl "net/url"
 	"os"
 	"strings"
 )
@@ -23,10 +23,12 @@ func main() {
 	config := flag.String("config", "", "Read some or all flags from an ini-style config file. Values in the config file take precedence over command line flags.")
 	section := flag.String("section", "rasterd", "A valid ini-style config file section.")
 
-	var proto = flag.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
-	var host = flag.String("host", "localhost", "The host for rasterd to listen for requests on.")
-	var port = flag.Int("port", 8080, "The port for rasterd to listen for requests on.")
+	var proto = flag.String("protocol", "", "The protocol for wof-staticd server to listen on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
+	var host = flag.String("host", "", "The host for rasterd to listen for requests on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
+	var port = flag.Int("port", 0, "The port for rasterd to listen for requests on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
 
+	var server_uri = flag.String("server-uri", "http://localhost:8080", "A valid aaronland/go-http-server URI.")
+	
 	do_www := flag.Bool("www", false, "Enable a simple web interface with a slippy map (at /) for testing and debugging.")
 	www_debug := flag.Bool("www-debug", false, "Enable debugging features for the web interface.")
 	www_tile_format := flag.String("www-tile-format", "svg", "Valid options are: png, svg.")
@@ -58,10 +60,17 @@ func main() {
 
 	flag.Parse()
 
+	ctx := context.Background()
+	
 	if *nextzen_apikey == "" && *nextzen_uri == "" {
 		log.Println("Missing -nextzen-apikey flag. Unless you've already cached your tiles you won't be able to fetch tiles to render!")
 	}
 
+	if *proto != "" || *host != "" || *port != 0 {
+		log.Println("Setting -server-uri flag from DEPRETCATED -procotol, -host and -port flags.")
+		*server_uri = fmt.Sprintf("%s://%s:%d", *proto, *host, *port)
+	}
+	
 	if *config != "" {
 
 		err := flags.SetFlagsFromConfig(*config, *section)
@@ -320,15 +329,7 @@ func main() {
 		mux.Handle("/", www_h)
 	}
 
-	address := fmt.Sprintf("http://%s:%d", *host, *port)
-
-	u, err := gourl.Parse(address)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	s, err := server.NewStaticServer(*proto, u)
+	s, err := server.NewServer(ctx, *server_uri)
 
 	if err != nil {
 		log.Fatal(err)
@@ -336,7 +337,7 @@ func main() {
 
 	log.Printf("Listening on %s\n", s.Address())
 
-	err = s.ListenAndServe(mux)
+	err = s.ListenAndServe(ctx, mux)
 
 	if err != nil {
 		log.Fatal(err)
