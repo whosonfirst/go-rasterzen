@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"github.com/aaronland/go-http-server"
 	"github.com/jtacoma/uritemplates"
@@ -11,7 +10,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-cache"
 	"github.com/whosonfirst/go-whosonfirst-cache-s3"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"github.com/sfomuseum/go-flags/flagset"	
 	"log"
 	gohttp "net/http"
 	"os"
@@ -20,45 +19,47 @@ import (
 
 func main() {
 
-	config := flag.String("config", "", "Read some or all flags from an ini-style config file. Values in the config file take precedence over command line flags.")
-	section := flag.String("section", "rasterd", "A valid ini-style config file section.")
+	fs := flagset.NewFlagSet("rasterd")
+	
+	// config := fs.String("config", "", "Read some or all flags from an ini-style config file. Values in the config file take precedence over command line flags.")
+	// section := fs.String("section", "rasterd", "A valid ini-style config file section.")
 
-	var proto = flag.String("protocol", "", "The protocol for wof-staticd server to listen on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
-	var host = flag.String("host", "", "The host for rasterd to listen for requests on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
-	var port = flag.Int("port", 0, "The port for rasterd to listen for requests on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
+	var proto = fs.String("protocol", "", "The protocol for wof-staticd server to listen on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
+	var host = fs.String("host", "", "The host for rasterd to listen for requests on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
+	var port = fs.Int("port", 0, "The port for rasterd to listen for requests on. THIS FLAG IS DEPRECATED. Please use -server-uri instead.")
 
-	var server_uri = flag.String("server-uri", "http://localhost:8080", "A valid aaronland/go-http-server URI.")
+	var server_uri = fs.String("server-uri", "http://localhost:8080", "A valid aaronland/go-http-server URI.")
 
-	do_www := flag.Bool("www", false, "Enable a simple web interface with a slippy map (at /) for testing and debugging.")
-	www_debug := flag.Bool("www-debug", false, "Enable debugging features for the web interface.")
-	www_tile_format := flag.String("www-tile-format", "svg", "Valid options are: png, svg.")
+	do_www := fs.Bool("www", false, "Enable a simple web interface with a slippy map (at /) for testing and debugging.")
+	www_debug := fs.Bool("www-debug", false, "Enable debugging features for the web interface.")
+	www_tile_format := fs.String("www-tile-format", "svg", "Valid options are: png, svg.")
 
-	no_cache := flag.Bool("no-cache", false, "Disable all caching.")
-	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
-	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
-	fs_root := flag.String("fs-root", "", "The root of your filesystem cache. If empty rasterd will try to use the current working directory.")
-	s3_cache := flag.Bool("s3-cache", false, "Cache tiles with a S3-based cache.")
-	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
-	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
+	no_cache := fs.Bool("no-cache", false, "Disable all caching.")
+	go_cache := fs.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
+	fs_cache := fs.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
+	fs_root := fs.String("fs-root", "", "The root of your filesystem cache. If empty rasterd will try to use the current working directory.")
+	s3_cache := fs.Bool("s3-cache", false, "Cache tiles with a S3-based cache.")
+	s3_dsn := fs.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
+	s3_opts := fs.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
-	nextzen_apikey := flag.String("nextzen-apikey", "", "A valid Nextzen API key.")
-	nextzen_origin := flag.String("nextzen-origin", "", "An optional HTTP 'Origin' host to pass along with your Nextzen requests.")
-	nextzen_debug := flag.Bool("nextzen-debug", false, "Log requests (to STDOUT) to Nextzen tile servers.")
-	nextzen_uri := flag.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
+	nextzen_apikey := fs.String("nextzen-apikey", "", "A valid Nextzen API key.")
+	nextzen_origin := fs.String("nextzen-origin", "", "An optional HTTP 'Origin' host to pass along with your Nextzen requests.")
+	nextzen_debug := fs.Bool("nextzen-debug", false, "Log requests (to STDOUT) to Nextzen tile servers.")
+	nextzen_uri := fs.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
 
-	png_handler := flag.Bool("png-handler", true, "Enable the PNG tile handler.")
-	svg_handler := flag.Bool("svg-handler", true, "Enable the SVG tile handler.")
-	rasterzen_handler := flag.Bool("rasterzen-handler", false, "Enable the Rasterzen tile handler.")
-	geojson_handler := flag.Bool("geojson-handler", false, "Enable the GeoJSON tile handler.")
+	png_handler := fs.Bool("png-handler", true, "Enable the PNG tile handler.")
+	svg_handler := fs.Bool("svg-handler", true, "Enable the SVG tile handler.")
+	rasterzen_handler := fs.Bool("rasterzen-handler", false, "Enable the Rasterzen tile handler.")
+	geojson_handler := fs.Bool("geojson-handler", false, "Enable the GeoJSON tile handler.")
 
-	custom_svg_options := flag.String("svg-options", "", "Custom RasterzenSVGOptions data. This may be a path to a JSON config file or a valid JSON string.")
+	custom_svg_options := fs.String("svg-options", "", "Custom RasterzenSVGOptions data. This may be a path to a JSON config file or a valid JSON string.")
 
-	var path_png = flag.String("path-png", "/png/", "The path that PNG tiles should be served from")
-	var path_svg = flag.String("path-svg", "/svg/", "The path that SVG tiles should be served from")
-	var path_geojson = flag.String("path-geojson", "/geojson/", "The path that GeoJSON tiles should be served from")
-	var path_rasterzen = flag.String("path-rasterzen", "/rasterzen/", "The path that Rasterzen tiles should be served from")
+	var path_png = fs.String("path-png", "/png/", "The path that PNG tiles should be served from")
+	var path_svg = fs.String("path-svg", "/svg/", "The path that SVG tiles should be served from")
+	var path_geojson = fs.String("path-geojson", "/geojson/", "The path that GeoJSON tiles should be served from")
+	var path_rasterzen = fs.String("path-rasterzen", "/rasterzen/", "The path that Rasterzen tiles should be served from")
 
-	flag.Parse()
+	flagset.Parse(fs)
 
 	ctx := context.Background()
 
@@ -71,6 +72,13 @@ func main() {
 		*server_uri = fmt.Sprintf("%s://%s:%d", *proto, *host, *port)
 	}
 
+	err := flagset.SetFlagsFromEnvVarsWithFeedback(fs, "RASTERD", true)
+
+	if err != nil {
+		log.Fatalf("Unabled to set flags from environment variables, %v", err)
+	}
+	
+	/*
 	if *config != "" {
 
 		err := flags.SetFlagsFromConfig(*config, *section)
@@ -87,7 +95,8 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-
+	*/
+	
 	if *no_cache {
 
 		log.Println("disable all cache layers")

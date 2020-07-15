@@ -82,6 +82,8 @@ github.com/paulmach/orb/geojson
 github.com/paulmach/orb/internal/mercator
 github.com/paulmach/orb/maptile
 github.com/paulmach/orb/project
+# github.com/sfomuseum/go-flags v0.3.1
+github.com/sfomuseum/go-flags/flagset
 # github.com/srwiley/oksvg v0.0.0-20200311192757-870daf9aa564
 github.com/srwiley/oksvg
 # github.com/srwiley/rasterx v0.0.0-20200120212402-85cb7272f5e9

@@ -14,6 +14,7 @@ require (
 	github.com/paulmach/go.geojson v1.4.0 // indirect
 	github.com/paulmach/orb v0.1.6
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/sfomuseum/go-flags v0.3.1
 	github.com/srwiley/oksvg v0.0.0-20200311192757-870daf9aa564
 	github.com/srwiley/rasterx v0.0.0-20200120212402-85cb7272f5e9
 	github.com/tidwall/gjson v1.6.0
