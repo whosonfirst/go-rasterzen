@@ -50,6 +50,12 @@ func NewGatherTilesFunc(tiles []string) (GatherTilesFunc, error) {
 
 func NewGatherTilesExtentFunc(extents []string, sep string, min_zoom int, max_zoom int) (GatherTilesFunc, error) {
 
+	grid, err := slippy.NewGrid(4326)
+
+	if err != nil {
+		return nil, err
+	}
+
 	gather_func := func(ctx context.Context, tileset *TileSet) (int64, error) {
 
 		count := int64(0)
@@ -64,7 +70,7 @@ func NewGatherTilesExtentFunc(extents []string, sep string, min_zoom int, max_zo
 
 			for z := min_zoom; z <= max_zoom; z++ {
 
-				for _, t := range slippy.FromBounds(ex, uint(z)) {
+				for _, t := range slippy.FromBounds(grid, ex, uint(z)) {
 					err = tileset.AddTile(t)
 
 					if err != nil {
