@@ -1,16 +1,22 @@
 package main
 
 import (
+	_ "github.com/aaronland/go-cloud-s3blob"
+	_ "github.com/whosonfirst/go-cache-blob"
+)
+
+import (
 	"context"
 	"fmt"
 	"github.com/aaronland/go-http-server"
 	"github.com/jtacoma/uritemplates"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/multi"
+	"github.com/whosonfirst/go-cache"
+	"github.com/whosonfirst/go-cache-multicache"
 	"github.com/whosonfirst/go-rasterzen/http"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
-	"github.com/whosonfirst/go-whosonfirst-cache"
-	"github.com/whosonfirst/go-whosonfirst-cache-s3"
-	"github.com/sfomuseum/go-flags/flagset"	
 	"log"
 	gohttp "net/http"
 	"os"
@@ -20,7 +26,7 @@ import (
 func main() {
 
 	fs := flagset.NewFlagSet("rasterd")
-	
+
 	// config := fs.String("config", "", "Read some or all flags from an ini-style config file. Values in the config file take precedence over command line flags.")
 	// section := fs.String("section", "rasterd", "A valid ini-style config file section.")
 
@@ -59,6 +65,9 @@ func main() {
 	var path_geojson = fs.String("path-geojson", "/geojson/", "The path that GeoJSON tiles should be served from")
 	var path_rasterzen = fs.String("path-rasterzen", "/rasterzen/", "The path that Rasterzen tiles should be served from")
 
+	var cache_uris multi.MultiString
+	fs.Var(&cache_uris, "cache-uri", "One or more valid whosonfirst/go-cache URIs")
+
 	flagset.Parse(fs)
 
 	ctx := context.Background()
@@ -77,32 +86,29 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unabled to set flags from environment variables, %v", err)
 	}
-	
+
 	/*
-	if *config != "" {
+		if *config != "" {
 
-		err := flags.SetFlagsFromConfig(*config, *section)
+			err := flags.SetFlagsFromConfig(*config, *section)
 
-		if err != nil {
-			log.Fatal(err)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+		} else {
+
+			err := flags.SetFlagsFromEnvVars("RASTERD")
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
-
-	} else {
-
-		err := flags.SetFlagsFromEnvVars("RASTERD")
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
 	*/
-	
+
 	if *no_cache {
 
-		log.Println("disable all cache layers")
-
-		*go_cache = false
-		*fs_cache = false
+		log.Println("The -no-cache flag is DEPRECATED and has no effect anymore.")
 	}
 
 	nz_opts := &nextzen.Options{
@@ -124,63 +130,12 @@ func main() {
 
 	caches := make([]cache.Cache, 0)
 
-	if *go_cache {
+	for _, u := range cache_uris {
 
-		log.Println("enable go-cache cache layer")
-
-		opts, err := cache.DefaultGoCacheOptions()
+		c, err := cache.NewCache(ctx, u)
 
 		if err != nil {
-			log.Fatal(err)
-		}
-
-		c, err := cache.NewGoCache(opts)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		caches = append(caches, c)
-	}
-
-	if *fs_cache {
-
-		log.Println("enable filesystem cache layer")
-
-		if *fs_root == "" {
-
-			cwd, err := os.Getwd()
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			*fs_root = cwd
-		}
-
-		c, err := cache.NewFSCache(*fs_root)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		caches = append(caches, c)
-	}
-
-	if *s3_cache {
-
-		log.Println("enable S3 cache layer")
-
-		opts, err := s3.NewS3CacheOptionsFromString(*s3_opts)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		c, err := s3.NewS3Cache(*s3_dsn, opts)
-
-		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Failed to instantiate cache '%s', %v", u, err)
 		}
 
 		caches = append(caches, c)
@@ -191,7 +146,7 @@ func main() {
 		// because we still need to pass a cache.Cache thingy
 		// around (20180612/thisisaaronland)
 
-		c, err := cache.NewNullCache()
+		c, err := cache.NewCache(ctx, "null://")
 
 		if err != nil {
 			log.Fatal(err)
@@ -200,7 +155,7 @@ func main() {
 		caches = append(caches, c)
 	}
 
-	c, err := cache.NewMultiCache(caches)
+	c, err := multicache.NewMultiCache(ctx, caches...)
 
 	if err != nil {
 		log.Fatal(err)
