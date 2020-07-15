@@ -36,7 +36,7 @@ type (
 		LineWidth, DashOffset, MiterLimit float64
 		Dash                              []float64
 		UseNonZeroWinding                 bool
-		fillerColor, linerColor           interface{} // either color.Color or *rasterx.Gradient
+		fillerColor, linerColor           interface{} // either color.Color or rasterx.Gradient
 		LineGap                           rasterx.GapFunc
 		LeadLineCap                       rasterx.CapFunc // This is used if different than LineCap
 		LineCap                           rasterx.CapFunc
@@ -119,7 +119,7 @@ func (svgp *SvgPath) DrawTransformed(r *rasterx.Dasher, opacity float64, t raste
 		switch fillerColor := svgp.fillerColor.(type) {
 		case color.Color:
 			rf.SetColor(rasterx.ApplyOpacity(fillerColor, svgp.FillOpacity*opacity))
-		case *rasterx.Gradient:
+		case rasterx.Gradient:
 			if fillerColor.Units == rasterx.ObjectBoundingBox {
 				fRect := rf.Scanner.GetPathExtent()
 				mnx, mny := float64(fRect.Min.X)/64, float64(fRect.Min.Y)/64
@@ -155,7 +155,7 @@ func (svgp *SvgPath) DrawTransformed(r *rasterx.Dasher, opacity float64, t raste
 		switch linerColor := svgp.linerColor.(type) {
 		case color.Color:
 			r.SetColor(rasterx.ApplyOpacity(linerColor, svgp.LineOpacity*opacity))
-		case *rasterx.Gradient:
+		case rasterx.Gradient:
 			if linerColor.Units == rasterx.ObjectBoundingBox {
 				fRect := r.Scanner.GetPathExtent()
 				mnx, mny := float64(fRect.Min.X)/64, float64(fRect.Min.Y)/64
@@ -343,24 +343,19 @@ func (c *IconCursor) parseTransform(v string) (rasterx.Matrix2D, error) {
 func (c *IconCursor) readStyleAttr(curStyle *PathStyle, k, v string) error {
 	switch k {
 	case "fill":
-		gradient, err := c.ReadGradURL(v)
-		if err != nil {
-			return err
-		}
-		if gradient != nil {
+		gradient, ok := c.ReadGradURL(v, curStyle.fillerColor)
+		if ok {
 			curStyle.fillerColor = gradient
 			break
 		}
+		var err error
 		curStyle.fillerColor, err = ParseSVGColor(v)
 		return err
 	case "stroke":
-		gradient, err := c.ReadGradURL(v)
-		if gradient != nil {
+		gradient, ok := c.ReadGradURL(v, curStyle.linerColor)
+		if ok {
 			curStyle.linerColor = gradient
 			break
-		}
-		if err != nil {
-			return err
 		}
 		col, errc := ParseSVGColor(v)
 		if errc != nil {
@@ -424,30 +419,29 @@ func (c *IconCursor) readStyleAttr(curStyle *PathStyle, k, v string) error {
 			curStyle.LineJoin = rasterx.Bevel
 		}
 	case "stroke-miterlimit":
-		mLimit, err := strconv.ParseFloat(v, 64)
+		mLimit, err := parseFloat(v, 64)
 		if err != nil {
 			return err
 		}
 		curStyle.MiterLimit = mLimit
 	case "stroke-width":
-		v = strings.TrimSuffix(v, "px")
-		width, err := strconv.ParseFloat(v, 64)
+		width, err := parseFloat(v, 64)
 		if err != nil {
 			return err
 		}
 		curStyle.LineWidth = width
 	case "stroke-dashoffset":
-		dashOffset, err := strconv.ParseFloat(v, 64)
+		dashOffset, err := parseFloat(v, 64)
 		if err != nil {
 			return err
 		}
 		curStyle.DashOffset = dashOffset
 	case "stroke-dasharray":
 		if v != "none" {
-			dashes := strings.Split(v, ",")
+			dashes := splitOnCommaOrSpace(v)
 			dList := make([]float64, len(dashes))
 			for i, dstr := range dashes {
-				d, err := strconv.ParseFloat(strings.TrimSpace(dstr), 64)
+				d, err := parseFloat(strings.TrimSpace(dstr), 64)
 				if err != nil {
 					return err
 				}
@@ -457,7 +451,7 @@ func (c *IconCursor) readStyleAttr(curStyle *PathStyle, k, v string) error {
 			break
 		}
 	case "opacity", "stroke-opacity", "fill-opacity":
-		op, err := strconv.ParseFloat(v, 64)
+		op, err := parseFloat(v, 64)
 		if err != nil {
 			return err
 		}
@@ -510,14 +504,32 @@ func (c *IconCursor) PushStyle(attrs []xml.Attr) error {
 
 // unitSuffixes are suffixes sometimes applied to the width and height attributes
 // of the svg element.
-var unitSuffixes = [3]string{"cm", "mm", "px"}
+var unitSuffixes = []string{"cm", "mm", "px", "pt"}
 
+// trimSuffixes removes unitSuffixes from any number that is not just numeric
 func trimSuffixes(a string) (b string) {
+	if a == "" || (a[len(a)-1] >= '0' && a[len(a)-1] <= '9') {
+		return a
+	}
 	b = a
 	for _, v := range unitSuffixes {
 		b = strings.TrimSuffix(b, v)
 	}
 	return
+}
+
+// parseFloat is a helper function that strips suffixes before passing to strconv.ParseFloat
+func parseFloat(s string, bitSize int) (float64, error) {
+	val := trimSuffixes(s)
+	return strconv.ParseFloat(val, bitSize)
+}
+
+// splitOnCommaOrSpace returns a list of strings after splitting the input on comma and space delimiters
+func splitOnCommaOrSpace(s string) []string {
+	return strings.FieldsFunc(s,
+		func(r rune) bool {
+			return r == ',' || r == ' '
+		})
 }
 
 func (c *IconCursor) readStartElement(se xml.StartElement) (err error) {
@@ -554,6 +566,7 @@ func (c *IconCursor) readStartElement(se xml.StartElement) (err error) {
 		return nil
 	}
 	err = df(c, se.Attr)
+
 	if len(c.Path) > 0 {
 		//The cursor parsed a path from the xml element
 		pathCopy := make(rasterx.Path, len(c.Path))
@@ -657,29 +670,72 @@ func readFraction(v string) (f float64, err error) {
 		d = 100
 		v = strings.TrimSuffix(v, "%")
 	}
-	f, err = strconv.ParseFloat(v, 64)
+	f, err = parseFloat(v, 64)
 	f /= d
-	if f > 1 {
-		f = 1
-	} else if f < 0 {
-		f = 0
+	// Is this is an unnecessary restriction? For now fractions can be all values not just in the range [0,1]
+	// if f > 1 {
+	// 	f = 1
+	// } else if f < 0 {
+	// 	f = 0
+	// }
+	return
+}
+
+// getColor is a helper function to get the background color
+// if ReadGradUrl needs it.
+func getColor(clr interface{}) color.Color {
+	switch c := clr.(type) {
+	case rasterx.Gradient: // This is a bit lazy but oh well
+		for _, s := range c.Stops {
+			if s.StopColor != nil {
+				return s.StopColor
+			}
+		}
+	case color.NRGBA:
+		return c
+	}
+	return colornames.Black
+}
+
+func localizeGradIfStopClrNil(g *rasterx.Gradient, defaultColor interface{}) (grad rasterx.Gradient) {
+	grad = *g
+	for _, s := range grad.Stops {
+		if s.StopColor == nil { // This means we need copy the gradient's Stop slice
+			// and fill in the default color
+
+			// Copy the stops
+			stops := make([]rasterx.GradStop, len(grad.Stops))
+			copy(stops, grad.Stops)
+			grad.Stops = stops
+			// Use the background color when a stop color is nil
+			clr := getColor(defaultColor)
+			for i, s := range stops {
+				if s.StopColor == nil {
+					grad.Stops[i].StopColor = clr
+				}
+			}
+			break // Only need to do this once
+		}
 	}
 	return
 }
 
 // ReadGradURL reads an SVG format gradient url
-func (c *IconCursor) ReadGradURL(v string) (grad *rasterx.Gradient, err error) {
+// Since the context of the gradient can affect the colors
+// the current fill or line color is passed in and used in
+// the case of a nil stopClor value
+func (c *IconCursor) ReadGradURL(v string, defaultColor interface{}) (grad rasterx.Gradient, ok bool) {
 	if strings.HasPrefix(v, "url(") && strings.HasSuffix(v, ")") {
 		urlStr := strings.TrimSpace(v[4 : len(v)-1])
 		if strings.HasPrefix(urlStr, "#") {
-			grad, ok := c.icon.Grads[urlStr[1:]]
+			var g *rasterx.Gradient
+			g, ok = c.icon.Grads[urlStr[1:]]
 			if ok {
-				return grad, nil
+				grad = localizeGradIfStopClrNil(g, defaultColor)
 			}
-			return nil, nil // missingIdError
 		}
 	}
-	return nil, nil // not a gradient url, and not an error
+	return
 }
 
 // ReadGradAttr reads an SVG gradient attribute
@@ -747,11 +803,9 @@ var (
 				c.icon.ViewBox.W = c.points[2]
 				c.icon.ViewBox.H = c.points[3]
 			case "width":
-				wn := trimSuffixes(attr.Value)
-				width, err = strconv.ParseFloat(wn, 64)
+				width, err = parseFloat(attr.Value, 64)
 			case "height":
-				hn := trimSuffixes(attr.Value)
-				height, err = strconv.ParseFloat(hn, 64)
+				height, err = parseFloat(attr.Value, 64)
 			}
 			if err != nil {
 				return err
@@ -772,17 +826,17 @@ var (
 		for _, attr := range attrs {
 			switch attr.Name.Local {
 			case "x":
-				x, err = strconv.ParseFloat(attr.Value, 64)
+				x, err = parseFloat(attr.Value, 64)
 			case "y":
-				y, err = strconv.ParseFloat(attr.Value, 64)
+				y, err = parseFloat(attr.Value, 64)
 			case "width":
-				w, err = strconv.ParseFloat(attr.Value, 64)
+				w, err = parseFloat(attr.Value, 64)
 			case "height":
-				h, err = strconv.ParseFloat(attr.Value, 64)
+				h, err = parseFloat(attr.Value, 64)
 			case "rx":
-				rx, err = strconv.ParseFloat(attr.Value, 64)
+				rx, err = parseFloat(attr.Value, 64)
 			case "ry":
-				ry, err = strconv.ParseFloat(attr.Value, 64)
+				ry, err = parseFloat(attr.Value, 64)
 			}
 			if err != nil {
 				return err
@@ -800,16 +854,16 @@ var (
 		for _, attr := range attrs {
 			switch attr.Name.Local {
 			case "cx":
-				cx, err = strconv.ParseFloat(attr.Value, 64)
+				cx, err = parseFloat(attr.Value, 64)
 			case "cy":
-				cy, err = strconv.ParseFloat(attr.Value, 64)
+				cy, err = parseFloat(attr.Value, 64)
 			case "r":
-				rx, err = strconv.ParseFloat(attr.Value, 64)
+				rx, err = parseFloat(attr.Value, 64)
 				ry = rx
 			case "rx":
-				rx, err = strconv.ParseFloat(attr.Value, 64)
+				rx, err = parseFloat(attr.Value, 64)
 			case "ry":
-				ry, err = strconv.ParseFloat(attr.Value, 64)
+				ry, err = parseFloat(attr.Value, 64)
 			}
 			if err != nil {
 				return err
@@ -827,13 +881,13 @@ var (
 		for _, attr := range attrs {
 			switch attr.Name.Local {
 			case "x1":
-				x1, err = strconv.ParseFloat(attr.Value, 64)
+				x1, err = parseFloat(attr.Value, 64)
 			case "x2":
-				x2, err = strconv.ParseFloat(attr.Value, 64)
+				x2, err = parseFloat(attr.Value, 64)
 			case "y1":
-				y1, err = strconv.ParseFloat(attr.Value, 64)
+				y1, err = parseFloat(attr.Value, 64)
 			case "y2":
-				y2, err = strconv.ParseFloat(attr.Value, 64)
+				y2, err = parseFloat(attr.Value, 64)
 			}
 			if err != nil {
 				return err
@@ -992,7 +1046,7 @@ var (
 					//todo: add current color inherit
 					stop.StopColor, err = ParseSVGColor(attr.Value)
 				case "stop-opacity":
-					stop.Opacity, err = strconv.ParseFloat(attr.Value, 64)
+					stop.Opacity, err = parseFloat(attr.Value, 64)
 				}
 				if err != nil {
 					return err
@@ -1013,9 +1067,9 @@ var (
 			case "href":
 				href = attr.Value
 			case "x":
-				x, err = strconv.ParseFloat(attr.Value, 64)
+				x, err = parseFloat(attr.Value, 64)
 			case "y":
-				y, err = strconv.ParseFloat(attr.Value, 64)
+				y, err = parseFloat(attr.Value, 64)
 			}
 			if err != nil {
 				return err

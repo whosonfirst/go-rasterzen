@@ -14,7 +14,13 @@ type Circle struct {
 	Radius float64
 }
 
-// CircleFromPoint returns the circle from by the given points, or an error if the points are colinear.
+// IsColinear returns weather the a,b,c are colinear to each other
+func IsColinear(a, b, c [2]float64) bool {
+	xA, yA, xB, yB, xC, yC := a[0], a[1], b[0], b[1], c[0], c[1]
+	return ((yB - yA) * (xC - xB)) == ((yC - yB) * (xB - xA))
+}
+
+// CircleFromPoints returns the circle from by the given points, or an error if the points are colinear.
 // REF:  Formula used gotten from http://mathforum.org/library/drmath/view/55233.html
 func CircleFromPoints(a, b, c [2]float64) (Circle, error) {
 	xA, yA, xB, yB, xC, yC := a[0], a[1], b[0], b[1], c[0], c[1]
@@ -82,7 +88,31 @@ func CircleFromPoints(a, b, c [2]float64) (Circle, error) {
 	return Circle{
 		Center: [2]float64{x, y},
 		Radius: r,
+		//Radius: RoundToPrec(r, 4),
 	}, nil
+}
+
+func cmpFloat(f1, f2 float64) bool {
+	bitTolerance := int64(math.Float64bits(1.0+tolerance) - math.Float64bits(1.0))
+	// handle infinity
+	if math.IsInf(f1, 0) || math.IsInf(f2, 0) {
+		return math.IsInf(f1, -1) == math.IsInf(f2, -1) &&
+			math.IsInf(f1, 1) == math.IsInf(f2, 1)
+	}
+
+	// -0.0 exist but -0.0 == 0.0 is true
+	if f1 == 0 || f2 == 0 {
+		return math.Abs(f2-f1) < tolerance
+	}
+
+	i1 := int64(math.Float64bits(f1))
+	i2 := int64(math.Float64bits(f2))
+	d := i2 - i1
+
+	if d < 0 {
+		return d > -bitTolerance
+	}
+	return d < bitTolerance
 }
 
 // ContainsPoint will check to see if the point is in the circle.
@@ -91,5 +121,45 @@ func (c Circle) ContainsPoint(pt [2]float64) bool {
 	// of the circle.
 	v1, v2 := c.Center[0]-pt[0], c.Center[1]-pt[1]
 	d := math.Sqrt((v1 * v1) + (v2 * v2))
-	return c.Radius >= d
+	//d = RoundToPrec(d, 3)
+	return cmpFloat(c.Radius, d) || c.Radius > d
+}
+
+func (c Circle) AsPoints(k uint) []Point {
+	if k < 3 {
+		k = 30
+	}
+
+	pts := make([]Point, int(k))
+	for i := 0; i < int(k); i++ {
+		t := (2 * math.Pi) * (float64(i) / float64(k))
+		x, y := c.Center[0]+c.Radius*math.Cos(t), c.Center[1]+c.Radius*math.Sin(t)
+		pts[i][0], pts[i][1] = float64(x), float64(y)
+	}
+	return pts
+}
+
+func (c Circle) AsLineString(k uint) LineString {
+	pts := c.AsPoints(k)
+	lns := make(LineString, len(pts))
+	for i := range pts {
+		lns[i] = [2]float64(pts[i])
+	}
+	return lns
+}
+
+// AsSegments takes the number of segments that should be returned to describe the circle.
+// a value  less then 3 will use the default value of 30.
+func (c Circle) AsSegments(k uint) []Line {
+	pts := c.AsPoints(k)
+	lines := make([]Line, len(pts))
+	for i := range pts {
+		j := i - 1
+		if j < 0 {
+			j = int(k) - 1
+		}
+		lines[i][0] = pts[j]
+		lines[i][1] = pts[i]
+	}
+	return lines
 }
