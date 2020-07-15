@@ -1,6 +1,11 @@
 package main
 
 import (
+	_ "github.com/aaronland/go-cloud-s3blob"
+	_ "github.com/whosonfirst/go-cache-blob"
+)
+
+import (
 	"context"
 	"errors"
 	"flag"
@@ -9,10 +14,11 @@ import (
 	"github.com/whosonfirst/go-rasterzen/seed"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-rasterzen/worker"
-	"github.com/whosonfirst/go-whosonfirst-cache"
-	"github.com/whosonfirst/go-whosonfirst-cache-s3"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"github.com/whosonfirst/go-cache"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/multi"
 	"github.com/whosonfirst/go-whosonfirst-log"
+	"github.com/whosonfirst/go-whosonfirst-flags"	
 	"io"
 	"os"
 	"strings"
@@ -20,62 +26,70 @@ import (
 
 func main() {
 
-	var min_zoom = flag.Int("min-zoom", 1, "The minimum zoom level to fetch for a tile extent.")
-	var max_zoom = flag.Int("max-zoom", 16, "The maximum zoom level to fetch for a tile extent.")
+	fs := flagset.NewFlagSet("rasterseed")
+	
+	var min_zoom = fs.Int("min-zoom", 1, "The minimum zoom level to fetch for a tile extent.")
+	var max_zoom = fs.Int("max-zoom", 16, "The maximum zoom level to fetch for a tile extent.")
 
-	var extents flags.MultiString
-	flag.Var(&extents, "extent", "One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.")
+	var extents multi.MultiString
+	fs.Var(&extents, "extent", "One or more extents to fetch tiles for. Extents should be passed as comma-separated 'minx,miny,maxx,maxy' strings.")
 
-	nextzen_apikey := flag.String("nextzen-apikey", "", "A valid Nextzen API key.")
-	nextzen_origin := flag.String("nextzen-origin", "", "An optional HTTP 'Origin' host to pass along with your Nextzen requests.")
-	nextzen_debug := flag.Bool("nextzen-debug", false, "Log requests (to STDOUT) to Nextzen tile servers.")
-	nextzen_uri := flag.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
+	nextzen_apikey := fs.String("nextzen-apikey", "", "A valid Nextzen API key.")
+	nextzen_origin := fs.String("nextzen-origin", "", "An optional HTTP 'Origin' host to pass along with your Nextzen requests.")
+	nextzen_debug := fs.Bool("nextzen-debug", false, "Log requests (to STDOUT) to Nextzen tile servers.")
+	nextzen_uri := fs.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
 
-	var mode = flag.String("mode", "tiles", "The mode to use when calculating tiles. Valid modes are: extent, tiles.")
-	var extent_separator = flag.String("extent-separator", ",", "The separating string for coordinates when calculating tiles in '-mode extent'")
+	var mode = fs.String("mode", "tiles", "The mode to use when calculating tiles. Valid modes are: extent, tiles.")
+	var extent_separator = fs.String("extent-separator", ",", "The separating string for coordinates when calculating tiles in '-mode extent'")
 
-	go_cache := flag.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
-	fs_cache := flag.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
-	fs_root := flag.String("fs-root", "", "The root of your filesystem cache. If empty rasterd will try to use the current working directory.")
-	s3_cache := flag.Bool("s3-cache", false, "Cache tiles with a S3-based cache.")
-	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
-	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
+	go_cache := fs.Bool("go-cache", false, "Cache tiles with an in-memory (go-cache) cache.")
+	fs_cache := fs.Bool("fs-cache", false, "Cache tiles with a filesystem-based cache.")
+	fs_root := fs.String("fs-root", "", "The root of your filesystem cache. If empty rasterd will try to use the current working directory.")
+	s3_cache := fs.Bool("s3-cache", false, "Cache tiles with a S3-based cache.")
+	s3_dsn := fs.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
+	s3_opts := fs.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
-	seed_rasterzen := flag.Bool("seed-rasterzen", false, "Seed Rasterzen tiles.")
-	seed_svg := flag.Bool("seed-svg", false, "Seed SVG tiles.")
-	seed_png := flag.Bool("seed-png", false, "Seed PNG tiles.")
-	seed_geojson := flag.Bool("seed-geojson", false, "Seed GeoJSON tiles.")
-	seed_extent := flag.Bool("seed-extent", false, "Seed \"extent\" tiles (as GeoJSON).")
-	seed_all := flag.Bool("seed-all", false, "See all the tile formats")
+	seed_rasterzen := fs.Bool("seed-rasterzen", false, "Seed Rasterzen tiles.")
+	seed_svg := fs.Bool("seed-svg", false, "Seed SVG tiles.")
+	seed_png := fs.Bool("seed-png", false, "Seed PNG tiles.")
+	seed_geojson := fs.Bool("seed-geojson", false, "Seed GeoJSON tiles.")
+	seed_extent := fs.Bool("seed-extent", false, "Seed \"extent\" tiles (as GeoJSON).")
+	seed_all := fs.Bool("seed-all", false, "See all the tile formats")
 
-	custom_rz_options := flag.String("rasterzen-options", "", "The path to a valid RasterzenOptions JSON file.")
-	custom_svg_options := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
-	custom_png_options := flag.String("png-options", "", "The path to a valid RasterzenPNGOptions JSON file.")
+	custom_rz_options := fs.String("rasterzen-options", "", "The path to a valid RasterzenOptions JSON file.")
+	custom_svg_options := fs.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
+	custom_png_options := fs.String("png-options", "", "The path to a valid RasterzenPNGOptions JSON file.")
 
-	seed_tileset_catalog_dsn := flag.String("seed-tileset-catalog-dsn", "catalog=sync", "A valid tile.SeedCatalog DSN string. Required parameters are 'catalog=CATALOG'")
+	seed_tileset_catalog_dsn := fs.String("seed-tileset-catalog-dsn", "catalog=sync", "A valid tile.SeedCatalog DSN string. Required parameters are 'catalog=CATALOG'")
 
-	seed_worker := flag.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local, sqs.")
-	max_workers := flag.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
+	seed_worker := fs.String("seed-worker", "local", "The type of worker for seeding tiles. Valid workers are: lambda, local, sqs.")
+	max_workers := fs.Int("seed-max-workers", 100, "The maximum number of concurrent workers to invoke when seeding tiles")
 
 	var lambda_dsn flags.DSNString
-	flag.Var(&lambda_dsn, "lambda-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION'")
+	fs.Var(&lambda_dsn, "lambda-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION'")
 
-	lambda_function := flag.String("lambda-function", "Rasterzen", "A valid AWS Lambda function name.")
+	lambda_function := fs.String("lambda-function", "Rasterzen", "A valid AWS Lambda function name.")
 
 	var sqs_dsn flags.DSNString
-	flag.Var(&sqs_dsn, "sqs-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION' and 'queue=QUEUE'")
+	fs.Var(&sqs_dsn, "sqs-dsn", "A valid go-whosonfirst-aws DSN string. Required paremeters are 'credentials=CREDENTIALS' and 'region=REGION' and 'queue=QUEUE'")
 
-	timings := flag.Bool("timings", false, "Display timings for tile seeding.")
-	strict := flag.Bool("strict", false, "Exit 0 (failure) at the end of seeding a tile set if any errors are encountered.")
+	timings := fs.Bool("timings", false, "Display timings for tile seeding.")
+	strict := fs.Bool("strict", false, "Exit 0 (failure) at the end of seeding a tile set if any errors are encountered.")
 
-	refresh_rasterzen := flag.Bool("refresh-rasterzen", false, "Force rasterzen tiles to be generated even if they are already cached.")
-	refresh_svg := flag.Bool("refresh-svg", false, "Force SVG tiles to be generated even if they are already cached.")
-	refresh_png := flag.Bool("refresh-png", false, "Force PNG tiles to be generated even if they are already cached.")
+	refresh_rasterzen := fs.Bool("refresh-rasterzen", false, "Force rasterzen tiles to be generated even if they are already cached.")
+	refresh_svg := fs.Bool("refresh-svg", false, "Force SVG tiles to be generated even if they are already cached.")
+	refresh_png := fs.Bool("refresh-png", false, "Force PNG tiles to be generated even if they are already cached.")
 
-	refresh_all := flag.Bool("refresh-all", false, "Force all tiles to be generated even if they are already cached.")
+	refresh_all := fs.Bool("refresh-all", false, "Force all tiles to be generated even if they are already cached.")
 
-	flag.Parse()
+	err := flagset.Parse(fs)
 
+	if err != nil {
+		log.Fatal("Failed to parse flagset, %v", err)
+	}
+
+	ctx := context.Background()
+	
 	if *seed_all {
 		*seed_rasterzen = true
 		*seed_geojson = true
@@ -112,67 +126,14 @@ func main() {
 		nz_opts.URITemplate = template
 	}
 
-	// TO DO: UPDATE TO USE go-cache and go-cache-blob
-
 	caches := make([]cache.Cache, 0)
 
-	if *go_cache {
+	for _, u := range cache_uris {
 
-		logger.Info("enable go-cache cache layer")
-
-		opts, err := cache.DefaultGoCacheOptions()
+		c, err := cache.NewCache(ctx, u)
 
 		if err != nil {
-			logger.Fatal(err)
-		}
-
-		c, err := cache.NewGoCache(opts)
-
-		if err != nil {
-			logger.Fatal(err)
-		}
-
-		caches = append(caches, c)
-	}
-
-	if *fs_cache {
-
-		logger.Info("enable filesystem cache layer")
-
-		if *fs_root == "" {
-
-			cwd, err := os.Getwd()
-
-			if err != nil {
-				logger.Fatal(err)
-			}
-
-			*fs_root = cwd
-		}
-
-		c, err := cache.NewFSCache(*fs_root)
-
-		if err != nil {
-			logger.Fatal(err)
-		}
-
-		caches = append(caches, c)
-	}
-
-	if *s3_cache {
-
-		logger.Info("enable S3 cache layer")
-
-		opts, err := s3.NewS3CacheOptionsFromString(*s3_opts)
-
-		if err != nil {
-			logger.Fatal(err)
-		}
-
-		c, err := s3.NewS3Cache(*s3_dsn, opts)
-
-		if err != nil {
-			logger.Fatal(err)
+			log.Fatalf("Failed to instantiate cache '%s', %v", u, err)
 		}
 
 		caches = append(caches, c)
@@ -183,19 +144,19 @@ func main() {
 		// because we still need to pass a cache.Cache thingy
 		// around (20180612/thisisaaronland)
 
-		c, err := cache.NewNullCache()
+		c, err := cache.NewCache(ctx, "null://")
 
 		if err != nil {
-			logger.Fatal(err)
+			log.Fatal(err)
 		}
 
 		caches = append(caches, c)
 	}
 
-	c, err := cache.NewMultiCache(caches)
+	c, err := cache.NewMultiCache(ctx, caches...)
 
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	var rz_opts *tile.RasterzenOptions

@@ -27,6 +27,7 @@ require (
 	github.com/whosonfirst/go-whosonfirst-cache-s3 v0.1.0
 	github.com/whosonfirst/go-whosonfirst-cli v0.1.0
 	github.com/whosonfirst/go-whosonfirst-crawl v0.2.1
+	github.com/whosonfirst/go-whosonfirst-flags v0.1.0
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
 	github.com/whosonfirst/go-whosonfirst-sqlite v0.1.6
 )

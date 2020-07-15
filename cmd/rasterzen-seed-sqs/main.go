@@ -3,6 +3,11 @@ package main
 // see also: docs/rasterzen-seed-sqs-arch.jpg
 
 import (
+	_ "github.com/aaronland/go-cloud-s3blob"
+	_ "github.com/whosonfirst/go-cache-blob"
+)
+
+import (
 	"context"
 	"encoding/json"
 	"errors"
@@ -14,7 +19,7 @@ import (
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-rasterzen/worker"
-	"github.com/whosonfirst/go-whosonfirst-cache-s3"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
 	"strings"
@@ -85,7 +90,7 @@ func main() {
 	nextzen_uri := flag.String("nextzen-uri", "", "A valid URI template (RFC 6570) pointing to a custom Nextzen endpoint.")
 
 	s3_dsn := flag.String("s3-dsn", "", "A valid go-whosonfirst-aws DSN string")
-	s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
+	// s3_opts := flag.String("s3-opts", "", "A valid go-whosonfirst-cache-s3 options string")
 
 	custom_rz_options := flag.String("rasterzen-options", "", "The path to a valid RasterzenOptions JSON file.")
 	custom_svg_options := flag.String("svg-options", "", "The path to a valid RasterzenSVGOptions JSON file.")
@@ -98,6 +103,8 @@ func main() {
 
 	flag.Parse()
 
+	ctx := context.Background()
+	
 	err := flags.SetFlagsFromEnvVars("RASTERZEN_SEED")
 
 	if err != nil {
@@ -121,13 +128,7 @@ func main() {
 		nz_opts.URITemplate = template
 	}
 
-	opts, err := s3.NewS3CacheOptionsFromString(*s3_opts)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	s3_cache, err := s3.NewS3Cache(*s3_dsn, opts)
+	s3_cache, err := cache.NewCache(ctx, *s3_dsn)
 
 	if err != nil {
 		log.Fatal(err)
