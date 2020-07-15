@@ -3,15 +3,16 @@ package tile
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-geojson-svg"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
 	"log"
@@ -129,7 +130,7 @@ type FeatureCollection struct {
 
 func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_opts *RasterzenOptions, svg_opts *RasterzenSVGOptions) (io.ReadCloser, error) {
 
-	log.Println("RENDER SVG", t)
+	ctx := context.Background()
 
 	svg_key := CacheKeyForTile(t, "svg", "svg")
 
@@ -138,7 +139,7 @@ func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_op
 
 	if !svg_opts.Refresh {
 
-		svg_data, err = c.Get(svg_key)
+		svg_data, err = c.Get(ctx, svg_key)
 
 		if err == nil {
 			return svg_data, nil
@@ -169,7 +170,7 @@ func RenderSVGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_op
 	r := bytes.NewReader(buf.Bytes())
 	svg_fh := ioutil.NopCloser(r)
 
-	return c.Set(svg_key, svg_fh)
+	return c.Set(ctx, svg_key, svg_fh)
 }
 
 func RasterzenToSVG(in io.Reader, out io.Writer) error {

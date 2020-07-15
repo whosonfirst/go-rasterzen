@@ -3,10 +3,11 @@ package tile
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/go-spatial/geom/slippy"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"image/png"
 	"io"
 	"io/ioutil"
@@ -78,6 +79,8 @@ func RasterzenPNGOptionsFromBytes(body []byte) (*RasterzenPNGOptions, error) {
 
 func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_opts *RasterzenOptions, svg_opts *RasterzenSVGOptions, png_opts *RasterzenPNGOptions) (io.ReadCloser, error) {
 
+	ctx := context.Background()
+
 	png_key := CacheKeyForTile(t, "png", "png")
 
 	var png_data io.ReadCloser
@@ -85,7 +88,7 @@ func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_op
 
 	if !png_opts.Refresh {
 
-		png_data, err = c.Get(png_key)
+		png_data, err = c.Get(ctx, png_key)
 
 		if err == nil {
 			return png_data, nil
@@ -116,7 +119,7 @@ func RenderPNGTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_op
 	r := bytes.NewReader(buf.Bytes())
 	png_fh := ioutil.NopCloser(r)
 
-	return c.Set(png_key, png_fh)
+	return c.Set(ctx, png_key, png_fh)
 }
 
 func RasterzenToPNG(in io.Reader, out io.Writer, svg_opts *RasterzenSVGOptions) error {

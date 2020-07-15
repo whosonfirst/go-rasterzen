@@ -3,14 +3,17 @@ package worker
 import (
 	"bufio"
 	"bytes"
-	"github.com/whosonfirst/go-whosonfirst-cache"
+	"context"
+	"github.com/whosonfirst/go-cache"
 	"io"
 	"io/ioutil"
 )
 
 func CheckCache(c cache.Cache, key string) (bool, error) {
 
-	cache_data, err := c.Get(key)
+	ctx := context.Background()
+
+	cache_data, err := c.Get(ctx, key)
 
 	if err == nil {
 
@@ -37,7 +40,7 @@ func CheckCache(c cache.Cache, key string) (bool, error) {
 		r := bytes.NewReader(b.Bytes())
 		fh := ioutil.NopCloser(r)
 
-		cache_fh, cache_err := c.Set(key, fh)
+		cache_fh, cache_err := c.Set(ctx, key, fh)
 
 		if cache_err != nil {
 			return false, cache_err

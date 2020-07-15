@@ -2,12 +2,13 @@ package tile
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/go-spatial/geom"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/paulmach/orb/maptile"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
 	_ "log"
@@ -33,12 +34,14 @@ type Polygon []Coordinates
 
 func RenderExtentTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (io.ReadCloser, error) {
 
+	ctx := context.Background()
+
 	extent_key := CacheKeyForTile(t, "extent", "geojson")
 
 	var extent_data io.ReadCloser
 	var err error
 
-	extent_data, err = c.Get(extent_key)
+	extent_data, err = c.Get(ctx, extent_key)
 
 	if err == nil {
 		return extent_data, nil
@@ -90,7 +93,7 @@ func RenderExtentTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options) (i
 	r := bytes.NewReader(body)
 	extent_fh := ioutil.NopCloser(r)
 
-	return c.Set(extent_key, extent_fh)
+	return c.Set(ctx, extent_key, extent_fh)
 }
 
 /*

@@ -3,23 +3,26 @@ package tile
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/tidwall/gjson"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
 )
 
 func RenderGeoJSONTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, rz_opts *RasterzenOptions) (io.ReadCloser, error) {
 
+	ctx := context.Background()
+
 	geojson_key := CacheKeyForTile(t, "geojson", "geojson")
 
 	var geojson_data io.ReadCloser
 	var err error
 
-	geojson_data, err = c.Get(geojson_key)
+	geojson_data, err = c.Get(ctx, geojson_key)
 
 	if err == nil {
 		return geojson_data, nil
@@ -47,7 +50,7 @@ func RenderGeoJSONTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options, r
 	r := bytes.NewReader(buf.Bytes())
 	geojson_fh := ioutil.NopCloser(r)
 
-	return c.Set(geojson_key, geojson_fh)
+	return c.Set(ctx, geojson_key, geojson_fh)
 }
 
 func RasterzenToGeoJSON(in io.Reader, out io.Writer) error {

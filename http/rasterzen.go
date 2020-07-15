@@ -1,8 +1,8 @@
 package http
 
 import (
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"log"
 	gohttp "net/http"
 )

@@ -2,6 +2,7 @@ package worker
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -9,10 +10,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/go-spatial/geom/slippy"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
 	"github.com/whosonfirst/go-whosonfirst-aws/session"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
 	_ "log"
@@ -103,6 +104,8 @@ func (w *LambdaWorker) RenderPNGTile(t slippy.Tile) error {
 }
 
 func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
+
+	ctx := context.Background()
 
 	// handle refresh stuff here...
 
@@ -197,7 +200,7 @@ func (w *LambdaWorker) renderTile(t slippy.Tile, prefix, format string) error {
 
 	fh := ioutil.NopCloser(r)
 
-	cache_fh, err := w.cache.Set(cache_key, fh)
+	cache_fh, err := w.cache.Set(ctx, cache_key, fh)
 
 	if err != nil {
 		return nil

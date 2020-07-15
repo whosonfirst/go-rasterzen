@@ -1,11 +1,12 @@
 package tile
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/go-spatial/geom/slippy"
 	"github.com/tidwall/gjson"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
 	_ "log"
@@ -93,15 +94,18 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options,
 
 	var err error
 
+	ctx := context.Background()
+
 	if !rz_opts.Refresh {
-		rasterzen_data, err = c.Get(rasterzen_key)
+
+		rasterzen_data, err = c.Get(ctx, rasterzen_key)
 
 		if err == nil {
 			return rasterzen_data, nil
 		}
 	}
 
-	nextzen_data, err = c.Get(nextzen_key)
+	nextzen_data, err = c.Get(ctx, nextzen_key)
 
 	if err != nil {
 
@@ -113,7 +117,7 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options,
 
 		defer t.Close()
 
-		nextzen_data, err = c.Set(nextzen_key, t)
+		nextzen_data, err = c.Set(ctx, nextzen_key, t)
 
 		if err != nil {
 			return nil, err
@@ -125,7 +129,7 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options,
 	// (20190606/thisisaaronland)
 
 	if nextzen.IsOverZoom(z) {
-		rasterzen_data, err = c.Set(rasterzen_key, nextzen_data)
+		rasterzen_data, err = c.Set(ctx, rasterzen_key, nextzen_data)
 	} else {
 
 		cr, err := nextzen.CropTile(z, x, y, nextzen_data)
@@ -136,7 +140,7 @@ func RenderRasterzenTile(t slippy.Tile, c cache.Cache, nz_opts *nextzen.Options,
 
 		defer cr.Close()
 
-		rasterzen_data, err = c.Set(rasterzen_key, cr)
+		rasterzen_data, err = c.Set(ctx, rasterzen_key, cr)
 
 		if err != nil {
 			return nil, err

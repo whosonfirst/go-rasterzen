@@ -5,9 +5,9 @@ import (
 	"bytes"
 	"errors"
 	"github.com/go-spatial/geom/slippy"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 	"io"
 	"io/ioutil"
 	"log"
@@ -70,7 +70,8 @@ func NewDispatchHandler(c cache.Cache) (*DispatchHandler, error) {
 
 func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.Request, key string) error {
 
-	data, err := h.Cache.Get(key)
+	ctx := req.Context()
+	data, err := h.Cache.Get(ctx, key)
 
 	// log.Println("GET", key, err, cache.IsCacheMiss(err), cache.IsCacheMissMulti(err))
 
@@ -110,7 +111,7 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 
 		if err == nil {
 
-			_, cache_err := h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
+			_, cache_err := h.Cache.Set(ctx, key, cache.NewReadCloser(b.Bytes()))
 
 			if cache_err != nil {
 				log.Printf("%s %v\n", key, cache_err)
@@ -179,7 +180,7 @@ func (h *DispatchHandler) HandleRequest(rsp gohttp.ResponseWriter, req *gohttp.R
 
 	// log.Println("SET CACHE", key)
 
-	_, cache_err := h.Cache.Set(key, cache.NewReadCloser(b.Bytes()))
+	_, cache_err := h.Cache.Set(ctx, key, cache.NewReadCloser(b.Bytes()))
 
 	if cache_err != nil {
 		log.Printf("FAILED TO SET %s %v\n", key, cache_err)

@@ -2,9 +2,9 @@ package worker
 
 import (
 	"github.com/go-spatial/geom/slippy"
+	"github.com/whosonfirst/go-cache"
 	"github.com/whosonfirst/go-rasterzen/nextzen"
 	"github.com/whosonfirst/go-rasterzen/tile"
-	"github.com/whosonfirst/go-whosonfirst-cache"
 )
 
 type LocalWorker struct {
