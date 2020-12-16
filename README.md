@@ -35,6 +35,30 @@ make tools
 
 All of this package's dependencies are bundled with the code in the `vendor` directory.
 
+## Quick start
+
+If you just want to see what this looks like in a web browser here's what you'll need to type, from a command-line:
+
+```
+$> git clone https://github.com/whosonfirst/go-rasterzen.git
+$> cd go-rasterzen
+$> make tools
+$> mkdir cache
+$> ./bin/rasterd -www -fs-cache -fs-root ./cache/ -nextzen-apikey {APIKEY}
+$> open http://localhost:8080
+```
+
+_Note: The `open {URL}` syntax is probably specific to a Mac._
+
+This means you'll need to have the following applications installed on your computer:
+
+* Git
+* [Go](https://golang.org/dl)
+* Make
+* A web browser
+
+You'll also need a valid Nextzen API key which you can register for here: https://developers.nextzen.org/
+
 ## Tools
 
 ### rasterd
