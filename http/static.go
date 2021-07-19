@@ -2,15 +2,21 @@ package http
 
 import (
 	gohttp "net/http"
+	"github.com/whosonfirst/go-rasterzen/static"	
 )
 
 func StaticFileSystem() (gohttp.FileSystem, error) {
-	fs := assetFS()
+	fs := gohttp.FS(static.FS)
 	return fs, nil
 }
 
 func StaticHandler() (gohttp.Handler, error) {
 
-	fs := assetFS()
+	fs, err := StaticFileSystem()
+
+	if err != nil {
+		return nil, err
+	}
+		
 	return gohttp.FileServer(fs), nil
 }

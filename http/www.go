@@ -1,9 +1,9 @@
 package http
 
 import (
-	"github.com/whosonfirst/go-bindata-html-template"
-	"github.com/whosonfirst/go-rasterzen/assets/templates"
+	"github.com/whosonfirst/go-rasterzen/templates/html"
 	gohttp "net/http"
+	"html/template"
 )
 
 type WWWHandlerOptions struct {
@@ -20,10 +20,8 @@ type WWWTemplateVars struct {
 
 func WWWHandler(opts *WWWHandlerOptions) (gohttp.HandlerFunc, error) {
 
-	t := template.New("index", templates.Asset)
-	// t = t.Funcs(funcs)
-
-	t, err := t.ParseFiles("templates/html/index.html")
+	t := template.New("index")
+	t, err := t.ParseFS(html.FS, "*.html")
 
 	if err != nil {
 		return nil, err

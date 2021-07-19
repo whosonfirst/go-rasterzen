@@ -139,36 +139,40 @@ func NewHTTPServer(ctx context.Context, uri string) (Server, error) {
 }
 
 func (s *HTTPServer) Address() string {
-	return s.url.String()
+
+	u, _ := url.Parse(s.url.String())
+	u.RawQuery = ""
+
+	return u.String()
 }
 
-func (s *HTTPServer) ListenAndServe(ctx context.Context, mux *http.ServeMux) error {
+func (s *HTTPServer) ListenAndServe(ctx context.Context, mux http.Handler) error {
 
 	idleConnsClosed := make(chan struct{})
-	
+
 	go func() {
-		
+
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
 
 		// We received an interrupt signal, shut down.
-		
+
 		err := s.http_server.Shutdown(context.Background())
 
 		if err != nil {
 			log.Printf("HTTP server shutdown error: %v", err)
 		}
-		
+
 		close(idleConnsClosed)
 	}()
-	
+
 	s.http_server.Handler = mux
 
 	var err error
-	
+
 	if s.cert != "" && s.key != "" {
-		err = s.http_server.ListenAndServeTLS(s.cert, s.key)		
+		err = s.http_server.ListenAndServeTLS(s.cert, s.key)
 	} else {
 		err = s.http_server.ListenAndServe()
 	}

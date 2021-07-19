@@ -1,24 +1,11 @@
 CWD=$(shell pwd)
 
-bake-assets:
-	go build -o bin/go-bindata cmd/go-bindata/main.go
-	go build -o bin/go-bindata-assetfs cmd/go-bindata-assetfs/main.go
-	rm -f www/static/*~ www/static/css/*~ www/static/javascript/*~
-	@PATH=$(PATH):$(CWD)/bin bin/go-bindata-assetfs -pkg http static/javascript static/css
-	mv bindata.go http/assetfs.go
-	rm -rf templates/html/*~
-	bin/go-bindata -pkg templates -o assets/templates/html.go templates/html
-
 tools:
 	rm -rf bin/*
 	go build -mod vendor -o bin/rasterd cmd/rasterd/main.go
 	go build -mod vendor -o bin/rasterzen-seed cmd/rasterzen-seed/main.go
 	go build -mod vendor -o bin/rasterpng cmd/rasterpng/main.go
 	go build -mod vendor -o bin/rastersvg cmd/rastersvg/main.go
-
-rebuild:
-	@make assets
-	@make tools
 
 lambda:
 	@make lambda-seed

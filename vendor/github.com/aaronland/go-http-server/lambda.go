@@ -15,7 +15,8 @@ func init() {
 
 type LambdaServer struct {
 	Server
-	url *url.URL
+	url          *url.URL
+	binary_types []string
 }
 
 func NewLambdaServer(ctx context.Context, uri string) (Server, error) {
@@ -30,6 +31,14 @@ func NewLambdaServer(ctx context.Context, uri string) (Server, error) {
 		url: u,
 	}
 
+	q := u.Query()
+
+	binary_types, ok := q["binary_type"]
+
+	if ok {
+		server.binary_types = binary_types
+	}
+
 	return &server, nil
 }
 
@@ -37,13 +46,13 @@ func (s *LambdaServer) Address() string {
 	return s.url.String()
 }
 
-func (s *LambdaServer) ListenAndServe(ctx context.Context, mux *http.ServeMux) error {
-
-	// this cr^H^H^H stuff is important (20180713/thisisaaronland)
-	// go-rasterzen/README.md#lambda-api-gateway-and-images#lambda-api-gateway-and-images
+func (s *LambdaServer) ListenAndServe(ctx context.Context, mux http.Handler) error {
 
 	lambda_opts := new(algnhsa.Options)
-	lambda_opts.BinaryContentTypes = []string{"application/zip"}
+
+	if len(s.binary_types) > 0 {
+		lambda_opts.BinaryContentTypes = s.binary_types
+	}
 
 	algnhsa.ListenAndServe(mux, lambda_opts)
 	return nil

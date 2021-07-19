@@ -154,10 +154,95 @@ type MultiLineStringSetter interface {
 	SetLineStrings([][][2]float64) error
 }
 
+// MultiLineStringZSetter is a mutable MultiLineStringZer.
+type MultiLineStringZSetter interface {
+	MultiLineStringZer
+	SetLineStringZs([][][3]float64) error
+}
+
+// MultiLineStringMSetter is a mutable MultiLineStringMer.
+type MultiLineStringMSetter interface {
+	MultiLineStringMer
+	SetLineStringMs([][][3]float64) error
+}
+
+// MultiLineStringZMSetter is a mutable MultiLineZMStringer.
+type MultiLineStringZMSetter interface {
+	MultiLineStringZMer
+	SetLineStringZMs([][][4]float64) error
+}
+
+// MultiLineStringSSetter is a mutable MultiLineSStringer.
+type MultiLineStringSSetter interface {
+	MultiLineStringSer
+	SetSRID(srid uint32, mls MultiLineString) error
+}
+
+// MultiLineStringZSSetter is a mutable MultiLineZSStringer.
+type MultiLineStringZSSetter interface {
+	MultiLineStringZSer
+	SetSRID(srid uint32, mlsz MultiLineStringZ) error
+}
+
+// MultiLineStringMSSetter is a mutable MultiLineMSStringer.
+type MultiLineStringMSSetter interface {
+	MultiLineStringMSer
+	SetSRID(srid uint32, mlsm MultiLineStringM) error
+}
+
+// MultiLineStringZMSSetter is a mutable MultiLineZMSStringer.
+type MultiLineStringZMSSetter interface {
+	MultiLineStringZMSer
+	SetSRID(srid uint32, mlszm MultiLineStringZM) error
+}
+
 // PolygonSetter is a mutable Polygoner.
 type PolygonSetter interface {
 	Polygoner
 	SetLinearRings([][][2]float64) error
+	AsSegments() ([][]Line, error)
+}
+
+type PolygonZSetter interface {
+	PolygonZer
+	SetLinearRings([][][3]float64) error
+	AsSegments() ([][]LineZ, error)
+}
+
+type PolygonMSetter interface {
+	PolygonMer
+	SetLinearRings([][][3]float64) error
+	AsSegments() ([][]LineM, error)
+}
+
+type PolygonZMSetter interface {
+	PolygonZMer
+	SetLinearRings([][][4]float64) error
+	AsSegments() ([][]LineZM, error)
+}
+
+type PolygonSSetter interface {
+	PolygonSer
+	SetLinearRings(srid uint32, pol Polygon) error
+	AsSegments() ([][]Line, uint32, error)
+}
+
+type PolygonZSSetter interface {
+	PolygonZSer
+	SetLinearRings(srid uint32, polz PolygonZ) error
+	AsSegments() ([][]LineZ, uint32, error)
+}
+
+type PolygonMSSetter interface {
+	PolygonMSer
+	SetLinearRings(srid uint32, polm PolygonM) error
+	AsSegments() ([][]LineM, uint32, error)
+}
+
+type PolygonZMSSetter interface {
+	PolygonZMSer
+	SetLinearRings(srid uint32, polzm PolygonZM) error
+	AsSegments() ([][]LineZM, uint32, error)
 }
 
 // MultiPolygonSetter is a mutable MultiPolygoner.
