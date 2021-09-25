@@ -6,14 +6,14 @@ github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
 ## explicit
 github.com/aaronland/go-string/dsn
-# github.com/aws/aws-lambda-go v1.25.0
+# github.com/aws/aws-lambda-go v1.26.0
 ## explicit
 github.com/aws/aws-lambda-go/events
 github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go v1.40.3
+# github.com/aws/aws-sdk-go v1.40.49
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -70,7 +70,7 @@ github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
 # github.com/go-ini/ini v1.42.0
 github.com/go-ini/ini
-# github.com/go-spatial/geom v0.0.0-20210315165355-0e06498b3362
+# github.com/go-spatial/geom v0.0.0-20210804045141-e17f18e24cae
 ## explicit
 github.com/go-spatial/geom
 github.com/go-spatial/geom/slippy
@@ -102,19 +102,19 @@ github.com/srwiley/oksvg
 # github.com/srwiley/rasterx v0.0.0-20210519020934-456a8d69b780
 ## explicit
 github.com/srwiley/rasterx
-# github.com/tidwall/gjson v1.8.1
+# github.com/tidwall/gjson v1.9.1
 ## explicit
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.0.3
 github.com/tidwall/match
-# github.com/tidwall/pretty v1.1.0
+# github.com/tidwall/pretty v1.2.0
 github.com/tidwall/pretty
-# github.com/tidwall/sjson v1.1.7
+# github.com/tidwall/sjson v1.2.2
 ## explicit
 github.com/tidwall/sjson
 # github.com/whosonfirst/algnhsa v0.1.0
 github.com/whosonfirst/algnhsa
-# github.com/whosonfirst/go-geojson-svg v0.0.3
+# github.com/whosonfirst/go-geojson-svg v0.0.4
 ## explicit
 github.com/whosonfirst/go-geojson-svg
 # github.com/whosonfirst/go-spatialite v0.1.1

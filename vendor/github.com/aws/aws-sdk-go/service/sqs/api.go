@@ -2166,12 +2166,20 @@ type AddPermissionInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s AddPermissionInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s AddPermissionInput) GoString() string {
 	return s.String()
 }
@@ -2226,12 +2234,20 @@ type AddPermissionOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s AddPermissionOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s AddPermissionOutput) GoString() string {
 	return s.String()
 }
@@ -2260,12 +2276,20 @@ type BatchResultErrorEntry struct {
 	SenderFault *bool `type:"boolean" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s BatchResultErrorEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s BatchResultErrorEntry) GoString() string {
 	return s.String()
 }
@@ -2311,12 +2335,20 @@ type ChangeMessageVisibilityBatchInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityBatchInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityBatchInput) GoString() string {
 	return s.String()
 }
@@ -2376,12 +2408,20 @@ type ChangeMessageVisibilityBatchOutput struct {
 	Successful []*ChangeMessageVisibilityBatchResultEntry `locationNameList:"ChangeMessageVisibilityBatchResultEntry" type:"list" flattened:"true" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityBatchOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityBatchOutput) GoString() string {
 	return s.String()
 }
@@ -2432,12 +2472,20 @@ type ChangeMessageVisibilityBatchRequestEntry struct {
 	VisibilityTimeout *int64 `type:"integer"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityBatchRequestEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityBatchRequestEntry) GoString() string {
 	return s.String()
 }
@@ -2486,12 +2534,20 @@ type ChangeMessageVisibilityBatchResultEntry struct {
 	Id *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityBatchResultEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityBatchResultEntry) GoString() string {
 	return s.String()
 }
@@ -2525,12 +2581,20 @@ type ChangeMessageVisibilityInput struct {
 	VisibilityTimeout *int64 `type:"integer" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityInput) GoString() string {
 	return s.String()
 }
@@ -2576,12 +2640,20 @@ type ChangeMessageVisibilityOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ChangeMessageVisibilityOutput) GoString() string {
 	return s.String()
 }
@@ -2615,25 +2687,42 @@ type CreateQueueInput struct {
 	//    which a ReceiveMessage action waits for a message to arrive. Valid values:
 	//    An integer from 0 to 20 (seconds). Default: 0.
 	//
-	//    * RedrivePolicy – The string that includes the parameters for the dead-letter
-	//    queue functionality of the source queue as a JSON object. For more information
-	//    about the redrive policy and dead-letter queues, see Using Amazon SQS
-	//    Dead-Letter Queues (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
-	//    in the Amazon SQS Developer Guide. deadLetterTargetArn – The Amazon
-	//    Resource Name (ARN) of the dead-letter queue to which Amazon SQS moves
-	//    messages after the value of maxReceiveCount is exceeded. maxReceiveCount
-	//    – The number of times a message is delivered to the source queue before
-	//    being moved to the dead-letter queue. When the ReceiveCount for a message
-	//    exceeds the maxReceiveCount for a queue, Amazon SQS moves the message
-	//    to the dead-letter-queue. The dead-letter queue of a FIFO queue must also
-	//    be a FIFO queue. Similarly, the dead-letter queue of a standard queue
-	//    must also be a standard queue.
-	//
 	//    * VisibilityTimeout – The visibility timeout for the queue, in seconds.
 	//    Valid values: An integer from 0 to 43,200 (12 hours). Default: 30. For
 	//    more information about the visibility timeout, see Visibility Timeout
 	//    (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)
 	//    in the Amazon SQS Developer Guide.
+	//
+	// The following attributes apply only to dead-letter queues: (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
+	//
+	//    * RedrivePolicy – The string that includes the parameters for the dead-letter
+	//    queue functionality of the source queue as a JSON object. The parameters
+	//    are as follows: deadLetterTargetArn – The Amazon Resource Name (ARN)
+	//    of the dead-letter queue to which Amazon SQS moves messages after the
+	//    value of maxReceiveCount is exceeded. maxReceiveCount – The number of
+	//    times a message is delivered to the source queue before being moved to
+	//    the dead-letter queue. When the ReceiveCount for a message exceeds the
+	//    maxReceiveCount for a queue, Amazon SQS moves the message to the dead-letter-queue.
+	//
+	//    * RedriveAllowPolicy – The string that includes the parameters for the
+	//    permissions for the dead-letter queue redrive permission and which source
+	//    queues can specify dead-letter queues as a JSON object. The parameters
+	//    are as follows: redrivePermission – The permission type that defines
+	//    which source queues can specify the current queue as the dead-letter queue.
+	//    Valid values are: allowAll – (Default) Any source queues in this Amazon
+	//    Web Services account in the same Region can specify this queue as the
+	//    dead-letter queue. denyAll – No source queues can specify this queue
+	//    as the dead-letter queue. byQueue – Only queues specified by the sourceQueueArns
+	//    parameter can specify this queue as the dead-letter queue. sourceQueueArns
+	//    – The Amazon Resource Names (ARN)s of the source queues that can specify
+	//    this queue as the dead-letter queue and redrive messages. You can specify
+	//    this parameter only when the redrivePermission parameter is set to byQueue.
+	//    You can specify up to 10 source queue ARNs. To allow more than 10 source
+	//    queues to specify dead-letter queues, set the redrivePermission parameter
+	//    to allowAll.
+	//
+	// The dead-letter queue of a FIFO queue must also be a FIFO queue. Similarly,
+	// the dead-letter queue of a standard queue must also be a standard queue.
 	//
 	// The following attributes apply only to server-side-encryption (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html):
 	//
@@ -2750,12 +2839,20 @@ type CreateQueueInput struct {
 	Tags map[string]*string `locationName:"Tag" locationNameKey:"Key" locationNameValue:"Value" type:"map" flattened:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s CreateQueueInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s CreateQueueInput) GoString() string {
 	return s.String()
 }
@@ -2799,12 +2896,20 @@ type CreateQueueOutput struct {
 	QueueUrl *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s CreateQueueOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s CreateQueueOutput) GoString() string {
 	return s.String()
 }
@@ -2831,12 +2936,20 @@ type DeleteMessageBatchInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageBatchInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageBatchInput) GoString() string {
 	return s.String()
 }
@@ -2896,12 +3009,20 @@ type DeleteMessageBatchOutput struct {
 	Successful []*DeleteMessageBatchResultEntry `locationNameList:"DeleteMessageBatchResultEntry" type:"list" flattened:"true" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageBatchOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageBatchOutput) GoString() string {
 	return s.String()
 }
@@ -2939,12 +3060,20 @@ type DeleteMessageBatchRequestEntry struct {
 	ReceiptHandle *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageBatchRequestEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageBatchRequestEntry) GoString() string {
 	return s.String()
 }
@@ -2987,12 +3116,20 @@ type DeleteMessageBatchResultEntry struct {
 	Id *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageBatchResultEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageBatchResultEntry) GoString() string {
 	return s.String()
 }
@@ -3019,12 +3156,20 @@ type DeleteMessageInput struct {
 	ReceiptHandle *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageInput) GoString() string {
 	return s.String()
 }
@@ -3061,12 +3206,20 @@ type DeleteMessageOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteMessageOutput) GoString() string {
 	return s.String()
 }
@@ -3082,12 +3235,20 @@ type DeleteQueueInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteQueueInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteQueueInput) GoString() string {
 	return s.String()
 }
@@ -3115,12 +3276,20 @@ type DeleteQueueOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteQueueOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s DeleteQueueOutput) GoString() string {
 	return s.String()
 }
@@ -3180,22 +3349,41 @@ type GetQueueAttributesInput struct {
 	//    * ReceiveMessageWaitTimeSeconds – Returns the length of time, in seconds,
 	//    for which the ReceiveMessage action waits for a message to arrive.
 	//
-	//    * RedrivePolicy – The string that includes the parameters for the dead-letter
-	//    queue functionality of the source queue as a JSON object. For more information
-	//    about the redrive policy and dead-letter queues, see Using Amazon SQS
-	//    Dead-Letter Queues (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
-	//    in the Amazon SQS Developer Guide. deadLetterTargetArn – The Amazon
-	//    Resource Name (ARN) of the dead-letter queue to which Amazon SQS moves
-	//    messages after the value of maxReceiveCount is exceeded. maxReceiveCount
-	//    – The number of times a message is delivered to the source queue before
-	//    being moved to the dead-letter queue. When the ReceiveCount for a message
-	//    exceeds the maxReceiveCount for a queue, Amazon SQS moves the message
-	//    to the dead-letter-queue.
-	//
 	//    * VisibilityTimeout – Returns the visibility timeout for the queue.
 	//    For more information about the visibility timeout, see Visibility Timeout
 	//    (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)
 	//    in the Amazon SQS Developer Guide.
+	//
+	// The following attributes apply only to dead-letter queues: (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
+	//
+	//    * RedrivePolicy – The string that includes the parameters for the dead-letter
+	//    queue functionality of the source queue as a JSON object. The parameters
+	//    are as follows: deadLetterTargetArn – The Amazon Resource Name (ARN)
+	//    of the dead-letter queue to which Amazon SQS moves messages after the
+	//    value of maxReceiveCount is exceeded. maxReceiveCount – The number of
+	//    times a message is delivered to the source queue before being moved to
+	//    the dead-letter queue. When the ReceiveCount for a message exceeds the
+	//    maxReceiveCount for a queue, Amazon SQS moves the message to the dead-letter-queue.
+	//
+	//    * RedriveAllowPolicy – The string that includes the parameters for the
+	//    permissions for the dead-letter queue redrive permission and which source
+	//    queues can specify dead-letter queues as a JSON object. The parameters
+	//    are as follows: redrivePermission – The permission type that defines
+	//    which source queues can specify the current queue as the dead-letter queue.
+	//    Valid values are: allowAll – (Default) Any source queues in this Amazon
+	//    Web Services account in the same Region can specify this queue as the
+	//    dead-letter queue. denyAll – No source queues can specify this queue
+	//    as the dead-letter queue. byQueue – Only queues specified by the sourceQueueArns
+	//    parameter can specify this queue as the dead-letter queue. sourceQueueArns
+	//    – The Amazon Resource Names (ARN)s of the source queues that can specify
+	//    this queue as the dead-letter queue and redrive messages. You can specify
+	//    this parameter only when the redrivePermission parameter is set to byQueue.
+	//    You can specify up to 10 source queue ARNs. To allow more than 10 source
+	//    queues to specify dead-letter queues, set the redrivePermission parameter
+	//    to allowAll.
+	//
+	// The dead-letter queue of a FIFO queue must also be a FIFO queue. Similarly,
+	// the dead-letter queue of a standard queue must also be a standard queue.
 	//
 	// The following attributes apply only to server-side-encryption (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html):
 	//
@@ -3254,12 +3442,20 @@ type GetQueueAttributesInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetQueueAttributesInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetQueueAttributesInput) GoString() string {
 	return s.String()
 }
@@ -3297,12 +3493,20 @@ type GetQueueAttributesOutput struct {
 	Attributes map[string]*string `locationName:"Attribute" locationNameKey:"Name" locationNameValue:"Value" type:"map" flattened:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetQueueAttributesOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetQueueAttributesOutput) GoString() string {
 	return s.String()
 }
@@ -3328,12 +3532,20 @@ type GetQueueUrlInput struct {
 	QueueOwnerAWSAccountId *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetQueueUrlInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetQueueUrlInput) GoString() string {
 	return s.String()
 }
@@ -3372,12 +3584,20 @@ type GetQueueUrlOutput struct {
 	QueueUrl *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetQueueUrlOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s GetQueueUrlOutput) GoString() string {
 	return s.String()
 }
@@ -3406,12 +3626,20 @@ type ListDeadLetterSourceQueuesInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListDeadLetterSourceQueuesInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListDeadLetterSourceQueuesInput) GoString() string {
 	return s.String()
 }
@@ -3463,12 +3691,20 @@ type ListDeadLetterSourceQueuesOutput struct {
 	QueueUrls []*string `locationName:"queueUrls" locationNameList:"QueueUrl" type:"list" flattened:"true" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListDeadLetterSourceQueuesOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListDeadLetterSourceQueuesOutput) GoString() string {
 	return s.String()
 }
@@ -3494,12 +3730,20 @@ type ListQueueTagsInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListQueueTagsInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListQueueTagsInput) GoString() string {
 	return s.String()
 }
@@ -3530,12 +3774,20 @@ type ListQueueTagsOutput struct {
 	Tags map[string]*string `locationName:"Tag" locationNameKey:"Key" locationNameValue:"Value" type:"map" flattened:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListQueueTagsOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListQueueTagsOutput) GoString() string {
 	return s.String()
 }
@@ -3563,12 +3815,20 @@ type ListQueuesInput struct {
 	QueueNamePrefix *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListQueuesInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListQueuesInput) GoString() string {
 	return s.String()
 }
@@ -3605,12 +3865,20 @@ type ListQueuesOutput struct {
 	QueueUrls []*string `locationNameList:"QueueUrl" type:"list" flattened:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListQueuesOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ListQueuesOutput) GoString() string {
 	return s.String()
 }
@@ -3680,12 +3948,20 @@ type Message struct {
 	ReceiptHandle *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Message) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s Message) GoString() string {
 	return s.String()
 }
@@ -3747,7 +4023,6 @@ type MessageAttributeValue struct {
 
 	// Binary type attributes can store any binary data, such as compressed data,
 	// encrypted data, or images.
-	//
 	// BinaryValue is automatically base64 encoded/decoded by the SDK.
 	BinaryValue []byte `type:"blob"`
 
@@ -3769,12 +4044,20 @@ type MessageAttributeValue struct {
 	StringValue *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s MessageAttributeValue) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s MessageAttributeValue) GoString() string {
 	return s.String()
 }
@@ -3835,7 +4118,6 @@ type MessageSystemAttributeValue struct {
 
 	// Binary type attributes can store any binary data, such as compressed data,
 	// encrypted data, or images.
-	//
 	// BinaryValue is automatically base64 encoded/decoded by the SDK.
 	BinaryValue []byte `type:"blob"`
 
@@ -3857,12 +4139,20 @@ type MessageSystemAttributeValue struct {
 	StringValue *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s MessageSystemAttributeValue) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s MessageSystemAttributeValue) GoString() string {
 	return s.String()
 }
@@ -3921,12 +4211,20 @@ type PurgeQueueInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PurgeQueueInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PurgeQueueInput) GoString() string {
 	return s.String()
 }
@@ -3954,12 +4252,20 @@ type PurgeQueueOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PurgeQueueOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s PurgeQueueOutput) GoString() string {
 	return s.String()
 }
@@ -4100,12 +4406,20 @@ type ReceiveMessageInput struct {
 	WaitTimeSeconds *int64 `type:"integer"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ReceiveMessageInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ReceiveMessageInput) GoString() string {
 	return s.String()
 }
@@ -4173,12 +4487,20 @@ type ReceiveMessageOutput struct {
 	Messages []*Message `locationNameList:"Message" type:"list" flattened:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ReceiveMessageOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s ReceiveMessageOutput) GoString() string {
 	return s.String()
 }
@@ -4206,12 +4528,20 @@ type RemovePermissionInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RemovePermissionInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RemovePermissionInput) GoString() string {
 	return s.String()
 }
@@ -4248,12 +4578,20 @@ type RemovePermissionOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RemovePermissionOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s RemovePermissionOutput) GoString() string {
 	return s.String()
 }
@@ -4274,12 +4612,20 @@ type SendMessageBatchInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageBatchInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageBatchInput) GoString() string {
 	return s.String()
 }
@@ -4340,12 +4686,20 @@ type SendMessageBatchOutput struct {
 	Successful []*SendMessageBatchResultEntry `locationNameList:"SendMessageBatchResultEntry" type:"list" flattened:"true" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageBatchOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageBatchOutput) GoString() string {
 	return s.String()
 }
@@ -4479,12 +4833,20 @@ type SendMessageBatchRequestEntry struct {
 	MessageSystemAttributes map[string]*MessageSystemAttributeValue `locationName:"MessageSystemAttribute" locationNameKey:"Name" locationNameValue:"Value" type:"map" flattened:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageBatchRequestEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageBatchRequestEntry) GoString() string {
 	return s.String()
 }
@@ -4610,12 +4972,20 @@ type SendMessageBatchResultEntry struct {
 	SequenceNumber *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageBatchResultEntry) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageBatchResultEntry) GoString() string {
 	return s.String()
 }
@@ -4779,12 +5149,20 @@ type SendMessageInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageInput) GoString() string {
 	return s.String()
 }
@@ -4902,12 +5280,20 @@ type SendMessageOutput struct {
 	SequenceNumber *string `type:"string"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SendMessageOutput) GoString() string {
 	return s.String()
 }
@@ -4971,25 +5357,42 @@ type SetQueueAttributesInput struct {
 	//    which a ReceiveMessage action waits for a message to arrive. Valid values:
 	//    An integer from 0 to 20 (seconds). Default: 0.
 	//
-	//    * RedrivePolicy – The string that includes the parameters for the dead-letter
-	//    queue functionality of the source queue as a JSON object. For more information
-	//    about the redrive policy and dead-letter queues, see Using Amazon SQS
-	//    Dead-Letter Queues (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
-	//    in the Amazon SQS Developer Guide. deadLetterTargetArn – The Amazon
-	//    Resource Name (ARN) of the dead-letter queue to which Amazon SQS moves
-	//    messages after the value of maxReceiveCount is exceeded. maxReceiveCount
-	//    – The number of times a message is delivered to the source queue before
-	//    being moved to the dead-letter queue. When the ReceiveCount for a message
-	//    exceeds the maxReceiveCount for a queue, Amazon SQS moves the message
-	//    to the dead-letter-queue. The dead-letter queue of a FIFO queue must also
-	//    be a FIFO queue. Similarly, the dead-letter queue of a standard queue
-	//    must also be a standard queue.
-	//
 	//    * VisibilityTimeout – The visibility timeout for the queue, in seconds.
 	//    Valid values: An integer from 0 to 43,200 (12 hours). Default: 30. For
 	//    more information about the visibility timeout, see Visibility Timeout
 	//    (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)
 	//    in the Amazon SQS Developer Guide.
+	//
+	// The following attributes apply only to dead-letter queues: (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
+	//
+	//    * RedrivePolicy – The string that includes the parameters for the dead-letter
+	//    queue functionality of the source queue as a JSON object. The parameters
+	//    are as follows: deadLetterTargetArn – The Amazon Resource Name (ARN)
+	//    of the dead-letter queue to which Amazon SQS moves messages after the
+	//    value of maxReceiveCount is exceeded. maxReceiveCount – The number of
+	//    times a message is delivered to the source queue before being moved to
+	//    the dead-letter queue. When the ReceiveCount for a message exceeds the
+	//    maxReceiveCount for a queue, Amazon SQS moves the message to the dead-letter-queue.
+	//
+	//    * RedriveAllowPolicy – The string that includes the parameters for the
+	//    permissions for the dead-letter queue redrive permission and which source
+	//    queues can specify dead-letter queues as a JSON object. The parameters
+	//    are as follows: redrivePermission – The permission type that defines
+	//    which source queues can specify the current queue as the dead-letter queue.
+	//    Valid values are: allowAll – (Default) Any source queues in this Amazon
+	//    Web Services account in the same Region can specify this queue as the
+	//    dead-letter queue. denyAll – No source queues can specify this queue
+	//    as the dead-letter queue. byQueue – Only queues specified by the sourceQueueArns
+	//    parameter can specify this queue as the dead-letter queue. sourceQueueArns
+	//    – The Amazon Resource Names (ARN)s of the source queues that can specify
+	//    this queue as the dead-letter queue and redrive messages. You can specify
+	//    this parameter only when the redrivePermission parameter is set to byQueue.
+	//    You can specify up to 10 source queue ARNs. To allow more than 10 source
+	//    queues to specify dead-letter queues, set the redrivePermission parameter
+	//    to allowAll.
+	//
+	// The dead-letter queue of a FIFO queue must also be a FIFO queue. Similarly,
+	// the dead-letter queue of a standard queue must also be a standard queue.
 	//
 	// The following attributes apply only to server-side-encryption (https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html):
 	//
@@ -5066,12 +5469,20 @@ type SetQueueAttributesInput struct {
 	QueueUrl *string `type:"string" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SetQueueAttributesInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SetQueueAttributesInput) GoString() string {
 	return s.String()
 }
@@ -5108,12 +5519,20 @@ type SetQueueAttributesOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SetQueueAttributesOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s SetQueueAttributesOutput) GoString() string {
 	return s.String()
 }
@@ -5132,12 +5551,20 @@ type TagQueueInput struct {
 	Tags map[string]*string `locationName:"Tag" locationNameKey:"Key" locationNameValue:"Value" type:"map" flattened:"true" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s TagQueueInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s TagQueueInput) GoString() string {
 	return s.String()
 }
@@ -5174,12 +5601,20 @@ type TagQueueOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s TagQueueOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s TagQueueOutput) GoString() string {
 	return s.String()
 }
@@ -5198,12 +5633,20 @@ type UntagQueueInput struct {
 	TagKeys []*string `locationNameList:"TagKey" type:"list" flattened:"true" required:"true"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s UntagQueueInput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s UntagQueueInput) GoString() string {
 	return s.String()
 }
@@ -5240,12 +5683,20 @@ type UntagQueueOutput struct {
 	_ struct{} `type:"structure"`
 }
 
-// String returns the string representation
+// String returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s UntagQueueOutput) String() string {
 	return awsutil.Prettify(s)
 }
 
-// GoString returns the string representation
+// GoString returns the string representation.
+//
+// API parameter values that are decorated as "sensitive" in the API will not
+// be included in the string output. The member name will be present, but the
+// value will be replaced with "sensitive".
 func (s UntagQueueOutput) GoString() string {
 	return s.String()
 }
@@ -5362,6 +5813,9 @@ const (
 
 	// QueueAttributeNameFifoThroughputLimit is a QueueAttributeName enum value
 	QueueAttributeNameFifoThroughputLimit = "FifoThroughputLimit"
+
+	// QueueAttributeNameRedriveAllowPolicy is a QueueAttributeName enum value
+	QueueAttributeNameRedriveAllowPolicy = "RedriveAllowPolicy"
 )
 
 // QueueAttributeName_Values returns all elements of the QueueAttributeName enum
@@ -5387,5 +5841,6 @@ func QueueAttributeName_Values() []string {
 		QueueAttributeNameKmsDataKeyReusePeriodSeconds,
 		QueueAttributeNameDeduplicationScope,
 		QueueAttributeNameFifoThroughputLimit,
+		QueueAttributeNameRedriveAllowPolicy,
 	}
 }
