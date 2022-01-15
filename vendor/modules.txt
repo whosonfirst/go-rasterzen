@@ -6,14 +6,14 @@ github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
 ## explicit
 github.com/aaronland/go-string/dsn
-# github.com/aws/aws-lambda-go v1.26.0
+# github.com/aws/aws-lambda-go v1.28.0
 ## explicit
 github.com/aws/aws-lambda-go/events
 github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go v1.40.49
+# github.com/aws/aws-sdk-go v1.42.35
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -70,7 +70,7 @@ github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
 # github.com/go-ini/ini v1.42.0
 github.com/go-ini/ini
-# github.com/go-spatial/geom v0.0.0-20210804045141-e17f18e24cae
+# github.com/go-spatial/geom v0.0.0-20211111064745-60d42903d86f
 ## explicit
 github.com/go-spatial/geom
 github.com/go-spatial/geom/slippy
@@ -85,7 +85,7 @@ github.com/mattn/go-sqlite3
 github.com/patrickmn/go-cache
 # github.com/paulmach/go.geojson v1.4.0
 github.com/paulmach/go.geojson
-# github.com/paulmach/orb v0.2.2
+# github.com/paulmach/orb v0.4.0
 ## explicit
 github.com/paulmach/orb
 github.com/paulmach/orb/clip
@@ -96,20 +96,20 @@ github.com/paulmach/orb/project
 # github.com/sfomuseum/go-flags v0.8.2
 ## explicit
 github.com/sfomuseum/go-flags/flagset
-# github.com/srwiley/oksvg v0.0.0-20210519022825-9fc0c575d5fe
+# github.com/srwiley/oksvg v0.0.0-20211120171407-1837d6608d8c
 ## explicit
 github.com/srwiley/oksvg
 # github.com/srwiley/rasterx v0.0.0-20210519020934-456a8d69b780
 ## explicit
 github.com/srwiley/rasterx
-# github.com/tidwall/gjson v1.9.1
+# github.com/tidwall/gjson v1.13.0
 ## explicit
 github.com/tidwall/gjson
-# github.com/tidwall/match v1.0.3
+# github.com/tidwall/match v1.1.1
 github.com/tidwall/match
 # github.com/tidwall/pretty v1.2.0
 github.com/tidwall/pretty
-# github.com/tidwall/sjson v1.2.2
+# github.com/tidwall/sjson v1.2.4
 ## explicit
 github.com/tidwall/sjson
 # github.com/whosonfirst/algnhsa v0.1.0
@@ -153,12 +153,12 @@ github.com/whosonfirst/go-whosonfirst-sqlite/database
 github.com/whosonfirst/go-whosonfirst-sqlite/utils
 # github.com/whosonfirst/walk v0.0.1
 github.com/whosonfirst/walk
-# golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
+# golang.org/x/image v0.0.0-20211028202545-6944b10bf410
 ## explicit
 golang.org/x/image/colornames
 golang.org/x/image/math/fixed
 golang.org/x/image/vector
-# golang.org/x/net v0.0.0-20210614182718-04defd469f4e
+# golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
