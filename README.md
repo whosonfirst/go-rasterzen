@@ -459,16 +459,16 @@ Your `wof-staticd` function should be configured with (Lambda) environment varia
 * All instances of `-` are replaced with `_`
 * Each flag is prefixed with `RASTERD`
 
-For example the command line flag `-protocol` would be mapped to the `RASTERD_PROTOCOL` environment variable. Which is a good example because it is the one environment variable you _must_ to specify for `rasterd` to work as a Lambda function. Specifically you need to define the protocol as... "lambda". For example
+For example the command line flag `-server-uri` would be mapped to the `RASTERD_SERVER_URI` environment variable. Which is a good example because it is the one environment variable you _must_ to specify for `rasterd` to work as a Lambda function. Specifically you need to define the protocol as... "lambda://". For example
 
 ```
-RASTERD_PROTOCOL = lambda
+RASTERD_SERVER_URI = lambda://
 ```
 
 In reality you'll need to specify other flags, like `RASTERD_S3_DSN` and `RASTERD_CACHE_OPTIONS`. For example here's how you might configure your function to render all the data and graphics formats (but not static HTML webpages) for your data:
 
 ```
-RASTERD_PROTOCOL = lambda
+RASTERD_SERVER_URI = lambda://
 RASTERD_S3_CACHE = true
 RASTERD_S3_OPTS = ACL=public-read
 RASTERD_S3_DSN = bucket={BUCKET} prefix={PREFIX} region={REGION} credentials=iam:
