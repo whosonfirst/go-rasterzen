@@ -13,7 +13,7 @@ github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go v1.42.35
+# github.com/aws/aws-sdk-go v1.43.15
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -96,13 +96,13 @@ github.com/paulmach/orb/project
 # github.com/sfomuseum/go-flags v0.8.2
 ## explicit
 github.com/sfomuseum/go-flags/flagset
-# github.com/srwiley/oksvg v0.0.0-20211120171407-1837d6608d8c
+# github.com/srwiley/oksvg v0.0.0-20220128195007-1f435e4c2b44
 ## explicit
 github.com/srwiley/oksvg
-# github.com/srwiley/rasterx v0.0.0-20210519020934-456a8d69b780
+# github.com/srwiley/rasterx v0.0.0-20220128185129-2efea2b9ea41
 ## explicit
 github.com/srwiley/rasterx
-# github.com/tidwall/gjson v1.13.0
+# github.com/tidwall/gjson v1.14.0
 ## explicit
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.1.1
@@ -154,15 +154,14 @@ github.com/whosonfirst/go-whosonfirst-sqlite/utils
 # github.com/whosonfirst/walk v0.0.1
 github.com/whosonfirst/walk
 # golang.org/x/image v0.0.0-20211028202545-6944b10bf410
-## explicit
 golang.org/x/image/colornames
 golang.org/x/image/math/fixed
 golang.org/x/image/vector
-# golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
+# golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/text v0.3.6
+# golang.org/x/text v0.3.7
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex
