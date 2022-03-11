@@ -3,7 +3,7 @@ module github.com/whosonfirst/go-rasterzen
 go 1.16
 
 require (
-	github.com/aaronland/go-http-server v0.0.7
+	github.com/aaronland/go-http-server v0.1.0
 	github.com/aaronland/go-string v0.1.2
 	github.com/aws/aws-lambda-go v1.28.0
 	github.com/aws/aws-sdk-go v1.43.15

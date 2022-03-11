@@ -474,6 +474,12 @@ RASTERD_S3_OPTS = ACL=public-read
 RASTERD_S3_DSN = bucket={BUCKET} prefix={PREFIX} region={REGION} credentials=iam:
 ```
 
+### Lambda, API Gateway and CloudFront
+
+If you are running your API Gateway instance behind a CloudFront distribution make sure you configure the behaviour associated with your API Gateway cache settings to cache requests using all query parameters or at least the `api_key` query parameter (which is passed along with requests to fetch raw Nextzen tile data).
+
+You should also configure your behaviour to include the `Origin` and `Accept` headers when it cache requests.
+
 ### Lambda, API Gateway and images
 
 In order for requests to produce PNG output (rather than a base64 encoded string) you will need to do a few things.

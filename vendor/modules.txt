@@ -1,4 +1,4 @@
-# github.com/aaronland/go-http-server v0.0.7
+# github.com/aaronland/go-http-server v0.1.0
 ## explicit
 github.com/aaronland/go-http-server
 # github.com/aaronland/go-roster v0.0.2
@@ -6,6 +6,8 @@ github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
 ## explicit
 github.com/aaronland/go-string/dsn
+# github.com/akrylysov/algnhsa v0.12.1
+github.com/akrylysov/algnhsa
 # github.com/aws/aws-lambda-go v1.28.0
 ## explicit
 github.com/aws/aws-lambda-go/events
@@ -112,8 +114,6 @@ github.com/tidwall/pretty
 # github.com/tidwall/sjson v1.2.4
 ## explicit
 github.com/tidwall/sjson
-# github.com/whosonfirst/algnhsa v0.1.0
-github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/go-geojson-svg v0.0.4
 ## explicit
 github.com/whosonfirst/go-geojson-svg
